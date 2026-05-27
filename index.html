@@ -50,7 +50,7 @@
 
         .hero-title { text-align: center; font-size: 22px; font-weight: 600; margin-bottom: 20px; color: #555555; margin-top: 15px; }
         
-        /* --- ГЛАВНОЕ МЕНЮ (РЕЗИНОВОЕ) --- */
+        /* --- ГЛАВНОЕ МЕНЮ --- */
         .menu-grid { 
             display: grid; grid-template-columns: 1fr 1fr; gap: 20px; padding: 20px; 
             align-content: start; overflow-y: auto; flex-grow: 1; width: 100%; box-sizing: border-box;
@@ -82,7 +82,6 @@
         .target-column { display: flex; justify-content: center; align-items: center; gap: 20px; width: 100%; min-height: 120px; margin-top: 10px; }
         .drag-column { display: flex; justify-content: center; align-items: center; gap: 25px; width: 100%; min-height: 130px; margin-top: auto; padding-bottom: 30px; }
 
-        /* Фишки слогов */
         .target-item { 
             width: 110px; height: 110px; 
             background-repeat: no-repeat; background-position: center; background-size: cover; 
@@ -103,7 +102,6 @@
         .draggable-item.matched { opacity: 0; pointer-events: none; transform: scale(0.5); transition: all 0.4s; }
         .target-item.matched { color: var(--wood-text); text-shadow: 1px 1px 0px rgba(255,255,255,0.5); }
 
-        /* Стрелочки слов */
         .nav-arrows-container {
             display: flex; justify-content: center; align-items: center; gap: 150px; 
             position: absolute; top: 110px; width: 100%; pointer-events: none;
@@ -129,7 +127,6 @@
         #soroban-score.correct-flash { color: #4CAF50 !important; animation: scaleUp 0.3s ease; }
         @keyframes scaleUp { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
 
-        /* Панель переключения Учим/Решаем */
         .soroban-mode-toggle {
             display: flex; gap: 15px; margin-bottom: 5px; width: 100%; justify-content: center;
         }
@@ -141,19 +138,28 @@
             background-color: var(--accent-color); color: white; box-shadow: 0 4px 10px rgba(122,144,164,0.3);
         }
 
-        /* Окно задания робота F4 */
         #soroban-task-bubble {
-            background-color: var(--card-bg); padding: 12px 20px; border-radius: 18px;
-            font-size: 18px; font-weight: 600; color: #4A5568; text-align: center;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.03); max-width: 90%; margin-bottom: 10px;
-            min-height: 24px; display: flex; align-items: center; justify-content: center;
+            background-color: var(--card-bg); padding: 10px 20px; border-radius: 18px;
+            font-size: 16px; font-weight: 600; color: #4A5568; text-align: center;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.03); max-width: 90%; margin-bottom: 5px;
+            min-height: 20px; display: flex; align-items: center; justify-content: center;
+        }
+
+        /* Стили для обучающей карточки Соробана */
+        #soroban-hint-card {
+            display: none;
+            height: 90px;
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+            margin-bottom: 5px;
+            object-fit: contain;
         }
 
         #abacus-body-container {
             width: 100%; display: flex; justify-content: center; align-items: flex-end; padding-bottom: 15px;
         }
 
-        /* --- АДАПТАЦИЯ ДЛЯ УЗКИХ ЭКРАНОВ (САМСУНГИ И ДР.) --- */
+        /* --- АДАПТАЦИЯ ДЛЯ УЗКИХ ЭКРАНОВ --- */
         @media (max-width: 390px) {
             .menu-grid { gap: 12px; padding: 15px; }
             .category-card { border-radius: 22px; padding: 20px 8px; }
@@ -163,9 +169,9 @@
             .target-item, .draggable-item { width: 90px; height: 90px; font-size: 30px; }
             .nav-arrows-container { gap: 110px; }
             
-            /* Умное уменьшение соробана для узких экранов */
             #abacus-body-container { transform: scale(0.85); transform-origin: bottom center; margin-bottom: -15px; }
             #soroban-score { font-size: 70px; }
+            #soroban-hint-card { height: 75px; } /* Карточка тоже чуть сжимается */
         }
     </style>
 </head>
@@ -187,7 +193,8 @@
                 <div class="category-icon-placeholder"><img src="img/icon_soroban.png" alt=""></div>
                 <div class="category-title">Счёты Соробан</div>
             </div>
-        </div> 
+        </div>
+    </div> 
 
     <div id="screen-room" class="screen">
         <div class="header">
@@ -213,6 +220,7 @@
                         <div id="mode-play" class="mode-btn" onclick="switchSorobanMode('play')">Решаем примеры</div>
                     </div>
                     <div id="soroban-task-bubble">Загрузка задания...</div>
+                    <img id="soroban-hint-card" src="" alt="Подсказка">
                 </div>
 
                 <div id="soroban-score" style="display:none;">0</div>
@@ -233,12 +241,11 @@
         let activeItem = null;
         let startX = 0, startY = 0;
 
-        // Переменные для игрового движка Соробана
         let sorobanMode = 'learn'; 
         let currentLessonIndex = 0;
         let isTaskLock = false; 
 
-        // --- БАЗА ДАННЫХ ПРИЛОЖЕНИЯ ---
+        // --- БАЗА ДАННЫХ ПРИЛОЖЕНИЯ (Теперь с карточками hint!) ---
         const roomsData = {
             'words': [
                 { id: 'lisa', text: 'Лиса', image: 'img/3d_lisa.png', sound: 'audio/w_lisa.wav', syllables: ['ли', 'са'], audioSyllables: ['audio/sl_li.wav', 'audio/sl_sa.wav'] },
@@ -249,15 +256,15 @@
                 { id: 'sobaka', text: 'Собака', image: 'img/3d_sobaka.png', sound: 'audio/w_sobaka.wav', syllables: ['со', 'ба', 'ка'], audioSyllables: ['audio/sl_so.wav', 'audio/sl_ba.wav', 'audio/sl_ka.wav'] }
             ],
             'soroban_learn': [
-                { taskText: "Покажи на счётах число 1️⃣", target: 1 },
-                { taskText: "Давай сделаем число 2️⃣", target: 2 },
-                { taskText: "А теперь подними косточки до 3️⃣", target: 3 },
-                { taskText: "Покажи число 4️⃣", target: 4 },
-                { taskText: "Сбрось всё и опусти Королеву-Пятерку! 5️⃣", target: 5 },
-                { taskText: "А теперь собери число 6️⃣ (Пять и Один)", target: 6 },
-                { taskText: "Сделай число 7️⃣ (Пять и Два)", target: 7 },
-                { taskText: "Давай соберем число 8️⃣", target: 8 },
-                { taskText: "Финальное число! Покажи на спице 9️⃣", target: 9 }
+                { taskText: "Покажи на счётах число 1️⃣", target: 1, hint: "img/card_1.png" },
+                { taskText: "Давай сделаем число 2️⃣", target: 2, hint: "img/card_2.png" },
+                { taskText: "А теперь подними косточки до 3️⃣", target: 3, hint: "img/card_3.png" },
+                { taskText: "Покажи число 4️⃣", target: 4, hint: "img/card_4.png" },
+                { taskText: "Сбрось всё и опусти Королеву-Пятерку! 5️⃣", target: 5, hint: "img/card_5.png" },
+                { taskText: "А теперь собери число 6️⃣ (Пять и Один)", target: 6, hint: "img/card_6.png" },
+                { taskText: "Сделай число 7️⃣ (Пять и Два)", target: 7, hint: "img/card_7.png" },
+                { taskText: "Давай соберем число 8️⃣", target: 8, hint: "img/card_8.png" },
+                { taskText: "Финальное число! Покажи на спице 9️⃣", target: 9, hint: "img/card_9.png" }
             ],
             'soroban_play': [
                 { taskText: "Реши пример: 1 + 2 = ?", target: 3 },
@@ -378,7 +385,7 @@
             setupWordsGame();
         }
 
-        // --- ДВИЖОК: СЧЁТЫ СОРОБАН (ПОЛНЫЙ ИГРОВОЙ ИНТЕРАКТИВ) ---
+        // --- ДВИЖОК: СЧЁТЫ СОРОБАН ---
         let sorobanState = [
             { upper: false, lower: 0 }, 
             { upper: false, lower: 0 }, 
@@ -493,6 +500,7 @@
             
             if (currentLessonIndex >= tasks.length) {
                 isTaskLock = true;
+                document.getElementById('soroban-hint-card').style.display = 'none'; // Прячем карточку в конце
                 if (sorobanMode === 'learn') {
                     document.getElementById('soroban-task-bubble').innerText = "🎉 Великолепно! Ты выучил все цифры!";
                     playSound('audio/soroban_win.wav');
@@ -504,7 +512,21 @@
                 return;
             }
 
-            document.getElementById('soroban-task-bubble').innerText = tasks[currentLessonIndex].taskText;
+            // Устанавливаем текст и карточку
+            const currentTask = tasks[currentLessonIndex];
+            document.getElementById('soroban-task-bubble').innerText = currentTask.taskText;
+            
+            const hintCard = document.getElementById('soroban-hint-card');
+            if (currentTask.hint) {
+                // Если картинка пока не загружена, она может отображать битую иконку, 
+                // поэтому можно поставить обработчик ошибки
+                hintCard.onerror = function() { this.style.display = 'none'; };
+                hintCard.src = currentTask.hint;
+                hintCard.style.display = 'block';
+            } else {
+                hintCard.style.display = 'none';
+            }
+
             isTaskLock = false;
         }
 
