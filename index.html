@@ -69,7 +69,9 @@
 
         /* --- ИГРОВАЯ ЗОНА --- */
         .room-content-area {
-            flex-grow: 1; display: flex; flex-direction: column; justify-content: space-between; align-items: center; padding: 10px 15px 30px 15px; width: 100%; box-sizing: border-box; overflow: hidden;
+            flex-grow: 1; display: flex; flex-direction: column; justify-content: space-between; align-items: center; padding: 10px 15px 30px 15px; width: 100%; box-sizing: border-box; 
+            overflow-y: auto; /* Разрешили прокрутку, если экран совсем короткий */
+            overflow-x: hidden;
         }
 
         .game-container { display: none; width: 100%; flex-direction: column; align-items: center; box-sizing: border-box; flex-grow: 1; justify-content: space-between; }
@@ -145,33 +147,38 @@
             min-height: 20px; display: flex; align-items: center; justify-content: center;
         }
 
-        /* Стили для обучающей карточки Соробана */
         #soroban-hint-card {
-            display: none;
-            height: 90px;
-            border-radius: 12px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.08);
-            margin-bottom: 5px;
-            object-fit: contain;
+            display: none; height: 90px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.08); margin-bottom: 5px; object-fit: contain;
         }
 
         #abacus-body-container {
             width: 100%; display: flex; justify-content: center; align-items: flex-end; padding-bottom: 15px;
         }
 
-        /* --- АДАПТАЦИЯ ДЛЯ УЗКИХ ЭКРАНОВ --- */
+        /* --- АДАПТАЦИЯ (Ширина и ВЫСОТА) --- */
         @media (max-width: 390px) {
             .menu-grid { gap: 12px; padding: 15px; }
             .category-card { border-radius: 22px; padding: 20px 8px; }
             .category-icon-placeholder { max-width: 90px; margin-bottom: 10px; }
             .category-title { font-size: 16px; }
-
             .target-item, .draggable-item { width: 90px; height: 90px; font-size: 30px; }
             .nav-arrows-container { gap: 110px; }
-            
             #abacus-body-container { transform: scale(0.85); transform-origin: bottom center; margin-bottom: -15px; }
             #soroban-score { font-size: 70px; }
-            #soroban-hint-card { height: 75px; } /* Карточка тоже чуть сжимается */
+            #soroban-hint-card { height: 75px; } 
+        }
+
+        /* Спасаем компьютеры (Если высота экрана меньше 850px) */
+        @media (max-height: 850px) {
+            #abacus-body-container { transform: scale(0.85); transform-origin: bottom center; }
+            #soroban-score { font-size: 65px; margin-top: 0; }
+        }
+        /* Для совсем низких экранов (ноутбуки 13 дюймов) */
+        @media (max-height: 720px) {
+            #abacus-body-container { transform: scale(0.70); transform-origin: bottom center; }
+            #soroban-score { font-size: 55px; }
+            #soroban-task-bubble { font-size: 14px; padding: 8px 15px; }
+            .hero-title { margin-bottom: 10px; }
         }
     </style>
 </head>
@@ -232,7 +239,6 @@
     </div>
 
     <script>
-        // --- ИНИЦИАЛИЗАЦИЯ ---
         try { vkBridge.send('VKWebAppInit'); } catch(e) { console.log(e); }
 
         let currentRoom = '';
@@ -245,7 +251,6 @@
         let currentLessonIndex = 0;
         let isTaskLock = false; 
 
-        // --- БАЗА ДАННЫХ ПРИЛОЖЕНИЯ (Теперь с карточками hint!) ---
         const roomsData = {
             'words': [
                 { id: 'lisa', text: 'Лиса', image: 'img/3d_lisa.png', sound: 'audio/w_lisa.wav', syllables: ['ли', 'са'], audioSyllables: ['audio/sl_li.wav', 'audio/sl_sa.wav'] },
@@ -276,7 +281,6 @@
             ]
         };
 
-        // --- НАВИГАЦИЯ ---
         function openRoom(roomId, title) {
             try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(e){}
             currentRoom = roomId;
@@ -322,7 +326,6 @@
             document.getElementById('game-area').classList.remove('active');
         }
 
-        // --- ПЕРЕКЛЮЧАТЕЛЬ РЕЖИМОВ СОРОБАНА ---
         function switchSorobanMode(mode) {
             if (isTaskLock) return;
             try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(e){}
@@ -336,7 +339,6 @@
             nextSorobanTask();
         }
 
-        // --- ДВИЖОК: КОНСТРУКТОР СЛОВ ---
         function setupWordsGame() {
             const dragZone = document.getElementById('drag-zone');
             const targetZone = document.getElementById('target-zone');
@@ -385,7 +387,6 @@
             setupWordsGame();
         }
 
-        // --- ДВИЖОК: СЧЁТЫ СОРОБАН ---
         let sorobanState = [
             { upper: false, lower: 0 }, 
             { upper: false, lower: 0 }, 
@@ -500,7 +501,7 @@
             
             if (currentLessonIndex >= tasks.length) {
                 isTaskLock = true;
-                document.getElementById('soroban-hint-card').style.display = 'none'; // Прячем карточку в конце
+                document.getElementById('soroban-hint-card').style.display = 'none'; 
                 if (sorobanMode === 'learn') {
                     document.getElementById('soroban-task-bubble').innerText = "🎉 Великолепно! Ты выучил все цифры!";
                     playSound('audio/soroban_win.wav');
@@ -512,14 +513,11 @@
                 return;
             }
 
-            // Устанавливаем текст и карточку
             const currentTask = tasks[currentLessonIndex];
             document.getElementById('soroban-task-bubble').innerText = currentTask.taskText;
             
             const hintCard = document.getElementById('soroban-hint-card');
             if (currentTask.hint) {
-                // Если картинка пока не загружена, она может отображать битую иконку, 
-                // поэтому можно поставить обработчик ошибки
                 hintCard.onerror = function() { this.style.display = 'none'; };
                 hintCard.src = currentTask.hint;
                 hintCard.style.display = 'block';
