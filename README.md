@@ -1,0 +1,2 @@
+# neuro-genius-vk
+образование
