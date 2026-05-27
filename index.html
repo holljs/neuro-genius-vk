@@ -12,7 +12,6 @@
             --text-color: #333333; 
             --accent-color: #7A90A4;
             --wood-text: #5C5552;
-            --green-glow: #A3E2C9;
         }
 
         body {
@@ -69,20 +68,20 @@
 
         /* --- ИГРОВАЯ ЗОНА --- */
         .room-content-area {
-            flex-grow: 1; display: flex; flex-direction: column; justify-content: space-between; align-items: center; padding: 10px 15px 30px 15px; width: 100%; box-sizing: border-box; 
-            overflow-y: auto; /* Разрешили прокрутку, если экран совсем короткий */
-            overflow-x: hidden;
+            flex-grow: 1; display: flex; flex-direction: column; justify-content: flex-start; align-items: center; padding: 10px 15px 30px 15px; width: 100%; box-sizing: border-box; 
+            overflow-y: auto; overflow-x: hidden;
         }
 
-        .game-container { display: none; width: 100%; flex-direction: column; align-items: center; box-sizing: border-box; flex-grow: 1; justify-content: space-between; }
+        /* Выровняли элементы по верхнему краю (flex-start) с отступами */
+        .game-container { display: none; width: 100%; flex-direction: column; align-items: center; box-sizing: border-box; flex-grow: 1; justify-content: flex-start; gap: 10px; }
         .game-container.active { display: flex; }
 
         /* Конструктор слов */
         #word-image-container { width: 100%; display: none; flex-direction: column; align-items: center; position: relative; margin-top: 10px; }
-        #word-3d-image { width: 100%; max-width: 280px; aspect-ratio: 1/1; object-fit: contain; margin-bottom: 10px; }
+        #word-3d-image { width: 100%; max-width: 250px; aspect-ratio: 1/1; object-fit: contain; margin-bottom: 5px; }
 
         .target-column { display: flex; justify-content: center; align-items: center; gap: 20px; width: 100%; min-height: 120px; margin-top: 10px; }
-        .drag-column { display: flex; justify-content: center; align-items: center; gap: 25px; width: 100%; min-height: 130px; margin-top: auto; padding-bottom: 30px; }
+        .drag-column { display: flex; justify-content: center; align-items: center; gap: 25px; width: 100%; min-height: 120px; margin-top: auto; padding-bottom: 20px; }
 
         .target-item { 
             width: 110px; height: 110px; 
@@ -125,6 +124,7 @@
             text-shadow: 3px 3px 0px rgba(0,0,0,0.04);
             margin-top: 5px;
             transition: color 0.2s;
+            line-height: 1;
         }
         #soroban-score.correct-flash { color: #4CAF50 !important; animation: scaleUp 0.3s ease; }
         @keyframes scaleUp { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
@@ -151,11 +151,12 @@
             display: none; height: 90px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.08); margin-bottom: 5px; object-fit: contain;
         }
 
+        /* Контейнер абакуса привязан к верху */
         #abacus-body-container {
-            width: 100%; display: flex; justify-content: center; align-items: flex-end; padding-bottom: 15px;
+            width: 100%; display: flex; justify-content: center; align-items: flex-start; padding-bottom: 15px; margin-top: 10px;
         }
 
-        /* --- АДАПТАЦИЯ (Ширина и ВЫСОТА) --- */
+        /* --- АДАПТАЦИЯ (Для смартфонов) --- */
         @media (max-width: 390px) {
             .menu-grid { gap: 12px; padding: 15px; }
             .category-card { border-radius: 22px; padding: 20px 8px; }
@@ -163,19 +164,18 @@
             .category-title { font-size: 16px; }
             .target-item, .draggable-item { width: 90px; height: 90px; font-size: 30px; }
             .nav-arrows-container { gap: 110px; }
-            #abacus-body-container { transform: scale(0.85); transform-origin: bottom center; margin-bottom: -15px; }
+            #abacus-body-container { transform: scale(0.85); transform-origin: top center; margin-bottom: -60px; }
             #soroban-score { font-size: 70px; }
             #soroban-hint-card { height: 75px; } 
         }
 
-        /* Спасаем компьютеры (Если высота экрана меньше 850px) */
+        /* --- АДАПТАЦИЯ (Для ПК и ноутбуков) --- */
         @media (max-height: 850px) {
-            #abacus-body-container { transform: scale(0.85); transform-origin: bottom center; }
+            #abacus-body-container { transform: scale(0.75); transform-origin: top center; margin-bottom: -120px; }
             #soroban-score { font-size: 65px; margin-top: 0; }
         }
-        /* Для совсем низких экранов (ноутбуки 13 дюймов) */
         @media (max-height: 720px) {
-            #abacus-body-container { transform: scale(0.70); transform-origin: bottom center; }
+            #abacus-body-container { transform: scale(0.60); transform-origin: top center; margin-bottom: -190px; }
             #soroban-score { font-size: 55px; }
             #soroban-task-bubble { font-size: 14px; padding: 8px 15px; }
             .hero-title { margin-bottom: 10px; }
