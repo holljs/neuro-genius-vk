@@ -24,7 +24,7 @@
             touch-action: none; 
         }
 
-        /* --- ШАПКА (Стала компактнее, чтобы дать место картинкам) --- */
+        /* --- ШАПКА --- */
         .header {
             width: 100%; padding: 15px 15px 5px 15px;
             display: flex; flex-direction: column; align-items: center;
@@ -49,7 +49,7 @@
 
         .hero-title { text-align: center; font-size: 22px; font-weight: 600; margin-bottom: 25px; color: #555555; margin-top: 20px; }
         
-        /* --- ГЛАВНОЕ МЕНЮ (МАСШТАБИРОВАНО) --- */
+        /* --- ГЛАВНОЕ МЕНЮ --- */
         .menu-grid { 
             display: grid; grid-template-columns: 1fr 1fr; gap: 25px; padding: 25px; 
             align-content: start; overflow-y: auto; flex-grow: 1;
@@ -62,9 +62,9 @@
             box-shadow: 0 6px 20px rgba(0,0,0,0.03);
         }
         .category-card:active { transform: scale(0.96); opacity: 0.9; }
-        .category-icon-placeholder { width: 140px; height: 140px; margin-bottom: 20px; } /* Увеличили иконки */
+        .category-icon-placeholder { width: 140px; height: 140px; margin-bottom: 20px; }
         .category-icon-placeholder img { width: 100%; height: 100%; object-fit: contain; }
-        .category-title { font-size: 20px; font-weight: 700; text-align: center; color: var(--text-color); } /* Увеличили шрифт */
+        .category-title { font-size: 20px; font-weight: 700; text-align: center; color: var(--text-color); }
 
         /* --- ИГРОВАЯ ЗОНА --- */
         .room-content-area {
@@ -74,36 +74,37 @@
         .game-container { display: none; width: 100%; flex-direction: column; align-items: center; box-sizing: border-box; flex-grow: 1; justify-content: space-between; }
         .game-container.active { display: flex; }
 
-        /* --- КОНСТРУКТОР СЛОВ (ГИГАНТСКИЕ КАРТИНКИ И ФИШКИ) --- */
+        /* Конструктор слов */
         #word-image-container { width: 100%; display: none; flex-direction: column; align-items: center; position: relative; margin-top: 10px; }
-        #word-3d-image { width: 100%; max-width: 280px; aspect-ratio: 1/1; object-fit: contain; margin-bottom: 10px; } /* Увеличили картинку */
+        #word-3d-image { width: 100%; max-width: 280px; aspect-ratio: 1/1; object-fit: contain; margin-bottom: 10px; }
 
         .target-column { display: flex; justify-content: center; align-items: center; gap: 20px; width: 100%; min-height: 120px; margin-top: 10px; }
         .drag-column { display: flex; justify-content: center; align-items: center; gap: 25px; width: 100%; min-height: 130px; margin-top: auto; padding-bottom: 30px; }
 
-        /* ФИШКИ СТАЛИ ОГРОМНЫМИ (110x110) */
+        /* Огромные фишки */
         .target-item { 
-            width: 110px; height: 110px; /* Было 85 */
+            width: 110px; height: 110px; 
             background-repeat: no-repeat; background-position: center; background-size: cover; 
             display: flex; justify-content: center; align-items: center; 
-            font-size: 36px; font-weight: bold; color: transparent; position: relative; /* Увеличили шрифт */
+            font-size: 36px; font-weight: bold; color: transparent; position: relative; 
         }
         .draggable-item { 
-            width: 110px; height: 110px; /* Было 85 */
+            width: 110px; height: 110px; 
             background-repeat: no-repeat; background-position: center; background-size: cover; 
             display: flex; justify-content: center; align-items: center; 
-            font-size: 36px; font-weight: bold; color: var(--wood-text); /* Увеличили шрифт */
+            font-size: 36px; font-weight: bold; color: var(--wood-text); 
             z-index: 10; cursor: pointer; position: relative; 
             text-shadow: 1px 1px 0px rgba(255,255,255,0.5); 
+            touch-action: none; /* Критично для фиксации пальца */
         }
         
         .draggable-item.dragging { z-index: 100; transform: scale(1.1); cursor: grabbing; }
         .draggable-item.matched { opacity: 0; pointer-events: none; transform: scale(0.5); transition: all 0.4s; }
         .target-item.matched { color: var(--wood-text); text-shadow: 1px 1px 0px rgba(255,255,255,0.5); }
 
-        /* --- СТРЕЛОЧКИ (РАЗДВИНУТЫ) --- */
+        /* Стрелочки */
         .nav-arrows-container {
-            display: flex; justify-content: center; align-items: center; gap: 150px; /* Раздвинули шире */
+            display: flex; justify-content: center; align-items: center; gap: 150px; 
             position: absolute; top: 110px; width: 100%; pointer-events: none;
         }
         .nav-arrow-btn {
@@ -114,9 +115,9 @@
         .nav-arrow-btn:active { transform: scale(0.9); background-color: #EAEFF5; }
         .nav-arrow-btn.disabled { opacity: 0.15; pointer-events: none; }
 
-        /* --- СОРОБАН (НА ВЕСЬ ЭКРАН) --- */
+        /* Соробан */
         #soroban-score {
-            font-size: 110px; /* Гигантская цифра */
+            font-size: 110px; 
             font-weight: 900;
             color: var(--accent-color);
             margin-bottom: 5px;
@@ -125,7 +126,7 @@
         }
 
         #abacus-body-container {
-            flex-grow: 1; width: 100%; display: flex; justify-content: center; align-items: flex-end; padding-bottom: 20px;
+            width: 100%; display: flex; justify-content: center; align-items: flex-end; padding-bottom: 20px;
         }
     </style>
 </head>
@@ -187,7 +188,6 @@
         let activeItem = null;
         let startX = 0, startY = 0;
 
-        // --- БАЗА ДАННЫХ ПРИЛОЖЕНИЯ ---
         const roomsData = {
             'words': [
                 { id: 'lisa', text: 'Лиса', image: 'img/3d_lisa.png', sound: 'audio/w_lisa.wav', syllables: ['ли', 'са'], audioSyllables: ['audio/sl_li.wav', 'audio/sl_sa.wav'] },
@@ -204,12 +204,15 @@
             try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(e){}
             currentRoom = roomId;
             
+            // ЖЕЛЕЗНАЯ ОЧИСТКА: Удаляем старый соробан при любых переключениях комнат!
+            const oldAbacus = document.getElementById('abacus-body-container');
+            if (oldAbacus) oldAbacus.remove();
+
             document.getElementById('room-title').innerText = title;
             document.getElementById('screen-menu').classList.remove('active');
             document.getElementById('screen-room').classList.add('active');
             document.getElementById('game-area').classList.add('active');
 
-            // Скрываем/показываем элементы специфичные для комнат
             if (roomId === 'words') {
                 currentWordIndex = 0;
                 document.getElementById('word-image-container').style.display = 'flex';
@@ -221,7 +224,7 @@
                 document.getElementById('word-image-container').style.display = 'none';
                 document.getElementById('soroban-score').style.display = 'block';
                 document.getElementById('soroban-score').innerText = '0';
-                document.getElementById('target-zone').style.display = 'none'; // Счета заберут всё место
+                document.getElementById('target-zone').style.display = 'none'; 
                 document.getElementById('drag-zone').style.display = 'none';
                 setupSorobanGame();
             }
@@ -229,12 +232,16 @@
 
         function goHome() {
             try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(e){}
+            // ЖЕЛЕЗНАЯ ОЧИСТКА: Удаляем соробан при выходе в меню
+            const oldAbacus = document.getElementById('abacus-body-container');
+            if (oldAbacus) oldAbacus.remove();
+
             document.getElementById('screen-room').classList.remove('active');
             document.getElementById('screen-menu').classList.add('active');
             document.getElementById('game-area').classList.remove('active');
         }
 
-        // --- ДВИЖОК: КОНСТРУКТОР СЛОВ (ГИГАНТЫ) ---
+        // --- ДВИЖОК: КОНСТРУКТОР СЛОВ ---
         function setupWordsGame() {
             const dragZone = document.getElementById('drag-zone');
             const targetZone = document.getElementById('target-zone');
@@ -248,7 +255,6 @@
             document.getElementById('btn-prev-word').classList.toggle('disabled', currentWordIndex === 0);
             document.getElementById('btn-next-word').classList.toggle('disabled', currentWordIndex === roomsData['words'].length - 1);
 
-            // Создаем огромные лунки
             wordData.syllables.forEach((syl, index) => {
                 const slot = document.createElement('div');
                 slot.className = 'target-item';
@@ -259,7 +265,6 @@
                 targetZone.appendChild(slot);
             });
 
-            // Создаем огромные кирпичики
             wordData.syllables.forEach((syl, i) => {
                 const brick = document.createElement('div');
                 brick.className = 'draggable-item';
@@ -268,8 +273,8 @@
                 brick.setAttribute('data-syl', syl);
                 brick.setAttribute('data-audio', wordData.audioSyllables[i]);
 
-                brick.addEventListener('touchstart', handlePointerStart, {passive: false});
-                brick.addEventListener('mousedown', handlePointerStart);
+                // Перешли на PointerEvents для идеальной фиксации пальца
+                brick.addEventListener('pointerdown', handlePointerStart);
                 dragZone.appendChild(brick);
             });
             
@@ -287,14 +292,13 @@
             setupWordsGame();
         }
 
-        // --- ДВИЖОК: СЧЁТЫ СОРОБАН (ОГРОМНЫЕ) ---
+        // --- ДВИЖОК: СЧЁТЫ СОРОБАН ---
         let sorobanState = [
             { upper: false, lower: 0 }, 
             { upper: false, lower: 0 }, 
             { upper: false, lower: 0 }  
         ];
 
-        // Параметры для масштабированного соробана
         const S_UPPER_FREE = 15;   
         const S_UPPER_ACTIVE = 75; 
         const S_LOWER_BASE = 350;  
@@ -302,28 +306,24 @@
         const S_BEAM_TOP = 140;
 
         function setupSorobanGame() {
-            // Очищаем зоны, так как соробан будет в своём контейнере
             const gameArea = document.getElementById('game-area');
-            // Удаляем старый соробан, если он есть
             const oldAbacus = document.getElementById('abacus-body-container');
             if (oldAbacus) oldAbacus.remove();
             
             playSound('audio/soroban_intro.wav');
 
-            // Создаем масштабированный деревянный корпус
             const abacusContainer = document.createElement('div');
             abacusContainer.id = 'abacus-body-container';
 
             const abacusBody = document.createElement('div');
             abacusBody.style.position = "relative";
-            abacusBody.style.width = "360px"; // Шире
-            abacusBody.style.height = "480px"; // Выше
+            abacusBody.style.width = "360px"; 
+            abacusBody.style.height = "480px"; 
             abacusBody.style.backgroundImage = "url('img/soroban_board.png')"; 
             abacusBody.style.backgroundSize = "100% 100%";
             abacusBody.style.padding = "30px 20px";
             abacusBody.style.boxSizing = "border-box";
 
-            // Разделительная планка
             const beam = document.createElement('div');
             beam.style.position = "absolute";
             beam.style.top = (S_BEAM_TOP - 7) + "px"; beam.style.left = "25px";
@@ -333,18 +333,16 @@
             beam.style.zIndex = "5";
             abacusBody.appendChild(beam);
 
-            // Делаем 3 гигантские спицы
             for (let s = 0; s < 3; s++) {
                 const rod = document.createElement('div');
                 rod.style.position = "absolute";
                 rod.style.top = "40px";
-                rod.style.left = (75 + s * 105) + "px"; // Шаг шире
+                rod.style.left = (75 + s * 105) + "px"; 
                 rod.style.width = "10px"; rod.style.height = "400px";
                 rod.style.backgroundColor = "#D2B48C"; 
                 rod.style.borderRadius = "5px";
                 rod.style.zIndex = "1";
                 
-                // ВЕРХНЯЯ (НЕБЕСНАЯ) косточка
                 const upperBead = createLargeBeadImg();
                 upperBead.style.top = S_UPPER_FREE + "px"; 
                 upperBead.style.zIndex = "10";
@@ -357,33 +355,27 @@
                 };
                 rod.appendChild(upperBead);
 
-                // НИЖНИЕ (ЗЕМНЫЕ) косточки — умный клик пачкой
                 const lowerBeads = [];
                 for (let b = 0; b < 4; b++) {
                     const lowerBead = createLargeBeadImg();
-                    // Физическое положение на спице (базовое — все внизу)
                     let initialTop = S_LOWER_BASE - (3 - b) * S_LOWER_STEP; 
                     lowerBead.style.top = initialTop + "px";
                     lowerBead.style.zIndex = "10";
                     
                     lowerBead.onclick = () => {
                         try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(e){}
-                        let clickedValue = b + 1; // Порядковый номер косточки снизу
+                        let clickedValue = b + 1;
                         
-                        // Меняем состояние: если поднято 3, клик по 3 опускает до 2. Если поднято 2, клик по 3 поднимает 3.
                         if (sorobanState[s].lower === clickedValue) {
                             sorobanState[s].lower = clickedValue - 1;
                         } else {
                             sorobanState[s].lower = clickedValue;
                         }
 
-                        // Перерисовываем всю пачку косточек на спице
                         lowerBeads.forEach((bead, idx) => {
                             if (idx < sorobanState[s].lower) {
-                                // Эти косточки едут вверх (прижимаются к планке)
                                 bead.style.top = (S_BEAM_TOP + 15 + idx * (S_LOWER_STEP-5)) + "px"; 
                             } else {
-                                // Эти косточки едут вниз (базовая позиция)
                                 bead.style.top = (S_LOWER_BASE - (3 - idx) * S_LOWER_STEP) + "px"; 
                             }
                         });
@@ -407,33 +399,30 @@
             document.getElementById('soroban-score').innerText = total;
         }
 
-        // Огромные косточки соробана (85px шириной)
         function createLargeBeadImg() {
             const img = document.createElement('img');
             img.src = "img/soroban_bead.png"; 
             img.style.position = "absolute";
-            img.style.width = "85px";  // Ещё шире
-            img.style.height = "45px"; // Ещё выше
-            img.style.left = "-38px";  // Центровка по новой ширине спицы
+            img.style.width = "85px";  
+            img.style.height = "45px"; 
+            img.style.left = "-38px";  
             img.style.cursor = "pointer";
             img.style.transition = "top 0.18s cubic-bezier(0.25, 1, 0.5, 1)"; 
             return img;
         }
 
-        // --- DRAG AND DROP ДЛЯ СЛОВ (МАСШТАБИРОВАННЫЙ) ---
+        // --- УМНЫЙ И СВЕРХНАДЁЖНЫЙ DRAG AND DROP (ФИКСАЦИЯ ПАЛЬЦА) ---
         function handlePointerStart(e) {
-            if (e.type === 'touchstart') e.preventDefault();
             if (e.target.classList.contains('matched')) return;
 
             activeItem = e.target;
-            const rect = activeItem.getBoundingClientRect();
             
-            // Фиксируем размер огромного кирпичика при взятии
+            // ЗАХВАТ ПОИНТЕРА: Привязываем палец к фишке "намертво"
+            activeItem.setPointerCapture(e.pointerId);
+
+            const rect = activeItem.getBoundingClientRect();
             activeItem.style.width = rect.width + 'px';
             activeItem.style.height = rect.height + 'px';
-
-            const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-            const clientY = e.touches ? e.touches[0].clientY : e.clientY;
 
             startX = rect.width / 2;
             startY = rect.height / 2;
@@ -444,32 +433,35 @@
             activeItem.classList.add('dragging');
             activeItem.style.position = 'fixed';
             activeItem.style.margin = '0';
-            activeItem.style.left = (clientX - startX) + 'px';
-            activeItem.style.top = (clientY - startY) + 'px';
+            activeItem.style.left = (e.clientX - startX) + 'px';
+            activeItem.style.top = (e.clientY - startY) + 'px';
+
+            // Вешаем события прямо на эту фишку, чтобы не терять фокус
+            activeItem.addEventListener('pointermove', handlePointerMove);
+            activeItem.addEventListener('pointerup', handlePointerEnd);
         }
 
         function handlePointerMove(e) {
             if (!activeItem) return;
-            e.preventDefault();
-            const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-            const clientY = e.touches ? e.touches[0].clientY : e.clientY;
-            activeItem.style.left = (clientX - startX) + 'px';
-            activeItem.style.top = (clientY - startY) + 'px';
+            activeItem.style.left = (e.clientX - startX) + 'px';
+            activeItem.style.top = (e.clientY - startY) + 'px';
         }
 
         function handlePointerEnd(e) {
             if (!activeItem) return;
+            
+            // Освобождаем палец
+            activeItem.releasePointerCapture(e.pointerId);
             activeItem.classList.remove('dragging');
             
+            activeItem.removeEventListener('pointermove', handlePointerMove);
+            activeItem.removeEventListener('pointerup', handlePointerEnd);
+
             const itemSyl = activeItem.getAttribute('data-syl');
-            const clientX = e.changedTouches ? e.changedTouches[0].clientX : e.clientX;
-            const clientY = e.changedTouches ? e.changedTouches[0].clientY : e.clientY;
+            const clientX = e.clientX;
+            const clientY = e.clientY;
 
-            // Проверяем, что под пальцем
             activeItem.style.display = 'none';
-            const elementUnderTouch = document.elementFromPoint(clientX, clientY);
-            activeItem.style.display = 'flex';
-
             let targets = document.querySelectorAll('.target-item');
             let matchedTarget = null;
 
@@ -482,20 +474,20 @@
                 }
             });
 
+            activeItem.style.display = 'flex';
+
             if (matchedTarget) {
                 try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "medium"}); } catch(e){}
                 activeItem.classList.add('matched');
                 matchedTarget.classList.add('matched');
                 activeItem.style.display = 'none';
                 
-                // Вставляем текстуру дерева в лунку
                 matchedTarget.style.backgroundImage = "url('img/brick_bg.png')";
 
                 matchedCount++;
                 const wordData = roomsData['words'][currentWordIndex];
                 
                 if (matchedCount === wordData.syllables.length) {
-                    // Слово полностью собрано!
                     setTimeout(() => {
                         currentWordIndex++;
                         if (currentWordIndex < roomsData['words'].length) {
@@ -520,12 +512,6 @@
             activeItem = null;
         }
 
-        document.addEventListener('touchmove', handlePointerMove, {passive: false});
-        document.addEventListener('touchend', handlePointerEnd);
-        document.addEventListener('mousemove', handlePointerMove, {passive: false});
-        document.addEventListener('mouseup', handlePointerEnd);
-
-        // --- ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ ---
         function shuffleArray(array) {
             for (let i = array.length - 1; i > 0; i--) {
                 const j = Math.floor(Math.random() * (i + 1));
