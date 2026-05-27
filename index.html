@@ -101,17 +101,15 @@
         <div class="hero-title">Выберите тренажёр интеллекта:</div>
         <div class="menu-grid">
             <div class="category-card" onclick="openRoom('words', 'Конструктор слов')">
-                <div class="category-icon-placeholder"><img src="img/items/3d_raketa.png" alt=""></div>
+                <div class="category-icon-placeholder"><img src="img/3d_raketa.png" alt=""></div>
                 <div class="category-title">Составь слово</div>
             </div>
             <div class="category-card" onclick="openRoom('soroban', 'Счёты Соробан')">
-                <div class="category-icon-placeholder"><img src="img/soroban/soroban_bead.png" alt=""></div>
+                <div class="category-icon-placeholder"><img src="img/soroban_bead.png" alt=""></div>
                 <div class="category-title">Счёты Соробан</div>
             </div>
         </div>
-    </div>
-
-    <div id="screen-room" class="screen">
+    </div> <div id="screen-room" class="screen">
         <div class="header">
             <div class="header-title-row"><span id="room-title">Комната</span></div>
             <div class="header-top">
@@ -119,16 +117,13 @@
             </div>
         </div>
         <div class="room-content-area">
-            
             <div id="game-area" class="game-container">
                 <div id="word-image-container" style="display:none;">
                     <img id="word-3d-image" src="" alt="">
                 </div>
-                
                 <div class="target-column" id="target-zone"></div>
                 <div class="drag-column" id="drag-zone"></div>
             </div>
-
         </div>
     </div>
 
@@ -139,19 +134,18 @@
         let currentRoom = '';
         let currentWordIndex = 0;
         let matchedCount = 0;
-
         let activeItem = null;
         let startX = 0, startY = 0;
 
         // --- БАЗА ДАННЫХ ПРИЛОЖЕНИЯ ---
         const roomsData = {
             'words': [
-                { id: 'lisa', text: 'Лиса', image: 'img/items/3d_lisa.png', sound: 'audio/w_lisa.wav', syllables: ['ли', 'са'], audioSyllables: ['audio/sl_li.wav', 'audio/sl_sa.wav'] },
-                { id: 'ryba', text: 'Рыба', image: 'img/items/3d_ryba.png', sound: 'audio/w_ryba.wav', syllables: ['ры', 'ба'], audioSyllables: ['audio/sl_ry.wav', 'audio/sl_ba.wav'] },
-                { id: 'kasha', text: 'Каша', image: 'img/items/3d_kasha.png', sound: 'audio/w_kasha.wav', syllables: ['ка', 'ша'], audioSyllables: ['audio/sl_ka.wav', 'audio/sl_sha.wav'] },
-                { id: 'raketa', text: 'Ракета', image: 'img/items/3d_raketa.png', sound: 'audio/w_raketa.wav', syllables: ['ра', 'ке', 'та'], audioSyllables: ['audio/sl_ra.wav', 'audio/sl_ke.wav', 'audio/sl_ta.wav'] },
-                { id: 'mashina', text: 'Машина', image: 'img/items/3d_mashina.png', sound: 'audio/w_mashina.wav', syllables: ['ма', 'ши', 'на'], audioSyllables: ['audio/sl_ma.wav', 'audio/sl_shi.wav', 'audio/sl_na.wav'] },
-                { id: 'sobaka', text: 'Собака', image: 'img/items/3d_sobaka.png', sound: 'audio/w_sobaka.wav', syllables: ['со', 'ба', 'ка'], audioSyllables: ['audio/sl_so.wav', 'audio/sl_ba.wav', 'audio/sl_ka.wav'] }
+                { id: 'lisa', text: 'Лиса', image: 'img/3d_lisa.png', sound: 'audio/w_lisa.wav', syllables: ['ли', 'са'], audioSyllables: ['audio/sl_li.wav', 'audio/sl_sa.wav'] },
+                { id: 'ryba', text: 'Рыба', image: 'img/3d_ryba.png', sound: 'audio/w_ryba.wav', syllables: ['ры', 'ба'], audioSyllables: ['audio/sl_ry.wav', 'audio/sl_ba.wav'] },
+                { id: 'kasha', text: 'Каша', image: 'img/3d_kasha.png', sound: 'audio/w_kasha.wav', syllables: ['ка', 'ша'], audioSyllables: ['audio/sl_ka.wav', 'audio/sl_sha.wav'] },
+                { id: 'raketa', text: 'Ракета', image: 'img/3d_raketa.png', sound: 'audio/w_raketa.wav', syllables: ['ра', 'ке', 'та'], audioSyllables: ['audio/sl_ra.wav', 'audio/sl_ke.wav', 'audio/sl_ta.wav'] },
+                { id: 'mashina', text: 'Машина', image: 'img/3d_mashina.png', sound: 'audio/w_mashina.wav', syllables: ['ма', 'ши', 'на'], audioSyllables: ['audio/sl_ma.wav', 'audio/sl_shi.wav', 'audio/sl_na.wav'] },
+                { id: 'sobaka', text: 'Собака', image: 'img/3d_sobaka.png', sound: 'audio/w_sobaka.wav', syllables: ['со', 'ба', 'ка'], audioSyllables: ['audio/sl_so.wav', 'audio/sl_ba.wav', 'audio/sl_ka.wav'] }
             ]
         };
 
@@ -190,41 +184,47 @@
             matchedCount = 0;
 
             const wordData = roomsData['words'][currentWordIndex];
-            
-            // Ставим картинку предмета
             document.getElementById('word-3d-image').src = wordData.image;
             if (currentWordIndex === 0) { playSound('audio/words_intro.wav'); } else { playSound(wordData.sound); }
 
-            // Создаем пустые лунки SLOT_BG
+            // ИСПРАВЛЕНО: Прямые пути в img/ без вложенных папок
             wordData.syllables.forEach((syl, index) => {
                 const slot = document.createElement('div');
                 slot.className = 'target-item';
-                slot.style.backgroundImage = "url('img/slots/slot_bg.png')";
+                slot.style.backgroundImage = "url('img/slot_bg.png')";
+                slot.style.backgroundSize = "contain";
                 slot.innerText = syl;
                 slot.setAttribute('data-syl', syl);
                 slot.setAttribute('data-index', index);
                 targetZone.appendChild(slot);
             });
 
-            // Создаем деревянные кубики BRICK_BG со слогами
-            let shuffledSyllables = wordData.syllables.map((syl, i) => ({ text: syl, audio: wordData.audioSyllables[i] }));
-            shuffleArray(shuffledSyllables);
-
-            shuffledSyllables.forEach(sylObj => {
+            wordData.syllables.forEach((syl, i) => {
                 const brick = document.createElement('div');
                 brick.className = 'draggable-item';
-                brick.style.backgroundImage = "url('img/bricks/brick_bg.png')";
-                brick.innerText = sylObj.text;
-                brick.setAttribute('data-syl', sylObj.text);
-                brick.setAttribute('data-audio', sylObj.audio);
+                brick.style.backgroundImage = "url('img/brick_bg.png')";
+                brick.style.backgroundSize = "contain";
+                brick.innerText = syl;
+                brick.setAttribute('data-syl', syl);
+                brick.setAttribute('data-audio', wordData.audioSyllables[i]);
 
                 brick.addEventListener('touchstart', handlePointerStart, {passive: false});
                 brick.addEventListener('mousedown', handlePointerStart);
                 dragZone.appendChild(brick);
             });
+            
+            let bricks = Array.from(dragZone.children);
+            shuffleArray(bricks);
+            dragZone.innerHTML = '';
+            bricks.forEach(b => dragZone.appendChild(b));
         }
 
-        // --- ДВИЖОК: СЧЁТЫ СОРОБАН (ИНТЕРФЕЙС) ---
+        // --- ДВИЖОК: СЧЁТЫ СОРОБАН ---
+        const UPPER_FREE = 10;   
+        const UPPER_ACTIVE = 65; 
+        const LOWER_BASE = 280;  
+        const STEP = 45;         
+
         function setupSorobanGame() {
             const dragZone = document.getElementById('drag-zone');
             const targetZone = document.getElementById('target-zone');
@@ -232,11 +232,106 @@
             
             playSound('audio/soroban_intro.wav');
 
-            // Скоро мы развернем тут красивую интерактивную сетку спиц и косточек!
-            targetZone.innerHTML = '<div style="font-size:20px; color:#7A90A4; text-align:center; margin-top:40px;">🧮 Виртуальный Соробан готовится к сборке косточек!</div>';
+            const scoreboard = document.createElement('div');
+            scoreboard.id = 'soroban-score';
+            scoreboard.style.fontSize = "54px";
+            scoreboard.style.fontWeight = "bold";
+            scoreboard.style.color = "var(--accent-color)";
+            scoreboard.style.marginBottom = "15px";
+            scoreboard.innerText = "0";
+            targetZone.appendChild(scoreboard);
+
+            const abacusBody = document.createElement('div');
+            abacusBody.style.position = "relative";
+            abacusBody.style.width = "280px";
+            abacusBody.style.height = "380px";
+            abacusBody.style.backgroundImage = "url('img/soroban_board.png')"; 
+            abacusBody.style.backgroundSize = "100% 100%";
+            abacusBody.style.padding = "20px";
+            abacusBody.style.boxSizing = "border-box";
+
+            const beam = document.createElement('div');
+            beam.style.position = "absolute";
+            beam.style.top = "115px"; beam.style.left = "15px";
+            beam.style.width = "250px"; beam.style.height = "12px";
+            beam.style.backgroundColor = "#4A3B32"; 
+            beam.style.borderRadius = "4px";
+            beam.style.zIndex = "5";
+            abacusBody.appendChild(beam);
+
+            for (let s = 0; s < 3; s++) {
+                const rod = document.createElement('div');
+                rod.style.position = "absolute";
+                rod.style.top = "30px";
+                rod.style.left = (55 + s * 85) + "px"; 
+                rod.style.width = "6px"; rod.style.height = "320px";
+                rod.style.backgroundColor = "#D2B48C"; 
+                rod.style.borderRadius = "3px";
+                
+                let state = { upper: false, lower1: false, lower2: false, lower3: false, lower4: false };
+
+                const upperBead = createBeadImg();
+                upperBead.style.top = UPPER_FREE + "px";
+                upperBead.onclick = () => {
+                    state.upper = !state.upper;
+                    upperBead.style.top = (state.upper ? UPPER_ACTIVE : UPPER_FREE) + "px";
+                    recalculateSoroban();
+                };
+                rod.appendChild(upperBead);
+
+                const lowers = [];
+                for (let b = 0; b < 4; b++) {
+                    const lowerBead = createBeadImg();
+                    lowerBead.style.top = (LOWER_BASE - b * STEP) + "px";
+                    
+                    lowerBead.onclick = () => {
+                        let targetState = !state[`lower${b+1}`];
+                        for (let k = 0; k < 4; k++) {
+                            if (targetState && k <= b) state[`lower${k+1}`] = true;
+                            if (!targetState && k >= b) state[`lower${k+1}`] = false;
+                        }
+                        lowers.forEach((bead, idx) => {
+                            let currentActive = state[`lower${idx+1}`];
+                            let activeTop = 135 + idx * STEP; 
+                            let freeTop = LOWER_BASE - idx * STEP; 
+                            bead.style.top = (currentActive ? activeTop : freeTop) + "px";
+                        });
+                        recalculateSoroban();
+                    };
+                    lowers.push(lowerBead);
+                    rod.appendChild(lowerBead);
+                }
+
+                function recalculateSoroban() {
+                    playSound('audio/click.wav'); 
+                    let val = 0;
+                    if (state.upper) val += 5;
+                    if (state.lower1) val += 1;
+                    if (state.lower2) val += 1;
+                    if (state.lower3) val += 1;
+                    if (state.lower4) val += 1;
+                    
+                    document.getElementById('soroban-score').innerText = val;
+                }
+
+                abacusBody.appendChild(rod);
+            }
+            targetZone.appendChild(abacusBody);
         }
 
-        // --- РАБОТА С ТАЧ-СОБЫТИЯМИ (DRAG AND DROP) ---
+        function createBeadImg() {
+            const img = document.createElement('img');
+            img.src = "img/soroban_bead.png"; 
+            img.style.position = "absolute";
+            img.style.width = "55px"; 
+            img.style.height = "35px";
+            img.style.left = "-25px"; 
+            img.style.cursor = "pointer";
+            img.style.transition = "top 0.15s ease-out"; 
+            return img;
+        }
+
+        // --- РАБОТА С ТАЧ-СОБЫТИЯМИ ---
         function handlePointerStart(e) {
             if (e.type === 'touchstart') e.preventDefault();
             if (e.target.classList.contains('matched')) return;
@@ -253,7 +348,6 @@
             startX = rect.width / 2;
             startY = rect.height / 2;
 
-            // Озвучка слога при взятии кубика
             const audioFile = activeItem.getAttribute('data-audio');
             playSound(audioFile);
 
@@ -288,7 +382,6 @@
             let targets = document.querySelectorAll('.target-item');
             let matchedTarget = null;
 
-            // Ищем лунку под пальцем
             targets.forEach(t => {
                 const rect = t.getBoundingClientRect();
                 if (clientX >= rect.left && clientX <= rect.right && clientY >= rect.top && clientY <= rect.bottom) {
@@ -304,14 +397,13 @@
                 matchedTarget.classList.add('matched');
                 activeItem.style.display = 'none';
                 
-                // Лунка приняла кубик — подсвечиваем её фон оригинальной кленовой плашкой!
-                matchedTarget.style.backgroundImage = "url('img/bricks/brick_bg.png')";
+                // ИСПРАВЛЕНО: Лунка подсвечивается из корня img/
+                matchedTarget.style.backgroundImage = "url('img/brick_bg.png')";
 
                 matchedCount++;
                 const wordData = roomsData['words'][currentWordIndex];
                 
                 if (matchedCount === wordData.syllables.length) {
-                    // Слово полностью собрано!
                     setTimeout(() => {
                         currentWordIndex++;
                         if (currentWordIndex < roomsData['words'].length) {
@@ -341,7 +433,6 @@
         document.addEventListener('mousemove', handlePointerMove, {passive: false});
         document.addEventListener('mouseup', handlePointerEnd);
 
-        // --- ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ ---
         function shuffleArray(array) {
             for (let i = array.length - 1; i > 0; i--) {
                 const j = Math.floor(Math.random() * (i + 1));
@@ -357,5 +448,4 @@
             }
         }
     </script>
-</body>
-</html>
+</body> </html>
