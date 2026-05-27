@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Нейро-Гений 5+</title>
+    <script src="https://unpkg.com/@vkontakte/vk-bridge/dist/browser.min.js"></script>
+    <style>
+        :root {
+            --bg-color: #F4F6F9; 
+            --card-bg: #FFFFFF;
+            --text-color: #333333; 
+            --accent-color: #7A90A4;
+            --wood-text: #5C5552;
+        }
+
+        body {
+            margin: 0; padding: 0;
+            background-color: var(--bg-color);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            color: var(--text-color);
+            display: flex; flex-direction: column;
+            height: 100vh; overflow: hidden; user-select: none; 
+            touch-action: none; 
+        }
+
+        /* --- ШАПКА --- */
+        .header {
+            width: 100%; padding: 25px 15px 10px 15px;
+            display: flex; flex-direction: column; align-items: center;
+            box-sizing: border-box; background-color: var(--bg-color); flex-shrink: 0;
+        }
+
+        .header-title-row { width: 100%; text-align: center; position: relative; display: flex; justify-content: center; align-items: center; min-height: 32px;}
+        #room-title { font-size: 22px; font-weight: 600; color: var(--accent-color); display: inline-block; }
+
+        .header-top { display: flex; justify-content: flex-start; width: 100%; margin-top: 15px; }
+        .back-btn {
+            font-size: 16px; cursor: pointer; padding: 10px 20px; background: var(--card-bg);
+            border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.03);
+            color: var(--text-color); font-weight: 500; transition: transform 0.2s; white-space: nowrap; 
+        }
+        .back-btn:active { transform: scale(0.95); opacity: 0.8; }
+
+        /* --- ЭКРАНЫ --- */
+        .screen { display: none; flex-direction: column; flex-grow: 1; width: 100%; height: 100%; overflow: hidden; }
+        .screen.active { display: flex; animation: fadeIn 0.4s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+
+        .hero-title { text-align: center; font-size: 20px; font-weight: 500; margin-bottom: 20px; color: #666666; }
+        
+        /* --- ГЛАВНОЕ МЕНЮ --- */
+        .menu-grid { 
+            display: grid; grid-template-columns: 1fr 1fr; gap: 20px; padding: 20px; 
+            align-content: start; overflow-y: auto; flex-grow: 1;
+        }
+        .category-card {
+            background-color: var(--card-bg);
+            border-radius: 24px; padding: 30px 15px;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            cursor: pointer; transition: transform 0.2s, box-shadow 0.2s; position: relative;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.02);
+        }
+        .category-card:active { transform: scale(0.97); opacity: 0.9; }
+        .category-icon-placeholder { width: 110px; height: 110px; margin-bottom: 15px; }
+        .category-icon-placeholder img { width: 100%; height: 100%; object-fit: contain; }
+        .category-title { font-size: 18px; font-weight: 600; text-align: center; color: var(--text-color); }
+
+        /* --- ИГРОВАЯ ЗОНА --- */
+        .room-content-area {
+            flex-grow: 1; display: flex; flex-direction: column; justify-content: flex-start; align-items: center; padding: 10px; width: 100%; box-sizing: border-box; overflow: hidden;
+        }
+
+        .game-container { display: none; width: 100%; flex-direction: column; align-items: center; gap: 25px; box-sizing: border-box; flex-grow: 1; }
+        .game-container.active { display: flex; }
+
+        /* Конструктор слов */
+        #word-image-container { width: 100%; max-width: 220px; aspect-ratio: 1/1; display: flex; justify-content: center; align-items: center; margin-top: 10px; }
+        #word-3d-image { width: 100%; height: 100%; object-fit: contain; }
+
+        .target-column { display: flex; justify-content: center; align-items: center; gap: 15px; width: 100%; min-height: 90px; margin-top: 10px; }
+        .drag-column { display: flex; justify-content: center; align-items: center; gap: 20px; width: 100%; min-height: 100px; margin-top: auto; padding-bottom: 40px; }
+
+        /* Стили токенов и лунок */
+        .target-item { width: 80px; height: 80px; background-repeat: no-repeat; background-position: center; background-size: contain; display: flex; justify-content: center; align-items: center; font-size: 26px; font-weight: bold; color: transparent; position: relative; }
+        .draggable-item { width: 85px; height: 85px; background-repeat: no-repeat; background-position: center; background-size: contain; display: flex; justify-content: center; align-items: center; font-size: 26px; font-weight: bold; color: var(--wood-text); z-index: 10; cursor: pointer; position: relative; text-shadow: 1px 1px 0px rgba(255,255,255,0.5); }
+        
+        .draggable-item.dragging { z-index: 100; transform: scale(1.1); cursor: grabbing; }
+        .draggable-item.matched { opacity: 0; pointer-events: none; transform: scale(0.5); transition: all 0.4s; }
+        .target-item.matched { color: var(--wood-text); text-shadow: 1px 1px 0px rgba(255,255,255,0.5); }
+    </style>
+</head>
+<body>
+
+    <div id="screen-menu" class="screen active">
+        <div class="header">
+            <div class="header-title-row">
+                <span style="font-size: 24px; font-weight: 700; color: var(--accent-color);">Нейро-Гений 5+</span>
+            </div>
+        </div>
+        <div class="hero-title">Выберите тренажёр интеллекта:</div>
+        <div class="menu-grid">
+            <div class="category-card" onclick="openRoom('words', 'Конструктор слов')">
+                <div class="category-icon-placeholder"><img src="img/items/3d_raketa.png" alt=""></div>
+                <div class="category-title">Составь слово</div>
+            </div>
+            <div class="category-card" onclick="openRoom('soroban', 'Счёты Соробан')">
+                <div class="category-icon-placeholder"><img src="img/soroban/soroban_bead.png" alt=""></div>
+                <div class="category-title">Счёты Соробан</div>
+            </div>
+        </div>
+    </div>
+
+    <div id="screen-room" class="screen">
+        <div class="header">
+            <div class="header-title-row"><span id="room-title">Комната</span></div>
+            <div class="header-top">
+                <div class="back-btn" onclick="goHome()">⬅ В меню</div>
+            </div>
+        </div>
+        <div class="room-content-area">
+            
+            <div id="game-area" class="game-container">
+                <div id="word-image-container" style="display:none;">
+                    <img id="word-3d-image" src="" alt="">
+                </div>
+                
+                <div class="target-column" id="target-zone"></div>
+                <div class="drag-column" id="drag-zone"></div>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        // --- ИНИЦИАЛИЗАЦИЯ И НАСТРОЙКИ ---
+        try { vkBridge.send('VKWebAppInit'); } catch(e) { console.log(e); }
+
+        let currentRoom = '';
+        let currentWordIndex = 0;
+        let matchedCount = 0;
+
+        let activeItem = null;
+        let startX = 0, startY = 0;
+
+        // --- БАЗА ДАННЫХ ПРИЛОЖЕНИЯ ---
+        const roomsData = {
+            'words': [
+                { id: 'lisa', text: 'Лиса', image: 'img/items/3d_lisa.png', sound: 'audio/w_lisa.wav', syllables: ['ли', 'са'], audioSyllables: ['audio/sl_li.wav', 'audio/sl_sa.wav'] },
+                { id: 'ryba', text: 'Рыба', image: 'img/items/3d_ryba.png', sound: 'audio/w_ryba.wav', syllables: ['ры', 'ба'], audioSyllables: ['audio/sl_ry.wav', 'audio/sl_ba.wav'] },
+                { id: 'kasha', text: 'Каша', image: 'img/items/3d_kasha.png', sound: 'audio/w_kasha.wav', syllables: ['ка', 'ша'], audioSyllables: ['audio/sl_ka.wav', 'audio/sl_sha.wav'] },
+                { id: 'raketa', text: 'Ракета', image: 'img/items/3d_raketa.png', sound: 'audio/w_raketa.wav', syllables: ['ра', 'ке', 'та'], audioSyllables: ['audio/sl_ra.wav', 'audio/sl_ke.wav', 'audio/sl_ta.wav'] },
+                { id: 'mashina', text: 'Машина', image: 'img/items/3d_mashina.png', sound: 'audio/w_mashina.wav', syllables: ['ма', 'ши', 'на'], audioSyllables: ['audio/sl_ma.wav', 'audio/sl_shi.wav', 'audio/sl_na.wav'] },
+                { id: 'sobaka', text: 'Собака', image: 'img/items/3d_sobaka.png', sound: 'audio/w_sobaka.wav', syllables: ['со', 'ба', 'ка'], audioSyllables: ['audio/sl_so.wav', 'audio/sl_ba.wav', 'audio/sl_ka.wav'] }
+            ]
+        };
+
+        // --- НАВИГАЦИЯ ---
+        function openRoom(roomId, title) {
+            try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(e){}
+            currentRoom = roomId;
+            
+            document.getElementById('room-title').innerText = title;
+            document.getElementById('screen-menu').classList.remove('active');
+            document.getElementById('screen-room').classList.add('active');
+            document.getElementById('game-area').classList.add('active');
+
+            if (roomId === 'words') {
+                currentWordIndex = 0;
+                document.getElementById('word-image-container').style.display = 'flex';
+                setupWordsGame();
+            } else if (roomId === 'soroban') {
+                document.getElementById('word-image-container').style.display = 'none';
+                setupSorobanGame();
+            }
+        }
+
+        function goHome() {
+            try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(e){}
+            document.getElementById('screen-room').classList.remove('active');
+            document.getElementById('screen-menu').classList.add('active');
+            document.getElementById('game-area').classList.remove('active');
+        }
+
+        // --- ДВИЖОК: КОНСТРУКТОР СЛОВ ---
+        function setupWordsGame() {
+            const dragZone = document.getElementById('drag-zone');
+            const targetZone = document.getElementById('target-zone');
+            dragZone.innerHTML = ''; targetZone.innerHTML = '';
+            matchedCount = 0;
+
+            const wordData = roomsData['words'][currentWordIndex];
+            
+            // Ставим картинку предмета
+            document.getElementById('word-3d-image').src = wordData.image;
+            if (currentWordIndex === 0) { playSound('audio/words_intro.wav'); } else { playSound(wordData.sound); }
+
+            // Создаем пустые лунки SLOT_BG
+            wordData.syllables.forEach((syl, index) => {
+                const slot = document.createElement('div');
+                slot.className = 'target-item';
+                slot.style.backgroundImage = "url('img/slots/slot_bg.png')";
+                slot.innerText = syl;
+                slot.setAttribute('data-syl', syl);
+                slot.setAttribute('data-index', index);
+                targetZone.appendChild(slot);
+            });
+
+            // Создаем деревянные кубики BRICK_BG со слогами
+            let shuffledSyllables = wordData.syllables.map((syl, i) => ({ text: syl, audio: wordData.audioSyllables[i] }));
+            shuffleArray(shuffledSyllables);
+
+            shuffledSyllables.forEach(sylObj => {
+                const brick = document.createElement('div');
+                brick.className = 'draggable-item';
+                brick.style.backgroundImage = "url('img/bricks/brick_bg.png')";
+                brick.innerText = sylObj.text;
+                brick.setAttribute('data-syl', sylObj.text);
+                brick.setAttribute('data-audio', sylObj.audio);
+
+                brick.addEventListener('touchstart', handlePointerStart, {passive: false});
+                brick.addEventListener('mousedown', handlePointerStart);
+                dragZone.appendChild(brick);
+            });
+        }
+
+        // --- ДВИЖОК: СЧЁТЫ СОРОБАН (ИНТЕРФЕЙС) ---
+        function setupSorobanGame() {
+            const dragZone = document.getElementById('drag-zone');
+            const targetZone = document.getElementById('target-zone');
+            dragZone.innerHTML = ''; targetZone.innerHTML = '';
+            
+            playSound('audio/soroban_intro.wav');
+
+            // Скоро мы развернем тут красивую интерактивную сетку спиц и косточек!
+            targetZone.innerHTML = '<div style="font-size:20px; color:#7A90A4; text-align:center; margin-top:40px;">🧮 Виртуальный Соробан готовится к сборке косточек!</div>';
+        }
+
+        // --- РАБОТА С ТАЧ-СОБЫТИЯМИ (DRAG AND DROP) ---
+        function handlePointerStart(e) {
+            if (e.type === 'touchstart') e.preventDefault();
+            if (e.target.classList.contains('matched')) return;
+
+            activeItem = e.target;
+            const rect = activeItem.getBoundingClientRect();
+            
+            activeItem.style.width = rect.width + 'px';
+            activeItem.style.height = rect.height + 'px';
+
+            const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+            const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+
+            startX = rect.width / 2;
+            startY = rect.height / 2;
+
+            // Озвучка слога при взятии кубика
+            const audioFile = activeItem.getAttribute('data-audio');
+            playSound(audioFile);
+
+            activeItem.classList.add('dragging');
+            activeItem.style.position = 'fixed';
+            activeItem.style.margin = '0';
+            activeItem.style.left = (clientX - startX) + 'px';
+            activeItem.style.top = (clientY - startY) + 'px';
+        }
+
+        function handlePointerMove(e) {
+            if (!activeItem) return;
+            e.preventDefault();
+            const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+            const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+            activeItem.style.left = (clientX - startX) + 'px';
+            activeItem.style.top = (clientY - startY) + 'px';
+        }
+
+        function handlePointerEnd(e) {
+            if (!activeItem) return;
+            activeItem.classList.remove('dragging');
+            
+            const itemSyl = activeItem.getAttribute('data-syl');
+            const clientX = e.changedTouches ? e.changedTouches[0].clientX : e.clientX;
+            const clientY = e.changedTouches ? e.changedTouches[0].clientY : e.clientY;
+
+            activeItem.style.display = 'none';
+            const elementUnderTouch = document.elementFromPoint(clientX, clientY);
+            activeItem.style.display = 'flex';
+
+            let targets = document.querySelectorAll('.target-item');
+            let matchedTarget = null;
+
+            // Ищем лунку под пальцем
+            targets.forEach(t => {
+                const rect = t.getBoundingClientRect();
+                if (clientX >= rect.left && clientX <= rect.right && clientY >= rect.top && clientY <= rect.bottom) {
+                    if (t.getAttribute('data-syl') === itemSyl && !t.classList.contains('matched')) {
+                        matchedTarget = t;
+                    }
+                }
+            });
+
+            if (matchedTarget) {
+                try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "medium"}); } catch(e){}
+                activeItem.classList.add('matched');
+                matchedTarget.classList.add('matched');
+                activeItem.style.display = 'none';
+                
+                // Лунка приняла кубик — подсвечиваем её фон оригинальной кленовой плашкой!
+                matchedTarget.style.backgroundImage = "url('img/bricks/brick_bg.png')";
+
+                matchedCount++;
+                const wordData = roomsData['words'][currentWordIndex];
+                
+                if (matchedCount === wordData.syllables.length) {
+                    // Слово полностью собрано!
+                    setTimeout(() => {
+                        currentWordIndex++;
+                        if (currentWordIndex < roomsData['words'].length) {
+                            setupWordsGame();
+                        } else {
+                            playSound('audio/words_win.wav');
+                            setTimeout(goHome, 3000);
+                        }
+                    }, 1200);
+                }
+            } else {
+                try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(e){}
+                playSound('audio/wrong.wav');
+                activeItem.style.transition = 'all 0.3s ease';
+                activeItem.style.position = 'relative';
+                activeItem.style.left = '0px';
+                activeItem.style.top = '0px';
+                activeItem.style.width = '';
+                activeItem.style.height = '';
+                setTimeout(() => { activeItem.style.transition = 'none'; }, 300);
+            }
+            activeItem = null;
+        }
+
+        document.addEventListener('touchmove', handlePointerMove, {passive: false});
+        document.addEventListener('touchend', handlePointerEnd);
+        document.addEventListener('mousemove', handlePointerMove, {passive: false});
+        document.addEventListener('mouseup', handlePointerEnd);
+
+        // --- ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ ---
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
+        function playSound(soundFile) {
+            if (soundFile) {
+                const audio = new Audio(soundFile);
+                audio.play().catch(err => console.log("Ошибка аудио:", err));
+            }
+        }
+    </script>
+</body>
+</html>
