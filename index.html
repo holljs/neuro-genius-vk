@@ -75,8 +75,8 @@
         .game-container.active { display: flex; }
 
         /* Конструктор слов */
-        #word-image-container { width: 100%; max-width: 220px; aspect-ratio: 1/1; display: flex; justify-content: center; align-items: center; margin-top: 10px; }
-        #word-3d-image { width: 100%; height: 100%; object-fit: contain; }
+        #word-image-container { width: 100%; display: none; flex-direction: column; align-items: center; margin-top: 10px; }
+        #word-3d-image { width: 100%; max-width: 180px; aspect-ratio: 1/1; object-fit: contain; }
 
         .target-column { display: flex; justify-content: center; align-items: center; gap: 15px; width: 100%; min-height: 90px; margin-top: 10px; }
         .drag-column { display: flex; justify-content: center; align-items: center; gap: 20px; width: 100%; min-height: 100px; margin-top: auto; padding-bottom: 40px; }
@@ -88,6 +88,18 @@
         .draggable-item.dragging { z-index: 100; transform: scale(1.1); cursor: grabbing; }
         .draggable-item.matched { opacity: 0; pointer-events: none; transform: scale(0.5); transition: all 0.4s; }
         .target-item.matched { color: var(--wood-text); text-shadow: 1px 1px 0px rgba(255,255,255,0.5); }
+
+        /* --- СТИЛИ ДЛЯ СТРЕЛОЧЕК ПЕРЕКЛЮЧЕНИЯ СЛОВ --- */
+        .nav-arrows-container {
+            display: flex; justify-content: center; align-items: center; gap: 50px; margin-top: 10px; width: 100%;
+        }
+        .nav-arrow-btn {
+            width: 55px; height: 55px; background-color: var(--card-bg); border-radius: 50%;
+            display: flex; justify-content: center; align-items: center; font-size: 22px; font-weight: bold;
+            color: var(--accent-color); box-shadow: 0 4px 10px rgba(0,0,0,0.06); cursor: pointer; transition: transform 0.1s; user-select: none;
+        }
+        .nav-arrow-btn:active { transform: scale(0.9); background-color: #EAEFF5; }
+        .nav-arrow-btn.disabled { opacity: 0.2; pointer-events: none; }
     </style>
 </head>
 <body>
@@ -109,7 +121,9 @@
                 <div class="category-title">Счёты Соробан</div>
             </div>
         </div>
-    </div> <div id="screen-room" class="screen">
+    </div> 
+
+    <div id="screen-room" class="screen">
         <div class="header">
             <div class="header-title-row"><span id="room-title">Комната</span></div>
             <div class="header-top">
@@ -118,9 +132,15 @@
         </div>
         <div class="room-content-area">
             <div id="game-area" class="game-container">
-                <div id="word-image-container" style="display:none;">
+                
+                <div id="word-image-container">
                     <img id="word-3d-image" src="" alt="">
+                    <div class="nav-arrows-container">
+                        <div id="btn-prev-word" class="nav-arrow-btn" onclick="changeWord(-1)">◀</div>
+                        <div id="btn-next-word" class="nav-arrow-btn" onclick="changeWord(1)">▶</div>
+                    </div>
                 </div>
+
                 <div class="target-column" id="target-zone"></div>
                 <div class="drag-column" id="drag-zone"></div>
             </div>
@@ -187,7 +207,11 @@
             document.getElementById('word-3d-image').src = wordData.image;
             if (currentWordIndex === 0) { playSound('audio/words_intro.wav'); } else { playSound(wordData.sound); }
 
-            // ИСПРАВЛЕНО: Прямые пути в img/ без вложенных папок
+            // Блокируем/активируем стрелочки в зависимости от выбранного слова
+            document.getElementById('btn-prev-word').classList.toggle('disabled', currentWordIndex === 0);
+            document.getElementById('btn-next-word').classList.toggle('disabled', currentWordIndex === roomsData['words'].length - 1);
+
+            // Создаем лунки
             wordData.syllables.forEach((syl, index) => {
                 const slot = document.createElement('div');
                 slot.className = 'target-item';
@@ -199,6 +223,7 @@
                 targetZone.appendChild(slot);
             });
 
+            // Создаем кирпичики
             wordData.syllables.forEach((syl, i) => {
                 const brick = document.createElement('div');
                 brick.className = 'draggable-item';
@@ -219,11 +244,21 @@
             bricks.forEach(b => dragZone.appendChild(b));
         }
 
-        // --- ДВИЖОК: СЧЁТЫ СОРОБАН ---
-        const UPPER_FREE = 10;   
-        const UPPER_ACTIVE = 65; 
-        const LOWER_BASE = 280;  
-        const STEP = 45;         
+        // Функция переключения слов по стрелочкам
+        function changeWord(direction) {
+            try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(e){}
+            currentWordIndex += direction;
+            if (currentWordIndex < 0) currentWordIndex = 0;
+            if (currentWordIndex >= roomsData['words'].length) currentWordIndex = roomsData['words'].length - 1;
+            setupWordsGame();
+        }
+
+        // --- ДВИЖОК: СЧЁТЫ СОРОБАН (ОПТИМИЗИРОВАННЫЙ СМАРТФОН-ВАРИАНТ) ---
+        let sorobanState = [
+            { upper: false, lower: 0 }, 
+            { upper: false, lower: 0 }, 
+            { upper: false, lower: 0 }  
+        ];
 
         function setupSorobanGame() {
             const dragZone = document.getElementById('drag-zone');
@@ -232,90 +267,97 @@
             
             playSound('audio/soroban_intro.wav');
 
+            // Крупная цифра на самом верху
             const scoreboard = document.createElement('div');
             scoreboard.id = 'soroban-score';
-            scoreboard.style.fontSize = "54px";
-            scoreboard.style.fontWeight = "bold";
+            scoreboard.style.fontSize = "72px"; 
+            scoreboard.style.fontWeight = "800";
             scoreboard.style.color = "var(--accent-color)";
-            scoreboard.style.marginBottom = "15px";
+            scoreboard.style.marginBottom = "10px";
+            scoreboard.style.textShadow = "2px 2px 0px rgba(0,0,0,0.05)";
             scoreboard.innerText = "0";
             targetZone.appendChild(scoreboard);
 
+            // Деревянный корпус
             const abacusBody = document.createElement('div');
             abacusBody.style.position = "relative";
-            abacusBody.style.width = "280px";
-            abacusBody.style.height = "380px";
+            abacusBody.style.width = "320px"; 
+            abacusBody.style.height = "420px"; 
             abacusBody.style.backgroundImage = "url('img/soroban_board.png')"; 
             abacusBody.style.backgroundSize = "100% 100%";
-            abacusBody.style.padding = "20px";
+            abacusBody.style.padding = "25px 15px";
             abacusBody.style.boxSizing = "border-box";
 
+            // Разделительная планка
             const beam = document.createElement('div');
             beam.style.position = "absolute";
-            beam.style.top = "115px"; beam.style.left = "15px";
-            beam.style.width = "250px"; beam.style.height = "12px";
+            beam.style.top = "120px"; beam.style.left = "20px";
+            beam.style.width = "280px"; beam.style.height = "14px";
             beam.style.backgroundColor = "#4A3B32"; 
-            beam.style.borderRadius = "4px";
+            beam.style.borderRadius = "6px";
             beam.style.zIndex = "5";
             abacusBody.appendChild(beam);
 
+            // Делаем 3 широкие спицы
             for (let s = 0; s < 3; s++) {
                 const rod = document.createElement('div');
                 rod.style.position = "absolute";
-                rod.style.top = "30px";
-                rod.style.left = (55 + s * 85) + "px"; 
-                rod.style.width = "6px"; rod.style.height = "320px";
+                rod.style.top = "35px";
+                rod.style.left = (65 + s * 95) + "px"; 
+                rod.style.width = "8px"; rod.style.height = "350px";
                 rod.style.backgroundColor = "#D2B48C"; 
-                rod.style.borderRadius = "3px";
+                rod.style.borderRadius = "4px";
                 
-                let state = { upper: false, lower1: false, lower2: false, lower3: false, lower4: false };
-
+                // ВЕРХНЯЯ (НЕБЕСНАЯ) косточка
                 const upperBead = createBeadImg();
-                upperBead.style.top = UPPER_FREE + "px";
+                upperBead.style.top = "10px"; 
+                
                 upperBead.onclick = () => {
-                    state.upper = !state.upper;
-                    upperBead.style.top = (state.upper ? UPPER_ACTIVE : UPPER_FREE) + "px";
-                    recalculateSoroban();
+                    sorobanState[s].upper = !sorobanState[s].upper;
+                    upperBead.style.top = (sorobanState[s].upper ? "65px" : "10px") + "px"; 
+                    updateSorobanScore();
                 };
                 rod.appendChild(upperBead);
 
-                const lowers = [];
+                // НИЖНИЕ (ЗЕМНЫЕ) косточки — умный клик пачкой
+                const lowerBeads = [];
                 for (let b = 0; b < 4; b++) {
                     const lowerBead = createBeadImg();
-                    lowerBead.style.top = (LOWER_BASE - b * STEP) + "px";
+                    let initialTop = 310 - (3 - b) * 48; 
+                    lowerBead.style.top = initialTop + "px";
                     
                     lowerBead.onclick = () => {
-                        let targetState = !state[`lower${b+1}`];
-                        for (let k = 0; k < 4; k++) {
-                            if (targetState && k <= b) state[`lower${k+1}`] = true;
-                            if (!targetState && k >= b) state[`lower${k+1}`] = false;
+                        let clickedValue = b + 1;
+                        if (sorobanState[s].lower === clickedValue) {
+                            sorobanState[s].lower = clickedValue - 1;
+                        } else {
+                            sorobanState[s].lower = clickedValue;
                         }
-                        lowers.forEach((bead, idx) => {
-                            let currentActive = state[`lower${idx+1}`];
-                            let activeTop = 135 + idx * STEP; 
-                            let freeTop = LOWER_BASE - idx * STEP; 
-                            bead.style.top = (currentActive ? activeTop : freeTop) + "px";
+
+                        lowerBeads.forEach((bead, idx) => {
+                            if (idx < sorobanState[s].lower) {
+                                bead.style.top = (140 + idx * 43) + "px"; // Едут вверх
+                            } else {
+                                bead.style.top = (310 - (3 - idx) * 43) + "px"; // Едут вниз
+                            }
                         });
-                        recalculateSoroban();
+                        updateSorobanScore();
                     };
-                    lowers.push(lowerBead);
+                    lowerBeads.push(lowerBead);
                     rod.appendChild(lowerBead);
                 }
-
-                function recalculateSoroban() {
-                    playSound('audio/click.wav'); 
-                    let val = 0;
-                    if (state.upper) val += 5;
-                    if (state.lower1) val += 1;
-                    if (state.lower2) val += 1;
-                    if (state.lower3) val += 1;
-                    if (state.lower4) val += 1;
-                    
-                    document.getElementById('soroban-score').innerText = val;
-                }
-
                 abacusBody.appendChild(rod);
             }
+
+            function updateSorobanScore() {
+                playSound('audio/click.wav'); 
+                let total = 0;
+                total += (sorobanState[0].upper ? 5 : 0) * 100 + sorobanState[0].lower * 100;
+                total += (sorobanState[1].upper ? 5 : 0) * 10 + sorobanState[1].lower * 10;
+                total += (sorobanState[2].upper ? 5 : 0) * 1 + sorobanState[2].lower * 1;
+                document.getElementById('soroban-score').innerText = total;
+            }
+
             targetZone.appendChild(abacusBody);
         }
 
@@ -323,11 +365,11 @@
             const img = document.createElement('img');
             img.src = "img/soroban_bead.png"; 
             img.style.position = "absolute";
-            img.style.width = "55px"; 
-            img.style.height = "35px";
-            img.style.left = "-25px"; 
+            img.style.width = "75px";  
+            img.style.height = "40px"; 
+            img.style.left = "-34px";  
             img.style.cursor = "pointer";
-            img.style.transition = "top 0.15s ease-out"; 
+            img.style.transition = "top 0.18s cubic-bezier(0.25, 1, 0.5, 1)"; 
             return img;
         }
 
@@ -397,7 +439,6 @@
                 matchedTarget.classList.add('matched');
                 activeItem.style.display = 'none';
                 
-                // ИСПРАВЛЕНО: Лунка подсвечивается из корня img/
                 matchedTarget.style.backgroundImage = "url('img/brick_bg.png')";
 
                 matchedCount++;
@@ -448,4 +489,5 @@
             }
         }
     </script>
-</body> </html>
+</body> 
+</html>
