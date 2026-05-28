@@ -127,8 +127,8 @@
 
         #soroban-hint-card { display: none; height: 90px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.08); margin-bottom: 5px; object-fit: contain; }
 
-        /* Отступ снизу увеличен, чтобы влезли подписи разрядов */
-        #abacus-body-container { width: 100%; display: flex; justify-content: center; align-items: flex-start; padding-bottom: 45px; margin-top: 5px; }
+        /* Контейнер абакуса */
+        #abacus-body-container { width: 100%; display: flex; justify-content: center; align-items: flex-start; padding-bottom: 30px; margin-top: 10px; }
 
         /* --- АДАПТАЦИЯ --- */
         @media (max-width: 390px) {
@@ -376,11 +376,11 @@
             { upper: false, lower: 0 }  
         ];
 
-        // --- ИДЕАЛЬНАЯ МАТЕМАТИКА КОСТОЧЕК ---
-        const BEAD_H = 43; // Плотная упаковка без щелей
-        const BEAM_T = 110; // Подняли планку, чтобы убрать пустоту сверху
-        const BEAM_B = 118; // Нижний край планки для идеального удара снизу
-        const LOWER_BASE = 360; // Координата дна деревянной рамы
+        // --- ИДЕАЛЬНАЯ МАТЕМАТИКА КОСТОЧЕК И ПЛАНКИ ---
+        const BEAD_H = 43; 
+        const BEAM_T = 115; // Позиция верхней грани планки
+        const BEAM_B = 127; // Позиция нижней грани планки
+        const LOWER_BASE = 370; // Позиция нижней косточки
 
         let globalLowerBeadsRefs = []; 
         let globalUpperBeadsRefs = [];
@@ -399,51 +399,55 @@
             const abacusBody = document.createElement('div');
             abacusBody.style.position = "relative";
             abacusBody.style.width = "360px"; 
-            abacusBody.style.height = "440px"; // Сделали компактнее по высоте
-            abacusBody.style.backgroundImage = "url('img/soroban_board.png')"; 
-            abacusBody.style.backgroundSize = "100% 100%";
+            abacusBody.style.height = "440px"; 
+            // КАРТИНКИ РАМКИ БОЛЬШЕ НЕТ! Идеальный минимализм.
+            abacusBody.style.background = "none";
             abacusBody.style.boxSizing = "border-box";
 
+            // Темная контрастная перекладина (нарисована CSS)
             const beam = document.createElement('div');
             beam.style.position = "absolute";
             beam.style.top = BEAM_T + "px"; 
-            beam.style.left = "25px";
-            beam.style.width = "310px"; 
-            beam.style.height = "14px";
-            beam.style.backgroundColor = "#4A3B32"; 
-            beam.style.borderRadius = "8px";
+            beam.style.left = "15px"; // Чуть шире спиц
+            beam.style.width = "330px"; 
+            beam.style.height = "12px";
+            beam.style.background = "linear-gradient(to bottom, #4A3B32, #2c211b)"; 
+            beam.style.borderRadius = "6px";
+            beam.style.boxShadow = "0 4px 8px rgba(0,0,0,0.3)";
             beam.style.zIndex = "5"; 
             abacusBody.appendChild(beam);
 
             const rodLabels = ["Сотни", "Десятки", "Единицы"];
 
-            // 3 идеальные, симметричные спицы
+            // 3 идеальные вертикальные спицы (нарисованы CSS)
             for (let s = 0; s < 3; s++) {
                 const rod = document.createElement('div');
                 rod.style.position = "absolute";
-                rod.style.top = "30px";
-                rod.style.left = (85 + s * 95) + "px"; // ИДЕАЛЬНЫЙ ЦЕНТР (85, 180, 275)
-                rod.style.width = "10px"; 
-                rod.style.height = "370px";
-                rod.style.backgroundColor = "#D2B48C"; 
-                rod.style.borderRadius = "5px";
+                rod.style.top = "20px";
+                rod.style.left = (85 + s * 95) + "px"; // Центры: 85, 180, 275
+                rod.style.width = "12px"; 
+                rod.style.height = "400px";
+                rod.style.background = "linear-gradient(to right, #D2B48C, #F5DEB3, #D2B48C)"; 
+                rod.style.borderRadius = "6px";
+                rod.style.boxShadow = "inset -2px 0 5px rgba(0,0,0,0.1), 2px 2px 5px rgba(0,0,0,0.1)";
+                rod.style.transform = "translateX(-50%)"; // Идеальное центрирование спицы
                 rod.style.zIndex = "1";
                 
-                // Подписи разрядов (вынесены ВНИЗ, за пределы рамки!)
+                // Подписи разрядов висят идеально ровно под спицами
                 const label = document.createElement('div');
                 label.innerText = rodLabels[s];
                 label.style.position = "absolute";
-                label.style.bottom = "-30px"; // Висят в воздухе под счетами
-                label.style.left = "-25px"; // Центрированы строго по спице
-                label.style.width = "60px";
-                label.style.textAlign = "center";
+                label.style.bottom = "-35px"; 
+                label.style.left = "50%"; 
+                label.style.transform = "translateX(-50%)"; // Центрирование текста
                 label.style.fontSize = "15px";
                 label.style.fontWeight = "bold";
                 label.style.color = "#7A90A4";
                 rod.appendChild(label);
 
+                // Верхняя косточка
                 const upperBead = createLargeBeadImg();
-                upperBead.style.top = "20px"; 
+                upperBead.style.top = "15px"; 
                 upperBead.style.zIndex = "10"; 
                 globalUpperBeadsRefs.push({ img: upperBead, rodIndex: s });
                 
@@ -451,12 +455,13 @@
                     if (isTaskLock && sorobanMode !== 'free') return;
                     try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(e){}
                     sorobanState[s].upper = !sorobanState[s].upper;
-                    // Идеальное касание планки сверху (72px)
-                    upperBead.style.top = (sorobanState[s].upper ? (BEAM_T - 38) + "px" : "20px"); 
+                    // Касание планки сверху (115 - 43 = 72)
+                    upperBead.style.top = (sorobanState[s].upper ? (BEAM_T - BEAD_H) + "px" : "15px"); 
                     updateSorobanScore();
                 };
                 rod.appendChild(upperBead);
 
+                // Нижние косточки
                 const lowerBeads = [];
                 for (let b = 0; b < 4; b++) {
                     const lowerBead = createLargeBeadImg();
@@ -477,7 +482,7 @@
 
                         lowerBeads.forEach((bead, idx) => {
                             if (idx < sorobanState[s].lower) {
-                                // Идеальное касание планки снизу
+                                // Касание планки снизу
                                 bead.style.top = (BEAM_B + idx * BEAD_H) + "px"; 
                             } else {
                                 bead.style.top = (LOWER_BASE - (3 - idx) * BEAD_H) + "px"; 
@@ -570,7 +575,7 @@
             document.getElementById('soroban-score').innerText = "0";
 
             globalUpperBeadsRefs.forEach(item => {
-                item.img.style.top = "20px";
+                item.img.style.top = "15px";
             });
 
             globalLowerBeadsRefs.forEach(item => {
@@ -586,7 +591,8 @@
             img.style.position = "absolute";
             img.style.width = "85px";  
             img.style.height = "45px"; 
-            img.style.left = "-38px"; // Центрирование на 10px спице
+            img.style.left = "50%"; 
+            img.style.transform = "translateX(-50%)"; // Идеальное центрирование на спице
             img.style.cursor = "pointer";
             img.style.transition = "top 0.15s cubic-bezier(0.25, 1, 0.5, 1)"; 
             return img;
