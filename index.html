@@ -11,7 +11,7 @@
             --card-bg: #FFFFFF;
             --text-color: #333333; 
             --accent-color: #7A90A4;
-            --accent-hover: #5D7387;
+            --success-color: #4CAF50;
             --wood-text: #5C5552;
         }
 
@@ -48,29 +48,29 @@
         .screen.active { display: flex; animation: fadeIn 0.3s ease; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-        .hero-title { text-align: center; font-size: 22px; font-weight: 600; margin-bottom: 20px; color: #555555; margin-top: 15px; }
+        .hero-title { text-align: center; font-size: 22px; font-weight: 600; margin-bottom: 20px; color: #555555; margin-top: 15px; padding: 0 15px; }
         
-        /* --- ГЛАВНОЕ МЕНЮ --- */
+        /* --- МЕНЮ (ГРИД) --- */
         .menu-grid { 
             display: grid; grid-template-columns: 1fr 1fr; gap: 20px; padding: 20px; 
             align-content: start; overflow-y: auto; flex-grow: 1; width: 100%; box-sizing: border-box;
         }
         .category-card {
-            background-color: var(--card-bg);
-            border-radius: 28px; padding: 25px 10px;
+            background-color: var(--card-bg); border-radius: 28px; padding: 25px 10px;
             display: flex; flex-direction: column; align-items: center; justify-content: center;
             cursor: pointer; transition: transform 0.2s, box-shadow 0.2s; position: relative;
-            box-shadow: 0 6px 20px rgba(0,0,0,0.03); width: 100%; box-sizing: border-box;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.03); width: 100%; box-sizing: border-box; text-align: center;
         }
         .category-card:active { transform: scale(0.96); opacity: 0.9; }
         .category-icon-placeholder { width: 100%; max-width: 120px; aspect-ratio: 1/1; margin-bottom: 15px; }
         .category-icon-placeholder img { width: 100%; height: 100%; object-fit: contain; }
-        .category-title { font-size: 18px; font-weight: 700; text-align: center; color: var(--text-color); line-height: 1.2; }
+        .category-title { font-size: 18px; font-weight: 700; color: var(--text-color); line-height: 1.2; }
+        .category-subtitle { font-size: 13px; color: #94A3B8; margin-top: 5px; font-weight: 500; }
 
         /* --- ИГРОВАЯ ЗОНА --- */
         .room-content-area {
             flex-grow: 1; display: flex; flex-direction: column; justify-content: flex-start; align-items: center; padding: 10px 15px 30px 15px; width: 100%; box-sizing: border-box; 
-            overflow-y: auto; overflow-x: hidden;
+            overflow-y: auto; overflow-x: hidden; position: relative;
         }
 
         .game-container { display: none; width: 100%; flex-direction: column; align-items: center; box-sizing: border-box; flex-grow: 1; justify-content: flex-start; gap: 10px; }
@@ -79,15 +79,12 @@
         /* Слоги */
         #word-image-container { width: 100%; display: none; flex-direction: column; align-items: center; position: relative; margin-top: 10px; }
         #word-3d-image { width: 100%; max-width: 250px; aspect-ratio: 1/1; object-fit: contain; margin-bottom: 5px; }
-
         .target-column { display: flex; justify-content: center; align-items: center; gap: 20px; width: 100%; min-height: 120px; margin-top: 10px; }
         .drag-column { display: flex; justify-content: center; align-items: center; gap: 25px; width: 100%; min-height: 120px; margin-top: auto; padding-bottom: 20px; }
 
         .target-item, .draggable-item { 
-            width: 110px; height: 110px; 
-            background-repeat: no-repeat; background-position: center; background-size: cover; 
-            display: flex; justify-content: center; align-items: center; 
-            font-size: 36px; font-weight: bold; position: relative; 
+            width: 110px; height: 110px; background-repeat: no-repeat; background-position: center; background-size: cover; 
+            display: flex; justify-content: center; align-items: center; font-size: 36px; font-weight: bold; position: relative; 
         }
         .target-item { color: transparent; }
         .draggable-item { color: var(--wood-text); z-index: 10; cursor: pointer; text-shadow: 1px 1px 0px rgba(255,255,255,0.5); touch-action: none; }
@@ -95,11 +92,12 @@
         .draggable-item.matched { opacity: 0; pointer-events: none; transform: scale(0.5); transition: all 0.4s; }
         .target-item.matched { color: var(--wood-text); text-shadow: 1px 1px 0px rgba(255,255,255,0.5); }
 
-        .nav-arrows-container { display: flex; justify-content: center; align-items: center; gap: 150px; position: absolute; top: 110px; width: 100%; pointer-events: none; }
+        /* Навигация (Стрелки) */
+        .nav-arrows-container { display: flex; justify-content: center; align-items: center; gap: 20px; width: 100%; margin-top: 5px; margin-bottom: 10px; }
         .nav-arrow-btn {
-            width: 65px; height: 65px; background-color: var(--card-bg); border-radius: 50%;
-            display: flex; justify-content: center; align-items: center; font-size: 26px; font-weight: bold;
-            color: var(--accent-color); box-shadow: 0 4px 12px rgba(0,0,0,0.06); cursor: pointer; transition: transform 0.1s, opacity 0.2s; user-select: none; pointer-events: auto;
+            width: 50px; height: 50px; background-color: var(--card-bg); border-radius: 50%;
+            display: flex; justify-content: center; align-items: center; font-size: 22px; font-weight: bold;
+            color: var(--accent-color); box-shadow: 0 4px 12px rgba(0,0,0,0.06); cursor: pointer; transition: transform 0.1s, opacity 0.2s; user-select: none;
         }
         .nav-arrow-btn:active { transform: scale(0.9); background-color: #EAEFF5; }
         .nav-arrow-btn.disabled { opacity: 0.15; pointer-events: none; }
@@ -107,41 +105,33 @@
         /* --- СОРОБАН --- */
         #soroban-score {
             font-size: 85px; font-weight: 900; color: var(--accent-color);
-            margin-bottom: 0px; text-shadow: 3px 3px 0px rgba(0,0,0,0.04); margin-top: 5px; transition: color 0.3s; line-height: 1;
+            margin-bottom: 0px; text-shadow: 3px 3px 0px rgba(0,0,0,0.04); margin-top: 5px; transition: color 0.3s, transform 0.3s; line-height: 1;
         }
-        #soroban-score.correct-flash { color: var(--accent-hover) !important; animation: scaleUp 0.4s ease; }
-        @keyframes scaleUp { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
-
-        .soroban-mode-toggle { display: flex; gap: 10px; margin-bottom: 10px; width: 100%; justify-content: center; flex-wrap: wrap; }
-        .mode-btn {
-            padding: 8px 16px; border-radius: 20px; background-color: #E2E8F0;
-            font-size: 14px; font-weight: 600; color: #64748B; cursor: pointer; transition: all 0.2s;
-        }
-        .mode-btn.active { background-color: var(--accent-color); color: white; box-shadow: 0 4px 10px rgba(122,144,164,0.3); }
+        #soroban-score.correct-flash { color: var(--success-color) !important; transform: scale(1.1); }
 
         #soroban-task-container {
             display: flex; flex-direction: column; align-items: center;
-            background-color: var(--card-bg); padding: 15px; border-radius: 16px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05); margin-bottom: 5px; width: 90%; max-width: 360px;
+            background-color: var(--card-bg); padding: 20px; border-radius: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.04); margin-bottom: 5px; width: 95%; max-width: 400px;
         }
 
         #soroban-task-text {
-            font-size: 15px; font-weight: 500; color: var(--text-color);
-            text-align: center; margin-bottom: 10px; line-height: 1.4;
+            font-size: 18px; font-weight: 600; color: var(--text-color);
+            text-align: center; margin-bottom: 15px; line-height: 1.4;
         }
+        .target-highlight { color: var(--accent-color); font-size: 24px; font-weight: 800; margin-left: 5px;}
 
         #soroban-hint-card { 
-            height: 65px; border-radius: 8px; cursor: pointer; 
+            height: 80px; border-radius: 8px; cursor: pointer; 
             border: 1px solid #E2E8F0; transition: transform 0.2s; object-fit: contain;
         }
         #soroban-hint-card:active { transform: scale(0.95); }
 
-        .hint-label { font-size: 11px; color: #94A3B8; margin-top: 6px; }
-
         /* Контейнер абакуса */
-        #abacus-body-container { width: 100%; display: flex; justify-content: center; align-items: flex-start; padding-bottom: 30px; margin-top: 10px; }
+        #abacus-body-container { width: 100%; display: flex; justify-content: center; align-items: flex-start; padding-bottom: 30px; margin-top: 10px; transition: opacity 0.3s; }
+        #abacus-body-container.success-lock { pointer-events: none; opacity: 0.8; }
 
-        /* Лайтбокс для увеличения картинки */
+        /* Лайтбокс */
         #image-lightbox {
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0,0,0,0.8); z-index: 9999; flex-direction: column; 
@@ -157,9 +147,9 @@
             .category-icon-placeholder { max-width: 90px; margin-bottom: 10px; }
             .category-title { font-size: 16px; }
             .target-item, .draggable-item { width: 90px; height: 90px; font-size: 30px; }
-            .nav-arrows-container { gap: 110px; }
             #abacus-body-container { transform: scale(0.85); transform-origin: top center; margin-bottom: -60px; }
             #soroban-score { font-size: 70px; }
+            #soroban-task-text { font-size: 16px; }
         }
         @media (max-height: 850px) {
             #abacus-body-container { transform: scale(0.80); transform-origin: top center; margin-bottom: -90px; }
@@ -168,20 +158,22 @@
         @media (max-height: 720px) {
             #abacus-body-container { transform: scale(0.65); transform-origin: top center; margin-bottom: -150px; }
             #soroban-score { font-size: 55px; }
-            #soroban-task-container { padding: 10px; }
-            #soroban-task-text { font-size: 14px; margin-bottom: 5px; }
-            #soroban-hint-card { height: 50px; }
+            #soroban-task-container { padding: 15px; }
+            #soroban-task-text { font-size: 15px; margin-bottom: 10px; }
+            #soroban-hint-card { height: 60px; }
             .hero-title { margin-bottom: 10px; }
         }
     </style>
 </head>
 <body>
 
+    <!-- Лайтбокс для картинок -->
     <div id="image-lightbox" onclick="closeLightbox()">
         <img id="lightbox-img" src="">
-        <div class="lightbox-text">Нажмите в любом месте, чтобы закрыть</div>
+        <div class="lightbox-text">Нажмите, чтобы закрыть</div>
     </div>
 
+    <!-- ГЛАВНОЕ МЕНЮ -->
     <div id="screen-menu" class="screen active">
         <div class="header">
             <div class="header-title-row">
@@ -194,51 +186,79 @@
                 <div class="category-icon-placeholder"><img src="img/icon_words.png" alt=""></div>
                 <div class="category-title">Составь слово</div>
             </div>
-            <div class="category-card" onclick="openRoom('soroban', 'Счёты Соробан')">
+            <div class="category-card" onclick="openSorobanMenu()">
                 <div class="category-icon-placeholder"><img src="img/icon_soroban.png" alt=""></div>
                 <div class="category-title">Счёты Соробан</div>
             </div>
         </div>
     </div> 
 
+    <!-- ПОДМЕНЮ СОРОБАНА -->
+    <div id="screen-soroban-menu" class="screen">
+        <div class="header">
+            <div class="header-title-row"><span id="room-title">Счёты Соробан</span></div>
+            <div class="header-top">
+                <div class="back-btn" onclick="goMainFromSubmenu()">⬅ Назад</div>
+            </div>
+        </div>
+        <div class="hero-title">Выберите режим:</div>
+        <div class="menu-grid" style="grid-template-columns: 1fr;">
+            <div class="category-card" onclick="startSoroban('free', 'Свободный счет')" style="padding: 20px;">
+                <div class="category-title">Свободный счет</div>
+                <div class="category-subtitle">Изучайте косточки без заданий</div>
+            </div>
+            <div class="category-card" onclick="startSoroban('learn', 'Обучение')" style="padding: 20px;">
+                <div class="category-title">Обучение цифрам</div>
+                <div class="category-subtitle">Учимся набирать от 1 до 9</div>
+            </div>
+            <div class="category-card" onclick="startSoroban('play', 'Тренировка')" style="padding: 20px;">
+                <div class="category-title">Тренировка (Примеры)</div>
+                <div class="category-subtitle">Сложение и вычитание</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ИГРОВАЯ КОМНАТА -->
     <div id="screen-room" class="screen">
         <div class="header">
-            <div class="header-title-row"><span id="room-title">Комната</span></div>
+            <div class="header-title-row"><span id="game-room-title">Комната</span></div>
             <div class="header-top">
-                <div class="back-btn" onclick="goHome()">⬅ В меню</div>
+                <div class="back-btn" id="btn-back-to-menu">⬅ Назад</div>
             </div>
         </div>
         <div class="room-content-area">
             <div id="game-area" class="game-container">
                 
+                <!-- БЛОК КОНСТРУКТОРА СЛОВ -->
                 <div id="word-image-container">
                     <img id="word-3d-image" src="" alt="">
-                    <div class="nav-arrows-container">
+                    <div class="nav-arrows-container" style="position: absolute; top: 110px; gap: 150px;">
                         <div id="btn-prev-word" class="nav-arrow-btn" onclick="changeWord(-1)">◀</div>
                         <div id="btn-next-word" class="nav-arrow-btn" onclick="changeWord(1)">▶</div>
                     </div>
                 </div>
+                <div class="target-column" id="target-zone"></div>
+                <div class="drag-column" id="drag-zone"></div>
 
+                <!-- БЛОК СОРОБАНА -->
                 <div id="soroban-controls" style="display:none; width:100%; flex-direction:column; align-items:center;">
-                    <div class="soroban-mode-toggle">
-                        <div id="mode-free" class="mode-btn active" onclick="switchSorobanMode('free')">Свободный счет</div>
-                        <div id="mode-learn" class="mode-btn" onclick="switchSorobanMode('learn')">Обучение</div>
-                        <div id="mode-play" class="mode-btn" onclick="switchSorobanMode('play')">Тренировка</div>
-                    </div>
                     
                     <div id="soroban-task-container" style="display:none;">
                         <div id="soroban-task-text">Загрузка задания...</div>
                         <div id="soroban-hint-container" style="display:none; flex-direction:column; align-items:center;">
                             <img id="soroban-hint-card" src="" alt="Подсказка" onclick="openLightbox(this.src)">
-                            <div class="hint-label">Нажмите на картинку для увеличения</div>
+                            <div class="hint-label">Нажмите для увеличения</div>
+                        </div>
+                        <div class="nav-arrows-container" id="soroban-nav-arrows">
+                            <div id="btn-prev-soroban" class="nav-arrow-btn" onclick="changeSorobanTask(-1)">◀</div>
+                            <div id="btn-next-soroban" class="nav-arrow-btn" onclick="changeSorobanTask(1)">▶</div>
                         </div>
                     </div>
                 </div>
 
                 <div id="soroban-score" style="display:none;">0</div>
+                <!-- Контейнер для косточек создается JS-ом -->
 
-                <div class="target-column" id="target-zone"></div>
-                <div class="drag-column" id="drag-zone"></div>
             </div>
         </div>
     </div>
@@ -256,7 +276,6 @@
         let currentLessonIndex = 0;
         let isTaskLock = false; 
 
-        // База данных переведена в академический стиль
         const roomsData = {
             'words': [
                 { id: 'lisa', text: 'Лиса', image: 'img/3d_lisa.png', sound: 'audio/w_lisa.wav', syllables: ['ли', 'са'], audioSyllables: ['audio/sl_li.wav', 'audio/sl_sa.wav'] },
@@ -267,9 +286,9 @@
                 { id: 'sobaka', text: 'Собака', image: 'img/3d_sobaka.png', sound: 'audio/w_sobaka.wav', syllables: ['со', 'ба', 'ка'], audioSyllables: ['audio/sl_so.wav', 'audio/sl_ba.wav', 'audio/sl_ka.wav'] }
             ],
             'soroban_learn': [
-                { taskText: "В разряде единиц сдвиньте одну нижнюю косточку вверх к перекладине.", target: 1, hint: "img/card_1.png" },
-                { taskText: "В разряде единиц сдвиньте две нижние косточки вверх к перекладине.", target: 2, hint: "img/card_2.png" },
-                { taskText: "В разряде единиц сдвиньте три нижние косточки вверх к перекладине.", target: 3, hint: "img/card_3.png" },
+                { taskText: "В разряде единиц сдвиньте одну нижнюю косточку вверх.", target: 1, hint: "img/card_1.png" },
+                { taskText: "В разряде единиц сдвиньте две нижние косточки вверх.", target: 2, hint: "img/card_2.png" },
+                { taskText: "В разряде единиц сдвиньте три нижние косточки вверх.", target: 3, hint: "img/card_3.png" },
                 { taskText: "В разряде единиц сдвиньте четыре нижние косточки вверх.", target: 4, hint: "img/card_4.png" },
                 { taskText: "Опустите верхнюю косточку (пятерку) вниз к перекладине.", target: 5, hint: "img/card_5.png" },
                 { taskText: "В разряде единиц опустите верхнюю косточку и поднимите одну нижнюю.", target: 6, hint: "img/card_6.png" },
@@ -287,7 +306,6 @@
             ]
         };
 
-        // Функции лайтбокса
         function openLightbox(src) {
             const lb = document.getElementById('image-lightbox');
             document.getElementById('lightbox-img').src = src;
@@ -301,17 +319,46 @@
             setTimeout(() => lb.style.display = 'none', 200);
         }
 
+        // --- НАВИГАЦИЯ ---
+        function goMainFromSubmenu() {
+            try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(e){}
+            document.getElementById('screen-soroban-menu').classList.remove('active');
+            document.getElementById('screen-menu').classList.add('active');
+        }
+
+        function openSorobanMenu() {
+            try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(e){}
+            document.getElementById('screen-menu').classList.remove('active');
+            document.getElementById('screen-soroban-menu').classList.add('active');
+        }
+
+        function goBackToSorobanMenu() {
+            try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(e){}
+            const oldAbacus = document.getElementById('abacus-body-container');
+            if (oldAbacus) oldAbacus.remove();
+            document.getElementById('screen-room').classList.remove('active');
+            document.getElementById('screen-soroban-menu').classList.add('active');
+            document.getElementById('game-area').classList.remove('active');
+        }
+
+        function goHome() {
+            try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(e){}
+            const oldAbacus = document.getElementById('abacus-body-container');
+            if (oldAbacus) oldAbacus.remove();
+            document.getElementById('screen-room').classList.remove('active');
+            document.getElementById('screen-menu').classList.add('active');
+            document.getElementById('game-area').classList.remove('active');
+        }
+
         function openRoom(roomId, title) {
             try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(e){}
             currentRoom = roomId;
-            
-            const oldAbacus = document.getElementById('abacus-body-container');
-            if (oldAbacus) oldAbacus.remove();
-
-            document.getElementById('room-title').innerText = title;
+            document.getElementById('game-room-title').innerText = title;
             document.getElementById('screen-menu').classList.remove('active');
             document.getElementById('screen-room').classList.add('active');
             document.getElementById('game-area').classList.add('active');
+
+            document.getElementById('btn-back-to-menu').onclick = goHome;
 
             if (roomId === 'words') {
                 currentWordIndex = 0;
@@ -321,52 +368,42 @@
                 document.getElementById('target-zone').style.display = 'flex';
                 document.getElementById('drag-zone').style.display = 'flex';
                 setupWordsGame();
-            } else if (roomId === 'soroban') {
-                document.getElementById('word-image-container').style.display = 'none';
-                document.getElementById('soroban-controls').style.display = 'flex';
-                document.getElementById('soroban-score').style.display = 'block';
-                document.getElementById('soroban-score').innerText = '0';
-                document.getElementById('target-zone').style.display = 'none'; 
-                document.getElementById('drag-zone').style.display = 'none';
-                
-                switchSorobanMode('free'); 
-                setupSorobanGame();
             }
         }
 
-        function goHome() {
+        function startSoroban(mode, title) {
             try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(e){}
-            const oldAbacus = document.getElementById('abacus-body-container');
-            if (oldAbacus) oldAbacus.remove();
-
-            document.getElementById('screen-room').classList.remove('active');
-            document.getElementById('screen-menu').classList.add('active');
-            document.getElementById('game-area').classList.remove('active');
-        }
-
-        function switchSorobanMode(mode) {
-            if (isTaskLock) return;
-            try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(e){}
+            currentRoom = 'soroban';
             sorobanMode = mode;
             currentLessonIndex = 0;
+            isTaskLock = false;
+
+            document.getElementById('game-room-title').innerText = title;
+            document.getElementById('screen-soroban-menu').classList.remove('active');
+            document.getElementById('screen-room').classList.add('active');
+            document.getElementById('game-area').classList.add('active');
             
-            document.getElementById('mode-free').classList.toggle('active', mode === 'free');
-            document.getElementById('mode-learn').classList.toggle('active', mode === 'learn');
-            document.getElementById('mode-play').classList.toggle('active', mode === 'play');
-            
-            resetAbacusBeads(); 
+            document.getElementById('btn-back-to-menu').onclick = goBackToSorobanMenu;
+
+            document.getElementById('word-image-container').style.display = 'none';
+            document.getElementById('target-zone').style.display = 'none'; 
+            document.getElementById('drag-zone').style.display = 'none';
+
+            document.getElementById('soroban-controls').style.display = 'flex';
+            document.getElementById('soroban-score').style.display = 'block';
             
             const taskContainer = document.getElementById('soroban-task-container');
-
             if (mode === 'free') {
                 taskContainer.style.display = 'none';
-                isTaskLock = false;
             } else {
                 taskContainer.style.display = 'flex';
                 nextSorobanTask();
             }
+
+            resetAbacusBeads();
         }
 
+        // --- ДВИЖОК СЛОВ ---
         function setupWordsGame() {
             const dragZone = document.getElementById('drag-zone');
             const targetZone = document.getElementById('target-zone');
@@ -415,6 +452,7 @@
             setupWordsGame();
         }
 
+        // --- ДВИЖОК СОРОБАНА ---
         let sorobanState = [
             { upper: false, lower: 0 }, 
             { upper: false, lower: 0 }, 
@@ -422,7 +460,6 @@
         ];
 
         const BEAM_T = 95; 
-
         let globalLowerBeadsRefs = []; 
         let globalUpperBeadsRefs = [];
 
@@ -530,28 +567,37 @@
             gameArea.appendChild(abacusContainer);
         }
 
+        function changeSorobanTask(direction) {
+            try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(e){}
+            const arrayKey = 'soroban_' + sorobanMode;
+            const tasks = roomsData[arrayKey];
+            
+            currentLessonIndex += direction;
+            if (currentLessonIndex < 0) currentLessonIndex = 0;
+            if (currentLessonIndex >= tasks.length) currentLessonIndex = tasks.length - 1;
+            
+            resetAbacusBeads();
+            nextSorobanTask();
+        }
+
         function nextSorobanTask() {
             if (sorobanMode === 'free') return; 
             const arrayKey = 'soroban_' + sorobanMode;
             const tasks = roomsData[arrayKey];
             const hintContainer = document.getElementById('soroban-hint-container');
             
+            document.getElementById('btn-prev-soroban').classList.toggle('disabled', currentLessonIndex === 0);
+            document.getElementById('btn-next-soroban').classList.toggle('disabled', currentLessonIndex === tasks.length - 1);
+
             if (currentLessonIndex >= tasks.length) {
-                isTaskLock = true;
-                hintContainer.style.display = 'none'; 
-                if (sorobanMode === 'learn') {
-                    document.getElementById('soroban-task-text').innerText = "Отлично. Обучение пройдено.";
-                    playSound('audio/soroban_win.wav');
-                } else {
-                    document.getElementById('soroban-task-text').innerText = "Задания выполнены. Отличный результат.";
-                    playSound('audio/soroban_win.wav');
-                }
-                setTimeout(() => { switchSorobanMode('free'); }, 3000); 
                 return;
             }
 
             const currentTask = tasks[currentLessonIndex];
-            document.getElementById('soroban-task-text').innerText = currentTask.taskText;
+            
+            // Вставляем цель прямо в текст
+            document.getElementById('soroban-task-text').innerHTML = 
+                `${currentTask.taskText} <span class="target-highlight">(${currentTask.target})</span>`;
             
             const hintCard = document.getElementById('soroban-hint-card');
             if (currentTask.hint && sorobanMode === 'learn') {
@@ -585,14 +631,22 @@
                 isTaskLock = true; 
                 
                 scoreDisplay.classList.add('correct-flash');
+                document.getElementById('abacus-body-container').classList.add('success-lock');
                 try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "heavy"}); } catch(e){}
 
                 setTimeout(() => {
                     scoreDisplay.classList.remove('correct-flash');
-                    currentLessonIndex++;
+                    document.getElementById('abacus-body-container').classList.remove('success-lock');
                     
-                    resetAbacusBeads();
-                    nextSorobanTask();
+                    if(currentLessonIndex < roomsData[arrayKey].length - 1) {
+                        currentLessonIndex++;
+                        resetAbacusBeads();
+                        nextSorobanTask();
+                    } else {
+                        document.getElementById('soroban-task-text').innerText = "Курс пройден! Отличная работа.";
+                        playSound('audio/soroban_win.wav');
+                        setTimeout(goBackToSorobanMenu, 2500);
+                    }
                 }, 1500); 
             }
         }
@@ -620,56 +674,42 @@
             return img;
         }
 
-        // --- DRAG AND DROP ДЛЯ СЛОВ ---
+        // --- DRAG AND DROP ---
         function handlePointerStart(e) {
             if (e.target.classList.contains('matched')) return;
-
             activeItem = e.target;
             activeItem.setPointerCapture(e.pointerId);
-
             const rect = activeItem.getBoundingClientRect();
             activeItem.style.width = rect.width + 'px';
             activeItem.style.height = rect.height + 'px';
-
             startX = rect.width / 2;
             startY = rect.height / 2;
-
-            const audioFile = activeItem.getAttribute('data-audio');
-            playSound(audioFile);
-
+            playSound(activeItem.getAttribute('data-audio'));
             activeItem.classList.add('dragging');
             activeItem.style.position = 'fixed';
             activeItem.style.margin = '0';
             activeItem.style.left = (e.clientX - startX) + 'px';
             activeItem.style.top = (e.clientY - startY) + 'px';
-
             activeItem.addEventListener('pointermove', handlePointerMove);
             activeItem.addEventListener('pointerup', handlePointerEnd);
         }
-
         function handlePointerMove(e) {
             if (!activeItem) return;
             activeItem.style.left = (e.clientX - startX) + 'px';
             activeItem.style.top = (e.clientY - startY) + 'px';
         }
-
         function handlePointerEnd(e) {
             if (!activeItem) return;
-            
             activeItem.releasePointerCapture(e.pointerId);
             activeItem.classList.remove('dragging');
-            
             activeItem.removeEventListener('pointermove', handlePointerMove);
             activeItem.removeEventListener('pointerup', handlePointerEnd);
-
             const itemSyl = activeItem.getAttribute('data-syl');
             const clientX = e.clientX;
             const clientY = e.clientY;
-
             activeItem.style.display = 'none';
             let targets = document.querySelectorAll('.target-item');
             let matchedTarget = null;
-
             targets.forEach(t => {
                 const rect = t.getBoundingClientRect();
                 if (clientX >= rect.left && clientX <= rect.right && clientY >= rect.top && clientY <= rect.bottom) {
@@ -678,21 +718,15 @@
                     }
                 }
             });
-
             activeItem.style.display = 'flex';
-
             if (matchedTarget) {
                 try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "medium"}); } catch(e){}
                 activeItem.classList.add('matched');
                 matchedTarget.classList.add('matched');
                 activeItem.style.display = 'none';
-                
                 matchedTarget.style.backgroundImage = "url('img/brick_bg.png')";
-
                 matchedCount++;
-                const wordData = roomsData['words'][currentWordIndex];
-                
-                if (matchedCount === wordData.syllables.length) {
+                if (matchedCount === roomsData['words'][currentWordIndex].syllables.length) {
                     setTimeout(() => {
                         currentWordIndex++;
                         if (currentWordIndex < roomsData['words'].length) {
@@ -724,7 +758,6 @@
             }
             return array;
         }
-
         function playSound(soundFile) {
             if (soundFile) {
                 const audio = new Audio(soundFile);
