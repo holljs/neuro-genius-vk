@@ -179,21 +179,20 @@ body {
     width: 86px;  
     height: 44px; 
     left: 50%; 
-    transform: translateX(-50%); 
+    
+    /* МАГИЯ ЗДЕСЬ: scale(1.4) работает как лупа! 
+       Он делает бусину крупной и пухлой, не ломая математику скрипта */
+    transform: translateX(-50%) scale(1.4); 
+    
     cursor: pointer;
     transition: top 0.18s cubic-bezier(0.25, 1, 0.5, 1);
     z-index: 10;
     
-    background-size: 100% 100%;
+    /* contain гарантирует, что бусина ВСЕГДА будет идеальной формы (не расплющится) */
+    background-size: contain;
     background-repeat: no-repeat;
     background-position: center;
 }
-
-/* ВОТ ОНИ, ПОТЕРЯШКИ! Без них они невидимые: */
-.bead-green { background-image: url('img/bead_green.png'); } 
-.bead-blue  { background-image: url('img/bead_blue.png'); }  
-.bead-red   { background-image: url('img/bead_red.png'); }
-
 /* --- НОВАЯ РАСЧЕТНАЯ ЛИНЕЙКА (ПЕРЕКЛАДИНА) --- */
 .soroban-beam {
     position: absolute;
