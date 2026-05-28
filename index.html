@@ -72,7 +72,6 @@
             overflow-y: auto; overflow-x: hidden;
         }
 
-        /* Выровняли элементы по верхнему краю (flex-start) с отступами */
         .game-container { display: none; width: 100%; flex-direction: column; align-items: center; box-sizing: border-box; flex-grow: 1; justify-content: flex-start; gap: 10px; }
         .game-container.active { display: flex; }
 
@@ -83,30 +82,19 @@
         .target-column { display: flex; justify-content: center; align-items: center; gap: 20px; width: 100%; min-height: 120px; margin-top: 10px; }
         .drag-column { display: flex; justify-content: center; align-items: center; gap: 25px; width: 100%; min-height: 120px; margin-top: auto; padding-bottom: 20px; }
 
-        .target-item { 
+        .target-item, .draggable-item { 
             width: 110px; height: 110px; 
             background-repeat: no-repeat; background-position: center; background-size: cover; 
             display: flex; justify-content: center; align-items: center; 
-            font-size: 36px; font-weight: bold; color: transparent; position: relative; 
+            font-size: 36px; font-weight: bold; position: relative; 
         }
-        .draggable-item { 
-            width: 110px; height: 110px; 
-            background-repeat: no-repeat; background-position: center; background-size: cover; 
-            display: flex; justify-content: center; align-items: center; 
-            font-size: 36px; font-weight: bold; color: var(--wood-text); 
-            z-index: 10; cursor: pointer; position: relative; 
-            text-shadow: 1px 1px 0px rgba(255,255,255,0.5); 
-            touch-action: none;
-        }
-        
+        .target-item { color: transparent; }
+        .draggable-item { color: var(--wood-text); z-index: 10; cursor: pointer; text-shadow: 1px 1px 0px rgba(255,255,255,0.5); touch-action: none; }
         .draggable-item.dragging { z-index: 100; transform: scale(1.1); cursor: grabbing; }
         .draggable-item.matched { opacity: 0; pointer-events: none; transform: scale(0.5); transition: all 0.4s; }
         .target-item.matched { color: var(--wood-text); text-shadow: 1px 1px 0px rgba(255,255,255,0.5); }
 
-        .nav-arrows-container {
-            display: flex; justify-content: center; align-items: center; gap: 150px; 
-            position: absolute; top: 110px; width: 100%; pointer-events: none;
-        }
+        .nav-arrows-container { display: flex; justify-content: center; align-items: center; gap: 150px; position: absolute; top: 110px; width: 100%; pointer-events: none; }
         .nav-arrow-btn {
             width: 65px; height: 65px; background-color: var(--card-bg); border-radius: 50%;
             display: flex; justify-content: center; align-items: center; font-size: 26px; font-weight: bold;
@@ -115,30 +103,21 @@
         .nav-arrow-btn:active { transform: scale(0.9); background-color: #EAEFF5; }
         .nav-arrow-btn.disabled { opacity: 0.15; pointer-events: none; }
 
-        /* --- СОРОБАН И ЕГО РЕЖИМЫ --- */
+        /* --- СОРОБАН --- */
         #soroban-score {
-            font-size: 85px; 
-            font-weight: 900;
-            color: var(--accent-color);
-            margin-bottom: 0px;
-            text-shadow: 3px 3px 0px rgba(0,0,0,0.04);
-            margin-top: 5px;
-            transition: color 0.2s;
-            line-height: 1;
+            font-size: 85px; font-weight: 900; color: var(--accent-color);
+            margin-bottom: 0px; text-shadow: 3px 3px 0px rgba(0,0,0,0.04); margin-top: 5px; transition: color 0.2s; line-height: 1;
         }
         #soroban-score.correct-flash { color: #4CAF50 !important; animation: scaleUp 0.3s ease; }
         @keyframes scaleUp { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
 
-        .soroban-mode-toggle {
-            display: flex; gap: 15px; margin-bottom: 5px; width: 100%; justify-content: center;
-        }
+        /* Панель кнопок теперь с 3 режимами */
+        .soroban-mode-toggle { display: flex; gap: 10px; margin-bottom: 5px; width: 100%; justify-content: center; flex-wrap: wrap; }
         .mode-btn {
-            padding: 8px 16px; border-radius: 20px; background-color: #E2E8F0;
-            font-size: 14px; font-weight: 600; color: #64748B; cursor: pointer; transition: all 0.2s;
+            padding: 8px 14px; border-radius: 20px; background-color: #E2E8F0;
+            font-size: 13px; font-weight: 600; color: #64748B; cursor: pointer; transition: all 0.2s;
         }
-        .mode-btn.active {
-            background-color: var(--accent-color); color: white; box-shadow: 0 4px 10px rgba(122,144,164,0.3);
-        }
+        .mode-btn.active { background-color: var(--accent-color); color: white; box-shadow: 0 4px 10px rgba(122,144,164,0.3); }
 
         #soroban-task-bubble {
             background-color: var(--card-bg); padding: 10px 20px; border-radius: 18px;
@@ -147,16 +126,11 @@
             min-height: 20px; display: flex; align-items: center; justify-content: center;
         }
 
-        #soroban-hint-card {
-            display: none; height: 90px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.08); margin-bottom: 5px; object-fit: contain;
-        }
+        #soroban-hint-card { display: none; height: 90px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.08); margin-bottom: 5px; object-fit: contain; }
 
-        /* Контейнер абакуса привязан к верху */
-        #abacus-body-container {
-            width: 100%; display: flex; justify-content: center; align-items: flex-start; padding-bottom: 15px; margin-top: 10px;
-        }
+        #abacus-body-container { width: 100%; display: flex; justify-content: center; align-items: flex-start; padding-bottom: 15px; margin-top: 10px; }
 
-        /* --- АДАПТАЦИЯ (Для смартфонов) --- */
+        /* --- АДАПТАЦИЯ --- */
         @media (max-width: 390px) {
             .menu-grid { gap: 12px; padding: 15px; }
             .category-card { border-radius: 22px; padding: 20px 8px; }
@@ -168,8 +142,6 @@
             #soroban-score { font-size: 70px; }
             #soroban-hint-card { height: 75px; } 
         }
-
-        /* --- АДАПТАЦИЯ (Для ПК и ноутбуков) --- */
         @media (max-height: 850px) {
             #abacus-body-container { transform: scale(0.75); transform-origin: top center; margin-bottom: -120px; }
             #soroban-score { font-size: 65px; margin-top: 0; }
@@ -222,11 +194,13 @@
                 </div>
 
                 <div id="soroban-controls" style="display:none; width:100%; flex-direction:column; align-items:center;">
+                    <!-- Добавлена кнопка "Свободная игра" -->
                     <div class="soroban-mode-toggle">
-                        <div id="mode-learn" class="mode-btn active" onclick="switchSorobanMode('learn')">Учим цифры</div>
-                        <div id="mode-play" class="mode-btn" onclick="switchSorobanMode('play')">Решаем примеры</div>
+                        <div id="mode-free" class="mode-btn active" onclick="switchSorobanMode('free')">Свободная игра</div>
+                        <div id="mode-learn" class="mode-btn" onclick="switchSorobanMode('learn')">Учим цифры</div>
+                        <div id="mode-play" class="mode-btn" onclick="switchSorobanMode('play')">Примеры</div>
                     </div>
-                    <div id="soroban-task-bubble">Загрузка задания...</div>
+                    <div id="soroban-task-bubble" style="display:none;">Загрузка задания...</div>
                     <img id="soroban-hint-card" src="" alt="Подсказка">
                 </div>
 
@@ -247,7 +221,7 @@
         let activeItem = null;
         let startX = 0, startY = 0;
 
-        let sorobanMode = 'learn'; 
+        let sorobanMode = 'free'; // По умолчанию свободная игра
         let currentLessonIndex = 0;
         let isTaskLock = false; 
 
@@ -308,10 +282,8 @@
                 document.getElementById('soroban-score').innerText = '0';
                 document.getElementById('target-zone').style.display = 'none'; 
                 document.getElementById('drag-zone').style.display = 'none';
-                sorobanMode = 'learn';
-                currentLessonIndex = 0;
-                document.getElementById('mode-learn').classList.add('active');
-                document.getElementById('mode-play').classList.remove('active');
+                
+                switchSorobanMode('free'); // При входе включаем свободную игру
                 setupSorobanGame();
             }
         }
@@ -332,11 +304,23 @@
             sorobanMode = mode;
             currentLessonIndex = 0;
             
+            document.getElementById('mode-free').classList.toggle('active', mode === 'free');
             document.getElementById('mode-learn').classList.toggle('active', mode === 'learn');
             document.getElementById('mode-play').classList.toggle('active', mode === 'play');
             
             resetAbacusBeads(); 
-            nextSorobanTask();
+            
+            const taskBubble = document.getElementById('soroban-task-bubble');
+            const hintCard = document.getElementById('soroban-hint-card');
+
+            if (mode === 'free') {
+                taskBubble.style.display = 'none';
+                hintCard.style.display = 'none';
+                isTaskLock = false;
+            } else {
+                taskBubble.style.display = 'flex';
+                nextSorobanTask();
+            }
         }
 
         function setupWordsGame() {
@@ -393,11 +377,11 @@
             { upper: false, lower: 0 }  
         ];
 
-        const S_UPPER_FREE = 15;   
-        const S_UPPER_ACTIVE = 75; 
-        const S_LOWER_BASE = 350;  
-        const S_LOWER_STEP = 55;   
-        const S_BEAM_TOP = 140;
+        // Идеальная, выверенная до пикселя математика косточек!
+        const BEAD_H = 46; // Высота косточки с учетом микро-зазора
+        const BEAM_T = 135; // Верхний край перекладины
+        const BEAM_B = 151; // Нижний край перекладины (135 + 16px)
+        const LOWER_BASE = 360; // Дно спицы
 
         let globalLowerBeadsRefs = []; 
         let globalUpperBeadsRefs = [];
@@ -409,7 +393,6 @@
             
             globalLowerBeadsRefs = [];
             globalUpperBeadsRefs = [];
-            isTaskLock = false;
 
             const abacusContainer = document.createElement('div');
             abacusContainer.id = 'abacus-body-container';
@@ -425,12 +408,14 @@
 
             const beam = document.createElement('div');
             beam.style.position = "absolute";
-            beam.style.top = (S_BEAM_TOP - 7) + "px"; beam.style.left = "25px";
+            beam.style.top = "135px"; beam.style.left = "25px";
             beam.style.width = "310px"; beam.style.height = "16px";
             beam.style.backgroundColor = "#4A3B32"; 
             beam.style.borderRadius = "8px";
-            beam.style.zIndex = "5";
+            beam.style.zIndex = "5"; // Планка всегда над спицами
             abacusBody.appendChild(beam);
+
+            const rodLabels = ["Сотни", "Десятки", "Единицы"];
 
             for (let s = 0; s < 3; s++) {
                 const rod = document.createElement('div');
@@ -442,16 +427,30 @@
                 rod.style.borderRadius = "5px";
                 rod.style.zIndex = "1";
                 
+                // Подписи разрядов прямо на деревянном корпусе внизу
+                const label = document.createElement('div');
+                label.innerText = rodLabels[s];
+                label.style.position = "absolute";
+                label.style.bottom = "12px"; // Отступ от низа корпуса
+                label.style.left = (75 + s * 105 - 25) + "px"; // Центровка под спицей
+                label.style.width = "60px";
+                label.style.textAlign = "center";
+                label.style.fontSize = "14px";
+                label.style.fontWeight = "bold";
+                label.style.color = "#7A90A4";
+                abacusBody.appendChild(label);
+
                 const upperBead = createLargeBeadImg();
-                upperBead.style.top = S_UPPER_FREE + "px"; 
-                upperBead.style.zIndex = "10";
+                upperBead.style.top = "15px"; 
+                upperBead.style.zIndex = "10"; // Косточка над планкой
                 globalUpperBeadsRefs.push({ img: upperBead, rodIndex: s });
                 
                 upperBead.onclick = () => {
-                    if (isTaskLock) return;
+                    if (isTaskLock && sorobanMode !== 'free') return;
                     try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(e){}
                     sorobanState[s].upper = !sorobanState[s].upper;
-                    upperBead.style.top = (sorobanState[s].upper ? S_UPPER_ACTIVE + "px" : S_UPPER_FREE + "px"); 
+                    // Идеальное касание планки сверху
+                    upperBead.style.top = (sorobanState[s].upper ? (BEAM_T - BEAD_H) + "px" : "15px"); 
                     updateSorobanScore();
                 };
                 rod.appendChild(upperBead);
@@ -459,12 +458,13 @@
                 const lowerBeads = [];
                 for (let b = 0; b < 4; b++) {
                     const lowerBead = createLargeBeadImg();
-                    let initialTop = S_LOWER_BASE - (3 - b) * S_LOWER_STEP; 
+                    // Идеальное положение на дне
+                    let initialTop = LOWER_BASE - (3 - b) * BEAD_H; 
                     lowerBead.style.top = initialTop + "px";
                     lowerBead.style.zIndex = "10";
                     
                     lowerBead.onclick = () => {
-                        if (isTaskLock) return;
+                        if (isTaskLock && sorobanMode !== 'free') return;
                         try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(e){}
                         let clickedValue = b + 1;
                         
@@ -476,9 +476,10 @@
 
                         lowerBeads.forEach((bead, idx) => {
                             if (idx < sorobanState[s].lower) {
-                                bead.style.top = (S_BEAM_TOP + 15 + idx * (S_LOWER_STEP-5)) + "px"; 
+                                // Идеальное касание планки снизу
+                                bead.style.top = (BEAM_B + idx * BEAD_H) + "px"; 
                             } else {
-                                bead.style.top = (S_LOWER_BASE - (3 - idx) * S_LOWER_STEP) + "px"; 
+                                bead.style.top = (LOWER_BASE - (3 - idx) * BEAD_H) + "px"; 
                             }
                         });
                         updateSorobanScore();
@@ -491,11 +492,10 @@
             }
             abacusContainer.appendChild(abacusBody);
             gameArea.appendChild(abacusContainer);
-
-            nextSorobanTask(); 
         }
 
         function nextSorobanTask() {
+            if (sorobanMode === 'free') return; // В свободной игре нет заданий
             const arrayKey = 'soroban_' + sorobanMode;
             const tasks = roomsData[arrayKey];
             
@@ -509,7 +509,7 @@
                     document.getElementById('soroban-task-bubble').innerText = "🏆 Ура! Ты настоящий ментальный математик!";
                     playSound('audio/soroban_win.wav');
                 }
-                setTimeout(goHome, 4000);
+                setTimeout(() => { switchSorobanMode('free'); }, 3000); // Возврат в свободную игру
                 return;
             }
 
@@ -517,7 +517,7 @@
             document.getElementById('soroban-task-bubble').innerText = currentTask.taskText;
             
             const hintCard = document.getElementById('soroban-hint-card');
-            if (currentTask.hint) {
+            if (currentTask.hint && sorobanMode === 'learn') {
                 hintCard.onerror = function() { this.style.display = 'none'; };
                 hintCard.src = currentTask.hint;
                 hintCard.style.display = 'block';
@@ -538,6 +538,8 @@
             
             const scoreDisplay = document.getElementById('soroban-score');
             scoreDisplay.innerText = total;
+
+            if (sorobanMode === 'free') return; // В свободной игре просто меняем цифру
 
             const arrayKey = 'soroban_' + sorobanMode;
             const currentTask = roomsData[arrayKey][currentLessonIndex];
@@ -567,12 +569,12 @@
             document.getElementById('soroban-score').innerText = "0";
 
             globalUpperBeadsRefs.forEach(item => {
-                item.img.style.top = S_UPPER_FREE + "px";
+                item.img.style.top = "15px";
             });
 
             globalLowerBeadsRefs.forEach(item => {
                 item.beads.forEach((bead, idx) => {
-                    bead.style.top = (S_LOWER_BASE - (3 - idx) * S_LOWER_STEP) + "px";
+                    bead.style.top = (LOWER_BASE - (3 - idx) * BEAD_H) + "px";
                 });
             });
         }
