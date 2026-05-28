@@ -193,6 +193,12 @@ body {
     background-repeat: no-repeat;
     background-position: center;
 }
+
+/* ВОТ ОНИ, ПОТЕРЯШКИ! Без них они невидимые: */
+.bead-green { background-image: url('img/bead_green.png'); } 
+.bead-blue  { background-image: url('img/bead_blue.png'); }  
+.bead-red   { background-image: url('img/bead_red.png'); }
+
 /* --- НОВАЯ РАСЧЕТНАЯ ЛИНЕЙКА (ПЕРЕКЛАДИНА) --- */
 .soroban-beam {
     position: absolute;
