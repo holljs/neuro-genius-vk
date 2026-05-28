@@ -139,6 +139,16 @@ body {
 #lightbox-img { max-width: 90%; max-height: 80%; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
 .lightbox-text { color: white; margin-top: 15px; font-size: 14px; font-weight: 500; opacity: 0.8; }
 
+/* Улучшенная сетка для Обучения с колонками */
+.soroban-sub-grid-split { 
+    display: grid; 
+    grid-template-columns: 1fr 1fr; 
+    gap: 15px; 
+    padding: 10px 20px; 
+}
+.sub-column { display: flex; flex-direction: column; gap: 10px; }
+.sub-title-header { font-size: 14px; font-weight: 700; color: #94A3B8; margin-bottom: 5px; text-transform: uppercase; text-align: center;}
+
 /* --- АДАПТАЦИЯ --- */
 @media (max-width: 390px) {
     .menu-grid { gap: 10px; padding: 10px 15px; }
