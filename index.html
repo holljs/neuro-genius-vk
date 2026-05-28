@@ -376,8 +376,7 @@
             { upper: false, lower: 0 }  
         ];
 
-        // --- НОВЫЕ КООРДИНАТЫ (Планка поднята наверх, шаг плотный) ---
-        const BEAM_T = 95; // Подняли планку на 95px от верха (классическая пропорция)
+        const BEAM_T = 95; 
 
         let globalLowerBeadsRefs = []; 
         let globalUpperBeadsRefs = [];
@@ -400,7 +399,6 @@
             abacusBody.style.background = "none";
             abacusBody.style.boxSizing = "border-box";
 
-            // Темная контрастная перекладина
             const beam = document.createElement('div');
             beam.style.position = "absolute";
             beam.style.top = BEAM_T + "px"; 
@@ -439,7 +437,6 @@
                 label.style.color = "#7A90A4";
                 rod.appendChild(label);
 
-                // Верхняя косточка
                 const upperBead = createLargeBeadImg();
                 upperBead.style.top = "15px"; 
                 upperBead.style.zIndex = "10"; 
@@ -448,17 +445,15 @@
                     if (isTaskLock && sorobanMode !== 'free') return;
                     try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(e){}
                     sorobanState[s].upper = !sorobanState[s].upper;
-                    // Опускается ровно до планки
-                    upperBead.style.top = (sorobanState[s].upper ? "60px" : "15px"); 
+                    // Исправлено: 50px для идеального стыка с планкой
+                    upperBead.style.top = (sorobanState[s].upper ? "50px" : "15px"); 
                     updateSorobanScore();
                 };
                 rod.appendChild(upperBead);
 
-                // Нижние косточки
                 const lowerBeads = [];
                 for (let b = 0; b < 4; b++) {
                     const lowerBead = createLargeBeadImg();
-                    // Шаг 34px для плотности стопки (чтобы не было щелей)
                     lowerBead.style.top = (380 - (3 - b) * 34) + "px"; 
                     lowerBead.style.zIndex = "10";
                     
@@ -473,7 +468,6 @@
                             sorobanState[s].lower = clickedValue;
                         }
 
-                        // Прилипают к планке (от 100px и ниже)
                         lowerBeads.forEach((bead, idx) => {
                             if (idx < sorobanState[s].lower) {
                                 bead.style.top = (100 + idx * 34) + "px"; 
