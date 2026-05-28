@@ -176,24 +176,19 @@ body {
 /* --- НОВЫЙ ДИЗАЙН БУСИН (КАРТИНКАМИ) --- */
 .bead-3d {
     position: absolute;
-    width: 86px;  /* Возвращаем аккуратную ширину */
-    height: 44px; /* Оставляем правильную высоту для математики косточек */
+    width: 86px;  /* Ширина бусины */
+    height: 44px; /* Высота бусины */
     left: 50%; 
     transform: translateX(-50%); 
     cursor: pointer;
     transition: top 0.18s cubic-bezier(0.25, 1, 0.5, 1);
     z-index: 10;
     
-    /* МАГИЯ ЗДЕСЬ: Увеличиваем масштаб на 130%, чтобы убить прозрачные поля. 
-       Бусина сохраняет идеальные пропорции, а всё лишнее скрывается за краями! */
-    background-size: 130% auto;
+    /* ИСПРАВЛЕНИЕ: Картинка вписывается ровно в блок, ничего не обрезается! */
+    background-size: 100% 100%;
     background-repeat: no-repeat;
-    background-position: center center;
+    background-position: center;
 }
-
-.bead-green { background-image: url('img/bead_green.png'); } 
-.bead-blue  { background-image: url('img/bead_blue.png'); }  
-.bead-red   { background-image: url('img/bead_red.png'); }   
 
 /* --- НОВАЯ РАСЧЕТНАЯ ЛИНЕЙКА (ПЕРЕКЛАДИНА) --- */
 .soroban-beam {
