@@ -127,8 +127,8 @@
 
         #soroban-hint-card { display: none; height: 90px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.08); margin-bottom: 5px; object-fit: contain; }
 
-        /* Контейнер абакуса */
-        #abacus-body-container { width: 100%; display: flex; justify-content: center; align-items: flex-start; padding-bottom: 30px; margin-top: 10px; }
+        /* ИСПРАВЛЕНО: Дали больше места снизу, чтобы надписи не обрезались */
+        #abacus-body-container { width: 100%; display: flex; justify-content: center; align-items: flex-start; padding-bottom: 50px; margin-top: 10px; }
 
         /* --- АДАПТАЦИЯ --- */
         @media (max-width: 390px) {
@@ -138,16 +138,17 @@
             .category-title { font-size: 16px; }
             .target-item, .draggable-item { width: 90px; height: 90px; font-size: 30px; }
             .nav-arrows-container { gap: 110px; }
-            #abacus-body-container { transform: scale(0.85); transform-origin: top center; margin-bottom: -60px; }
+            /* ИСПРАВЛЕНО: Убрал сильный минус снизу, чтобы надписи влезли */
+            #abacus-body-container { transform: scale(0.85); transform-origin: top center; margin-bottom: -20px; }
             #soroban-score { font-size: 70px; }
             #soroban-hint-card { height: 75px; } 
         }
         @media (max-height: 850px) {
-            #abacus-body-container { transform: scale(0.80); transform-origin: top center; margin-bottom: -90px; }
+            #abacus-body-container { transform: scale(0.80); transform-origin: top center; margin-bottom: -60px; }
             #soroban-score { font-size: 65px; margin-top: 0; }
         }
         @media (max-height: 720px) {
-            #abacus-body-container { transform: scale(0.65); transform-origin: top center; margin-bottom: -150px; }
+            #abacus-body-container { transform: scale(0.65); transform-origin: top center; margin-bottom: -110px; }
             #soroban-score { font-size: 55px; }
             #soroban-task-bubble { font-size: 14px; padding: 8px 15px; }
             .hero-title { margin-bottom: 10px; }
@@ -376,39 +377,30 @@
             { upper: false, lower: 0 }  
         ];
 
-        // --- ИДЕАЛЬНАЯ МАТЕМАТИКА КОСТОЧЕК И ПЛАНКИ ---
-        const BEAD_H = 43; 
-        const BEAM_T = 115; // Позиция верхней грани планки
-        const BEAM_B = 127; // Позиция нижней грани планки
-        const LOWER_BASE = 370; // Позиция нижней косточки
-
-        let globalLowerBeadsRefs = []; 
-        let globalUpperBeadsRefs = [];
+        // --- РУЧНАЯ ВЫВЕРЕННАЯ МАТЕМАТИКА ---
+        const BEAM_T = 135; // Верх планки (опустили!)
+        const BEAM_B = 147; // Низ планки
 
         function setupSorobanGame() {
             const gameArea = document.getElementById('game-area');
             const oldAbacus = document.getElementById('abacus-body-container');
             if (oldAbacus) oldAbacus.remove();
             
-            globalLowerBeadsRefs = [];
-            globalUpperBeadsRefs = [];
-
             const abacusContainer = document.createElement('div');
             abacusContainer.id = 'abacus-body-container';
 
             const abacusBody = document.createElement('div');
             abacusBody.style.position = "relative";
             abacusBody.style.width = "360px"; 
-            abacusBody.style.height = "440px"; 
-            // КАРТИНКИ РАМКИ БОЛЬШЕ НЕТ! Идеальный минимализм.
+            abacusBody.style.height = "450px"; 
             abacusBody.style.background = "none";
             abacusBody.style.boxSizing = "border-box";
 
-            // Темная контрастная перекладина (нарисована CSS)
+            // Темная контрастная перекладина
             const beam = document.createElement('div');
             beam.style.position = "absolute";
             beam.style.top = BEAM_T + "px"; 
-            beam.style.left = "15px"; // Чуть шире спиц
+            beam.style.left = "15px"; 
             beam.style.width = "330px"; 
             beam.style.height = "12px";
             beam.style.background = "linear-gradient(to bottom, #4A3B32, #2c211b)"; 
@@ -419,27 +411,25 @@
 
             const rodLabels = ["Сотни", "Десятки", "Единицы"];
 
-            // 3 идеальные вертикальные спицы (нарисованы CSS)
             for (let s = 0; s < 3; s++) {
                 const rod = document.createElement('div');
                 rod.style.position = "absolute";
                 rod.style.top = "20px";
-                rod.style.left = (85 + s * 95) + "px"; // Центры: 85, 180, 275
+                rod.style.left = (85 + s * 95) + "px"; 
                 rod.style.width = "12px"; 
-                rod.style.height = "400px";
+                rod.style.height = "420px";
                 rod.style.background = "linear-gradient(to right, #D2B48C, #F5DEB3, #D2B48C)"; 
                 rod.style.borderRadius = "6px";
                 rod.style.boxShadow = "inset -2px 0 5px rgba(0,0,0,0.1), 2px 2px 5px rgba(0,0,0,0.1)";
-                rod.style.transform = "translateX(-50%)"; // Идеальное центрирование спицы
+                rod.style.transform = "translateX(-50%)"; 
                 rod.style.zIndex = "1";
                 
-                // Подписи разрядов висят идеально ровно под спицами
                 const label = document.createElement('div');
                 label.innerText = rodLabels[s];
                 label.style.position = "absolute";
                 label.style.bottom = "-35px"; 
                 label.style.left = "50%"; 
-                label.style.transform = "translateX(-50%)"; // Центрирование текста
+                label.style.transform = "translateX(-50%)"; 
                 label.style.fontSize = "15px";
                 label.style.fontWeight = "bold";
                 label.style.color = "#7A90A4";
@@ -447,16 +437,15 @@
 
                 // Верхняя косточка
                 const upperBead = createLargeBeadImg();
-                upperBead.style.top = "15px"; 
+                upperBead.style.top = "20px"; 
                 upperBead.style.zIndex = "10"; 
-                globalUpperBeadsRefs.push({ img: upperBead, rodIndex: s });
                 
                 upperBead.onclick = () => {
                     if (isTaskLock && sorobanMode !== 'free') return;
                     try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(e){}
                     sorobanState[s].upper = !sorobanState[s].upper;
-                    // Касание планки сверху (115 - 43 = 72)
-                    upperBead.style.top = (sorobanState[s].upper ? (BEAM_T - BEAD_H) + "px" : "15px"); 
+                    // Идеальное касание сверху: 93px
+                    upperBead.style.top = (sorobanState[s].upper ? "93px" : "20px"); 
                     updateSorobanScore();
                 };
                 rod.appendChild(upperBead);
@@ -465,8 +454,8 @@
                 const lowerBeads = [];
                 for (let b = 0; b < 4; b++) {
                     const lowerBead = createLargeBeadImg();
-                    let initialTop = LOWER_BASE - (3 - b) * BEAD_H; 
-                    lowerBead.style.top = initialTop + "px";
+                    // Базовые позиции на дне (плотно)
+                    lowerBead.style.top = (380 - (3 - b) * 42) + "px"; 
                     lowerBead.style.zIndex = "10";
                     
                     lowerBead.onclick = () => {
@@ -480,12 +469,12 @@
                             sorobanState[s].lower = clickedValue;
                         }
 
+                        // Идеальный контакт снизу
                         lowerBeads.forEach((bead, idx) => {
                             if (idx < sorobanState[s].lower) {
-                                // Касание планки снизу
-                                bead.style.top = (BEAM_B + idx * BEAD_H) + "px"; 
+                                bead.style.top = (144 + idx * 42) + "px"; 
                             } else {
-                                bead.style.top = (LOWER_BASE - (3 - idx) * BEAD_H) + "px"; 
+                                bead.style.top = (380 - (3 - idx) * 42) + "px"; 
                             }
                         });
                         updateSorobanScore();
@@ -493,7 +482,6 @@
                     lowerBeads.push(lowerBead);
                     rod.appendChild(lowerBead);
                 }
-                globalLowerBeadsRefs.push({ beads: lowerBeads, rodIndex: s });
                 abacusBody.appendChild(rod);
             }
             abacusContainer.appendChild(abacusBody);
@@ -573,16 +561,7 @@
                 { upper: false, lower: 0 }
             ];
             document.getElementById('soroban-score').innerText = "0";
-
-            globalUpperBeadsRefs.forEach(item => {
-                item.img.style.top = "15px";
-            });
-
-            globalLowerBeadsRefs.forEach(item => {
-                item.beads.forEach((bead, idx) => {
-                    bead.style.top = (LOWER_BASE - (3 - idx) * BEAD_H) + "px";
-                });
-            });
+            setupSorobanGame(); // Полный чистый рестарт косточек по координатам
         }
 
         function createLargeBeadImg() {
@@ -592,7 +571,7 @@
             img.style.width = "85px";  
             img.style.height = "45px"; 
             img.style.left = "50%"; 
-            img.style.transform = "translateX(-50%)"; // Идеальное центрирование на спице
+            img.style.transform = "translateX(-50%)"; 
             img.style.cursor = "pointer";
             img.style.transition = "top 0.15s cubic-bezier(0.25, 1, 0.5, 1)"; 
             return img;
