@@ -91,34 +91,45 @@
         </div>
     </div>
 
+    <!-- УРОВЕНЬ 3: МЕНЮ ОБУЧЕНИЯ СОРОБАНУ (В ОДИН СТОЛБЕЦ) -->
     <div id="screen-soroban-learn-menu" class="screen" style="overflow-y: auto;">
         <div class="header" style="position: sticky; top: 0; z-index: 10;">
             <div class="header-title-row"><span id="room-title">Обучение</span></div>
             <div class="header-top">
-                <div class="back-btn" onclick="goBackToSorobanMenuFromLearn()">⬅ Назад к режимам</div>
+                <div class="back-btn" onclick="goBackToSorobanMenuFromLearn()">⬅ Назад</div>
             </div>
         </div>
-        <div class="menu-grid sub-grid" style="margin-top: 15px;">
-            <div class="category-card sub-card" onclick="startSoroban('learn', 'learn_units', 'Обучение: Единицы')">
-                <div class="category-title sub-title">Единицы</div>
+        
+        <div class="menu-grid soroban-sub-grid-split">
+            <!-- Столбец 1: Разряды -->
+            <div class="sub-column">
+                <div class="sub-title-header">Разряды</div>
+                <div class="category-card sub-card" onclick="startSoroban('learn', 'learn_units', 'Единицы')">
+                    <div class="category-title sub-title">Единицы</div>
+                </div>
+                <div class="category-card sub-card" onclick="startSoroban('learn', 'learn_tens', 'Десятки')">
+                    <div class="category-title sub-title">Десятки</div>
+                </div>
+                <div class="category-card sub-card" onclick="startSoroban('learn', 'learn_hundreds', 'Сотни')">
+                    <div class="category-title sub-title">Сотни</div>
+                </div>
             </div>
-            <div class="category-card sub-card" onclick="startSoroban('learn', 'learn_tens', 'Обучение: Десятки')">
-                <div class="category-title sub-title">Десятки</div>
-            </div>
-            <div class="category-card sub-card" onclick="startSoroban('learn', 'learn_hundreds', 'Обучение: Сотни')">
-                <div class="category-title sub-title">Сотни</div>
-            </div>
-            <div class="category-card sub-card" onclick="startSoroban('learn', 'learn_add', 'Обучение: Сложение')">
-                <div class="category-title sub-title">Сложение</div>
-            </div>
-            <div class="category-card sub-card" onclick="startSoroban('learn', 'learn_sub', 'Обучение: Вычитание')">
-                <div class="category-title sub-title">Вычитание</div>
-            </div>
-            <div class="category-card sub-card" onclick="startSoroban('learn', 'learn_mult', 'Обучение: Умножение')">
-                <div class="category-title sub-title">Умножение</div>
-            </div>
-            <div class="category-card sub-card" onclick="startSoroban('learn', 'learn_div', 'Обучение: Деление')">
-                <div class="category-title sub-title">Деление</div>
+            
+            <!-- Столбец 2: Действия -->
+            <div class="sub-column">
+                <div class="sub-title-header">Действия</div>
+                <div class="category-card sub-card" onclick="startSoroban('learn', 'learn_add', 'Сложение')">
+                    <div class="category-title sub-title">Сложение</div>
+                </div>
+                <div class="category-card sub-card" onclick="startSoroban('learn', 'learn_sub', 'Вычитание')">
+                    <div class="category-title sub-title">Вычитание</div>
+                </div>
+                <div class="category-card sub-card" onclick="startSoroban('learn', 'learn_mult', 'Умножение')">
+                    <div class="category-title sub-title">Умножение</div>
+                </div>
+                <div class="category-card sub-card" onclick="startSoroban('learn', 'learn_div', 'Деление')">
+                    <div class="category-title sub-title">Деление</div>
+                </div>
             </div>
         </div>
     </div>
