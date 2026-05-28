@@ -75,7 +75,7 @@
         .game-container { display: none; width: 100%; flex-direction: column; align-items: center; box-sizing: border-box; flex-grow: 1; justify-content: flex-start; gap: 10px; }
         .game-container.active { display: flex; }
 
-        /* Конструктор слов */
+        /* Слоги */
         #word-image-container { width: 100%; display: none; flex-direction: column; align-items: center; position: relative; margin-top: 10px; }
         #word-3d-image { width: 100%; max-width: 250px; aspect-ratio: 1/1; object-fit: contain; margin-bottom: 5px; }
 
@@ -111,7 +111,6 @@
         #soroban-score.correct-flash { color: #4CAF50 !important; animation: scaleUp 0.3s ease; }
         @keyframes scaleUp { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
 
-        /* Панель кнопок теперь с 3 режимами */
         .soroban-mode-toggle { display: flex; gap: 10px; margin-bottom: 5px; width: 100%; justify-content: center; flex-wrap: wrap; }
         .mode-btn {
             padding: 8px 14px; border-radius: 20px; background-color: #E2E8F0;
@@ -128,7 +127,8 @@
 
         #soroban-hint-card { display: none; height: 90px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.08); margin-bottom: 5px; object-fit: contain; }
 
-        #abacus-body-container { width: 100%; display: flex; justify-content: center; align-items: flex-start; padding-bottom: 15px; margin-top: 10px; }
+        /* Отступ снизу увеличен, чтобы влезли подписи разрядов */
+        #abacus-body-container { width: 100%; display: flex; justify-content: center; align-items: flex-start; padding-bottom: 45px; margin-top: 5px; }
 
         /* --- АДАПТАЦИЯ --- */
         @media (max-width: 390px) {
@@ -143,11 +143,11 @@
             #soroban-hint-card { height: 75px; } 
         }
         @media (max-height: 850px) {
-            #abacus-body-container { transform: scale(0.75); transform-origin: top center; margin-bottom: -120px; }
+            #abacus-body-container { transform: scale(0.80); transform-origin: top center; margin-bottom: -90px; }
             #soroban-score { font-size: 65px; margin-top: 0; }
         }
         @media (max-height: 720px) {
-            #abacus-body-container { transform: scale(0.60); transform-origin: top center; margin-bottom: -190px; }
+            #abacus-body-container { transform: scale(0.65); transform-origin: top center; margin-bottom: -150px; }
             #soroban-score { font-size: 55px; }
             #soroban-task-bubble { font-size: 14px; padding: 8px 15px; }
             .hero-title { margin-bottom: 10px; }
@@ -194,7 +194,6 @@
                 </div>
 
                 <div id="soroban-controls" style="display:none; width:100%; flex-direction:column; align-items:center;">
-                    <!-- Добавлена кнопка "Свободная игра" -->
                     <div class="soroban-mode-toggle">
                         <div id="mode-free" class="mode-btn active" onclick="switchSorobanMode('free')">Свободная игра</div>
                         <div id="mode-learn" class="mode-btn" onclick="switchSorobanMode('learn')">Учим цифры</div>
@@ -221,7 +220,7 @@
         let activeItem = null;
         let startX = 0, startY = 0;
 
-        let sorobanMode = 'free'; // По умолчанию свободная игра
+        let sorobanMode = 'free'; 
         let currentLessonIndex = 0;
         let isTaskLock = false; 
 
@@ -283,7 +282,7 @@
                 document.getElementById('target-zone').style.display = 'none'; 
                 document.getElementById('drag-zone').style.display = 'none';
                 
-                switchSorobanMode('free'); // При входе включаем свободную игру
+                switchSorobanMode('free'); 
                 setupSorobanGame();
             }
         }
@@ -377,11 +376,11 @@
             { upper: false, lower: 0 }  
         ];
 
-        // Идеальная, выверенная до пикселя математика косточек!
-        const BEAD_H = 46; // Высота косточки с учетом микро-зазора
-        const BEAM_T = 135; // Верхний край перекладины
-        const BEAM_B = 151; // Нижний край перекладины (135 + 16px)
-        const LOWER_BASE = 360; // Дно спицы
+        // --- ИДЕАЛЬНАЯ МАТЕМАТИКА КОСТОЧЕК ---
+        const BEAD_H = 43; // Плотная упаковка без щелей
+        const BEAM_T = 110; // Подняли планку, чтобы убрать пустоту сверху
+        const BEAM_B = 118; // Нижний край планки для идеального удара снизу
+        const LOWER_BASE = 360; // Координата дна деревянной рамы
 
         let globalLowerBeadsRefs = []; 
         let globalUpperBeadsRefs = [];
@@ -400,57 +399,60 @@
             const abacusBody = document.createElement('div');
             abacusBody.style.position = "relative";
             abacusBody.style.width = "360px"; 
-            abacusBody.style.height = "480px"; 
+            abacusBody.style.height = "440px"; // Сделали компактнее по высоте
             abacusBody.style.backgroundImage = "url('img/soroban_board.png')"; 
             abacusBody.style.backgroundSize = "100% 100%";
-            abacusBody.style.padding = "30px 20px";
             abacusBody.style.boxSizing = "border-box";
 
             const beam = document.createElement('div');
             beam.style.position = "absolute";
-            beam.style.top = "135px"; beam.style.left = "25px";
-            beam.style.width = "310px"; beam.style.height = "16px";
+            beam.style.top = BEAM_T + "px"; 
+            beam.style.left = "25px";
+            beam.style.width = "310px"; 
+            beam.style.height = "14px";
             beam.style.backgroundColor = "#4A3B32"; 
             beam.style.borderRadius = "8px";
-            beam.style.zIndex = "5"; // Планка всегда над спицами
+            beam.style.zIndex = "5"; 
             abacusBody.appendChild(beam);
 
             const rodLabels = ["Сотни", "Десятки", "Единицы"];
 
+            // 3 идеальные, симметричные спицы
             for (let s = 0; s < 3; s++) {
                 const rod = document.createElement('div');
                 rod.style.position = "absolute";
-                rod.style.top = "40px";
-                rod.style.left = (75 + s * 105) + "px"; 
-                rod.style.width = "10px"; rod.style.height = "400px";
+                rod.style.top = "30px";
+                rod.style.left = (85 + s * 95) + "px"; // ИДЕАЛЬНЫЙ ЦЕНТР (85, 180, 275)
+                rod.style.width = "10px"; 
+                rod.style.height = "370px";
                 rod.style.backgroundColor = "#D2B48C"; 
                 rod.style.borderRadius = "5px";
                 rod.style.zIndex = "1";
                 
-                // Подписи разрядов прямо на деревянном корпусе внизу
+                // Подписи разрядов (вынесены ВНИЗ, за пределы рамки!)
                 const label = document.createElement('div');
                 label.innerText = rodLabels[s];
                 label.style.position = "absolute";
-                label.style.bottom = "12px"; // Отступ от низа корпуса
-                label.style.left = (75 + s * 105 - 25) + "px"; // Центровка под спицей
+                label.style.bottom = "-30px"; // Висят в воздухе под счетами
+                label.style.left = "-25px"; // Центрированы строго по спице
                 label.style.width = "60px";
                 label.style.textAlign = "center";
-                label.style.fontSize = "14px";
+                label.style.fontSize = "15px";
                 label.style.fontWeight = "bold";
                 label.style.color = "#7A90A4";
-                abacusBody.appendChild(label);
+                rod.appendChild(label);
 
                 const upperBead = createLargeBeadImg();
-                upperBead.style.top = "15px"; 
-                upperBead.style.zIndex = "10"; // Косточка над планкой
+                upperBead.style.top = "20px"; 
+                upperBead.style.zIndex = "10"; 
                 globalUpperBeadsRefs.push({ img: upperBead, rodIndex: s });
                 
                 upperBead.onclick = () => {
                     if (isTaskLock && sorobanMode !== 'free') return;
                     try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(e){}
                     sorobanState[s].upper = !sorobanState[s].upper;
-                    // Идеальное касание планки сверху
-                    upperBead.style.top = (sorobanState[s].upper ? (BEAM_T - BEAD_H) + "px" : "15px"); 
+                    // Идеальное касание планки сверху (72px)
+                    upperBead.style.top = (sorobanState[s].upper ? (BEAM_T - 38) + "px" : "20px"); 
                     updateSorobanScore();
                 };
                 rod.appendChild(upperBead);
@@ -458,7 +460,6 @@
                 const lowerBeads = [];
                 for (let b = 0; b < 4; b++) {
                     const lowerBead = createLargeBeadImg();
-                    // Идеальное положение на дне
                     let initialTop = LOWER_BASE - (3 - b) * BEAD_H; 
                     lowerBead.style.top = initialTop + "px";
                     lowerBead.style.zIndex = "10";
@@ -495,7 +496,7 @@
         }
 
         function nextSorobanTask() {
-            if (sorobanMode === 'free') return; // В свободной игре нет заданий
+            if (sorobanMode === 'free') return; 
             const arrayKey = 'soroban_' + sorobanMode;
             const tasks = roomsData[arrayKey];
             
@@ -509,7 +510,7 @@
                     document.getElementById('soroban-task-bubble').innerText = "🏆 Ура! Ты настоящий ментальный математик!";
                     playSound('audio/soroban_win.wav');
                 }
-                setTimeout(() => { switchSorobanMode('free'); }, 3000); // Возврат в свободную игру
+                setTimeout(() => { switchSorobanMode('free'); }, 3000); 
                 return;
             }
 
@@ -539,7 +540,7 @@
             const scoreDisplay = document.getElementById('soroban-score');
             scoreDisplay.innerText = total;
 
-            if (sorobanMode === 'free') return; // В свободной игре просто меняем цифру
+            if (sorobanMode === 'free') return; 
 
             const arrayKey = 'soroban_' + sorobanMode;
             const currentTask = roomsData[arrayKey][currentLessonIndex];
@@ -569,7 +570,7 @@
             document.getElementById('soroban-score').innerText = "0";
 
             globalUpperBeadsRefs.forEach(item => {
-                item.img.style.top = "15px";
+                item.img.style.top = "20px";
             });
 
             globalLowerBeadsRefs.forEach(item => {
@@ -585,9 +586,9 @@
             img.style.position = "absolute";
             img.style.width = "85px";  
             img.style.height = "45px"; 
-            img.style.left = "-38px";  
+            img.style.left = "-38px"; // Центрирование на 10px спице
             img.style.cursor = "pointer";
-            img.style.transition = "top 0.18s cubic-bezier(0.25, 1, 0.5, 1)"; 
+            img.style.transition = "top 0.15s cubic-bezier(0.25, 1, 0.5, 1)"; 
             return img;
         }
 
