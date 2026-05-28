@@ -176,18 +176,19 @@ body {
 /* --- НОВЫЙ ДИЗАЙН БУСИН (КАРТИНКАМИ) --- */
 .bead-3d {
     position: absolute;
-    width: 90px;  /* Широкие бусины! */
-    height: 44px; 
+    width: 86px;  /* Возвращаем аккуратную ширину */
+    height: 44px; /* Оставляем правильную высоту для математики косточек */
     left: 50%; 
     transform: translateX(-50%); 
     cursor: pointer;
     transition: top 0.18s cubic-bezier(0.25, 1, 0.5, 1);
     z-index: 10;
     
-    /* Жестко растягиваем картинку, убивая прозрачные поля */
-    background-size: 100% 100%;
+    /* МАГИЯ ЗДЕСЬ: Увеличиваем масштаб на 130%, чтобы убить прозрачные поля. 
+       Бусина сохраняет идеальные пропорции, а всё лишнее скрывается за краями! */
+    background-size: 130% auto;
     background-repeat: no-repeat;
-    background-position: center;
+    background-position: center center;
 }
 
 .bead-green { background-image: url('img/bead_green.png'); } 
@@ -200,12 +201,16 @@ body {
     top: 112px; 
     left: 5px;  
     width: 350px; 
-    height: 20px; /* Массивная планка */
+    height: 18px; 
     
-    background-image: url('img/soroban_beam.png'); 
+    /* БРОНЕБОЙНЫЙ КОД: Грузим картинку, а под неё кладем идеальный градиент дерева. 
+       Если картинка не загрузится, никто даже не заметит подмены! */
+    background-color: #a67c52;
+    background-image: url('img/soroban_beam.png'), linear-gradient(to bottom, #d9b282, #a67c52, #8b633b); 
     background-size: 100% 100%;
     background-repeat: no-repeat;
     
+    border-radius: 4px;
     box-shadow: 0 4px 10px rgba(0,0,0,0.3);
     z-index: 5; 
 }
