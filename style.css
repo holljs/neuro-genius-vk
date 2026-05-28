@@ -172,3 +172,39 @@ body {
     #soroban-hint-card { height: 60px; }
     .hero-title { margin-bottom: 10px; }
 }
+
+/* --- НОВЫЙ ДИЗАЙН БУСИН (КАРТИНКАМИ) --- */
+.bead-3d {
+    position: absolute;
+    width: 86px;  
+    height: 44px; 
+    left: 50%; 
+    transform: translateX(-50%); 
+    cursor: pointer;
+    transition: top 0.18s cubic-bezier(0.25, 1, 0.5, 1);
+    z-index: 10;
+    
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+.bead-green { background-image: url('img/bead_green.png'); } 
+.bead-blue  { background-image: url('img/bead_blue.png'); }  
+.bead-red   { background-image: url('img/bead_red.png'); }   
+
+/* --- НОВАЯ РАСЧЕТНАЯ ЛИНЕЙКА (ПЕРЕКЛАДИНА) --- */
+.soroban-beam {
+    position: absolute;
+    top: 115px; 
+    left: 10px; 
+    width: 340px; 
+    height: 14px;
+    
+    background-image: url('img/soroban_beam.png'); 
+    background-size: 100% 100%;
+    background-repeat: no-repeat;
+    
+    box-shadow: 0 4px 8px rgba(0,0,0,0.25);
+    z-index: 5; 
+}
