@@ -438,16 +438,16 @@
                 rod.appendChild(label);
 
                 const upperBead = createLargeBeadImg();
-                // ИСПРАВЛЕНО: Подняли неактивную верхнюю косточку до 10px
-                upperBead.style.top = "10px"; 
+                // ИСПРАВЛЕНО: В спокойном состоянии висит еще выше
+                upperBead.style.top = "5px"; 
                 upperBead.style.zIndex = "10"; 
                 
                 upperBead.onclick = () => {
                     if (isTaskLock && sorobanMode !== 'free') return;
                     try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(e){}
                     sorobanState[s].upper = !sorobanState[s].upper;
-                    // ИСПРАВЛЕНО: Активная верхняя косточка опускается только до 46px (не залезая на планку)
-                    upperBead.style.top = (sorobanState[s].upper ? "46px" : "10px"); 
+                    // ИСПРАВЛЕНО: При клике опускается ДО планки, не прячась за ней (30px)
+                    upperBead.style.top = (sorobanState[s].upper ? "30px" : "5px"); 
                     updateSorobanScore();
                 };
                 rod.appendChild(upperBead);
@@ -455,7 +455,6 @@
                 const lowerBeads = [];
                 for (let b = 0; b < 4; b++) {
                     const lowerBead = createLargeBeadImg();
-                    // ИСПРАВЛЕНО: Подняли всю нижнюю пачку вверх (старт с 360px)
                     lowerBead.style.top = (360 - (3 - b) * 34) + "px"; 
                     lowerBead.style.zIndex = "10";
                     
@@ -472,8 +471,8 @@
 
                         lowerBeads.forEach((bead, idx) => {
                             if (idx < sorobanState[s].lower) {
-                                // ИСПРАВЛЕНО: Идеальный стык снизу планки
-                                bead.style.top = (108 + idx * 34) + "px"; 
+                                // ИСПРАВЛЕНО: Дотягиваем нижние косточки вверх до самой планки (старт с 85px)
+                                bead.style.top = (85 + idx * 34) + "px"; 
                             } else {
                                 bead.style.top = (360 - (3 - idx) * 34) + "px"; 
                             }
