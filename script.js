@@ -284,32 +284,18 @@ function setupSorobanGame() {
     abacusBody.style.background = "none";
     abacusBody.style.boxSizing = "border-box";
 
+    // Наша новая деревянная перекладина
     const beam = document.createElement('div');
-    beam.style.position = "absolute";
-    beam.style.top = BEAM_T + "px"; 
-    beam.style.left = "15px"; 
-    beam.style.width = "330px"; 
-    beam.style.height = "12px";
-    beam.style.background = "linear-gradient(to bottom, #4A3B32, #2c211b)"; 
-    beam.style.borderRadius = "6px";
-    beam.style.boxShadow = "0 4px 8px rgba(0,0,0,0.3)";
-    beam.style.zIndex = "5"; 
+    beam.className = "soroban-beam";
     abacusBody.appendChild(beam);
 
     const rodLabels = ["Сотни", "Десятки", "Единицы"];
+    const rodColors = ["bead-green", "bead-blue", "bead-red"]; // Соответствие цвета разряду
 
     for (let s = 0; s < 3; s++) {
         const rod = document.createElement('div');
-        rod.style.position = "absolute";
-        rod.style.top = "20px";
+        rod.className = "soroban-rod";
         rod.style.left = (85 + s * 95) + "px"; 
-        rod.style.width = "12px"; 
-        rod.style.height = "420px";
-        rod.style.background = "linear-gradient(to right, #D2B48C, #F5DEB3, #D2B48C)"; 
-        rod.style.borderRadius = "6px";
-        rod.style.boxShadow = "inset -2px 0 5px rgba(0,0,0,0.1), 2px 2px 5px rgba(0,0,0,0.1)";
-        rod.style.transform = "translateX(-50%)"; 
-        rod.style.zIndex = "1";
         
         const label = document.createElement('div');
         label.innerText = rodLabels[s];
@@ -322,24 +308,28 @@ function setupSorobanGame() {
         label.style.color = "#7A90A4";
         rod.appendChild(label);
 
-        const upperBead = createLargeBeadImg();
+        // Создаем верхнюю 3D бусину
+        const upperBead = document.createElement('div');
+        upperBead.className = `bead-3d ${rodColors[s]}`;
         upperBead.style.top = "5px"; 
-        upperBead.style.zIndex = "10"; 
+        globalUpperBeadsRefs.push({ img: upperBead, rodIndex: s });
         
         upperBead.onclick = () => {
             if (isTaskLock && sorobanMode !== 'free') return;
             try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(e){}
             sorobanState[s].upper = !sorobanState[s].upper;
-            upperBead.style.top = (sorobanState[s].upper ? "50px" : "5px"); 
+            // Идеальное касание планки сверху
+            upperBead.style.top = (sorobanState[s].upper ? "52px" : "5px"); 
             updateSorobanScore();
         };
         rod.appendChild(upperBead);
 
+        // Создаем нижние 3D бусины
         const lowerBeads = [];
         for (let b = 0; b < 4; b++) {
-            const lowerBead = createLargeBeadImg();
+            const lowerBead = document.createElement('div');
+            lowerBead.className = `bead-3d ${rodColors[s]}`;
             lowerBead.style.top = (360 - (3 - b) * 34) + "px"; 
-            lowerBead.style.zIndex = "10";
             
             lowerBead.onclick = () => {
                 if (isTaskLock && sorobanMode !== 'free') return;
@@ -354,7 +344,8 @@ function setupSorobanGame() {
 
                 lowerBeads.forEach((bead, idx) => {
                     if (idx < sorobanState[s].lower) {
-                        bead.style.top = (85 + idx * 34) + "px"; 
+                        // Идеальное касание планки снизу
+                        bead.style.top = (112 + idx * 34) + "px"; 
                     } else {
                         bead.style.top = (360 - (3 - idx) * 34) + "px"; 
                     }
@@ -364,10 +355,25 @@ function setupSorobanGame() {
             lowerBeads.push(lowerBead);
             rod.appendChild(lowerBead);
         }
+        globalLowerBeadsRefs.push({ beads: lowerBeads, rodIndex: s });
         abacusBody.appendChild(rod);
     }
     abacusContainer.appendChild(abacusBody);
     gameArea.appendChild(abacusContainer);
+}
+
+// Функцию resetAbacusBeads тоже слегка обновим для правильного сброса верхних на 5px
+function resetAbacusBeads() {
+    sorobanState = [
+        { upper: false, lower: 0 },
+        { upper: false, lower: 0 },
+        { upper: false, lower: 0 }
+    ];
+    document.getElementById('soroban-score').innerText = "0";
+    globalUpperBeadsRefs.forEach(item => { item.img.style.top = "5px"; });
+    globalLowerBeadsRefs.forEach(item => {
+        item.beads.forEach((bead, idx) => { bead.style.top = (360 - (3 - idx) * 34) + "px"; });
+    });
 }
 
 function changeSorobanTask(direction) {
