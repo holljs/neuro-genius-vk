@@ -36,6 +36,13 @@ const roomsData = {
     ],
     'learn_tens': [], 
     'learn_hundreds': [],
+    'learn_friends': [
+        { taskText: "9 очень хочет стать 10, поэтому она ищет 1. Чтобы добавить 9: прибавь 10 и убери 1.", target: 10, hint: "img/card_friend_9.png" },
+        { taskText: "8 — это верный друг 2. Чтобы добавить 8: прибавь 10 и убери 2.", target: 8, hint: "img/card_friend_8.png" },
+        { taskText: "7 — это друг 3. Чтобы добавить 7: прибавь 10 и убери 3.", target: 7, hint: "img/card_friend_7.png" },
+        { taskText: "6 — это друг 4. Чтобы добавить 6: прибавь 10 и убери 4.", target: 6, hint: "img/card_friend_6.png" },
+        { taskText: "5 — это друг 5. Чтобы добавить 5: прибавь 10 и убери 5.", target: 5, hint: "img/card_friend_5.png" }
+    ],
     'learn_add': [],
     'learn_sub': [],
     'learn_mult': [],
