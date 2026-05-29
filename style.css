@@ -1,7 +1,7 @@
 :root {
-    --bg-color: #F4F6F9; 
+    --bg-color: #F4F6F9;
     --card-bg: #FFFFFF;
-    --text-color: #333333; 
+    --text-color: #333333;
     --accent-color: #7A90A4;
     --success-color: #4CAF50;
     --wood-text: #5C5552;
@@ -13,11 +13,11 @@ body {
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
     color: var(--text-color);
     display: flex; flex-direction: column;
-    height: 100vh; overflow: hidden; user-select: none; 
-    touch-action: none; 
+    height: 100vh; overflow: hidden; user-select: none;
+    touch-action: none;
 }
 
-/* --- ШАПКА --- */
+/* Шапка */
 .header {
     width: 100%; padding: 15px 15px 5px 15px;
     display: flex; flex-direction: column; align-items: center;
@@ -31,11 +31,11 @@ body {
 .back-btn {
     font-size: 15px; cursor: pointer; padding: 8px 18px; background: var(--card-bg);
     border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.03);
-    color: var(--text-color); font-weight: 500; transition: transform 0.2s; white-space: nowrap; 
+    color: var(--text-color); font-weight: 500; transition: transform 0.2s; white-space: nowrap;
 }
 .back-btn:active { transform: scale(0.95); opacity: 0.8; }
 
-/* --- ЭКРАНЫ --- */
+/* Экраны */
 .screen { display: none; flex-direction: column; flex-grow: 1; width: 100%; height: 100%; overflow: hidden; }
 .screen.active { display: flex; animation: fadeIn 0.3s ease; }
 @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
@@ -43,9 +43,9 @@ body {
 .hero-title { text-align: center; font-size: 22px; font-weight: 600; margin-bottom: 10px; color: #555555; margin-top: 15px; padding: 0 15px; }
 .section-title { font-size: 18px; font-weight: 700; color: var(--accent-color); width: 100%; text-align: left; padding: 15px 20px 5px 20px; box-sizing: border-box; }
 
-/* --- МЕНЮ (ГРИД) --- */
+/* Меню (грид) */
 .menu-grid { 
-    display: grid; grid-template-columns: 1fr 1fr; gap: 15px; padding: 10px 20px 20px 20px; 
+    display: grid; grid-template-columns: 1fr 1fr; gap: 15px; padding: 10px 20px 20px 20px;
     align-content: start; overflow-y: auto; flex-grow: 1; width: 100%; box-sizing: border-box;
 }
 .category-card {
@@ -60,14 +60,13 @@ body {
 .category-title { font-size: 16px; font-weight: 700; color: var(--text-color); line-height: 1.2; }
 .category-subtitle { font-size: 12px; color: #94A3B8; margin-top: 5px; font-weight: 500; }
 
-/* Спец-грид для подменю (мелкие карточки) */
 .sub-grid { grid-template-columns: 1fr 1fr; gap: 10px; padding: 5px 20px; }
 .sub-card { padding: 15px 10px; border-radius: 16px; }
 .sub-title { font-size: 14px; font-weight: 600; }
 
-/* --- ИГРОВАЯ ЗОНА --- */
+/* Игровая зона */
 .room-content-area {
-    flex-grow: 1; display: flex; flex-direction: column; justify-content: flex-start; align-items: center; padding: 10px 15px 30px 15px; width: 100%; box-sizing: border-box; 
+    flex-grow: 1; display: flex; flex-direction: column; justify-content: flex-start; align-items: center; padding: 10px 15px 30px 15px; width: 100%; box-sizing: border-box;
     overflow-y: auto; overflow-x: hidden; position: relative;
 }
 
@@ -81,8 +80,8 @@ body {
 .drag-column { display: flex; justify-content: center; align-items: center; gap: 25px; width: 100%; min-height: 120px; margin-top: auto; padding-bottom: 20px; }
 
 .target-item, .draggable-item { 
-    width: 110px; height: 110px; background-repeat: no-repeat; background-position: center; background-size: cover; 
-    display: flex; justify-content: center; align-items: center; font-size: 36px; font-weight: bold; position: relative; 
+    width: 110px; height: 110px; background-repeat: no-repeat; background-position: center; background-size: cover;
+    display: flex; justify-content: center; align-items: center; font-size: 36px; font-weight: bold; position: relative;
 }
 .target-item { color: transparent; }
 .draggable-item { color: var(--wood-text); z-index: 10; cursor: pointer; text-shadow: 1px 1px 0px rgba(255,255,255,0.5); touch-action: none; }
@@ -100,7 +99,7 @@ body {
 .nav-arrow-btn:active { transform: scale(0.9); background-color: #EAEFF5; }
 .nav-arrow-btn.disabled { opacity: 0.15; pointer-events: none; }
 
-/* --- СОРОБАН --- */
+/* Соробан */
 #soroban-score {
     font-size: 85px; font-weight: 900; color: var(--accent-color);
     margin-bottom: 0px; text-shadow: 3px 3px 0px rgba(0,0,0,0.04); margin-top: 5px; transition: color 0.3s, transform 0.3s; line-height: 1;
@@ -120,7 +119,7 @@ body {
 .target-highlight { color: var(--accent-color); font-size: 24px; font-weight: 800; margin-left: 5px;}
 
 #soroban-hint-card { 
-    height: 80px; border-radius: 8px; cursor: pointer; 
+    height: 80px; border-radius: 8px; cursor: pointer;
     border: 1px solid #E2E8F0; transition: transform 0.2s; object-fit: contain;
 }
 #soroban-hint-card:active { transform: scale(0.95); }
@@ -133,13 +132,13 @@ body {
 /* Лайтбокс */
 #image-lightbox {
     display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-    background: rgba(0,0,0,0.8); z-index: 9999; flex-direction: column; 
+    background: rgba(0,0,0,0.8); z-index: 9999; flex-direction: column;
     justify-content: center; align-items: center; opacity: 0; transition: opacity 0.2s;
 }
 #lightbox-img { max-width: 90%; max-height: 80%; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
 .lightbox-text { color: white; margin-top: 15px; font-size: 14px; font-weight: 500; opacity: 0.8; }
 
-/* Улучшенная сетка для Обучения с колонками */
+/* Сетка для Обучения */
 .soroban-sub-grid-split { 
     display: grid; 
     grid-template-columns: 1fr 1fr; 
@@ -149,7 +148,7 @@ body {
 .sub-column { display: flex; flex-direction: column; gap: 10px; }
 .sub-title-header { font-size: 14px; font-weight: 700; color: #94A3B8; margin-bottom: 5px; text-transform: uppercase; text-align: center;}
 
-/* --- АДАПТАЦИЯ --- */
+/* Адаптация */
 @media (max-width: 390px) {
     .menu-grid { gap: 10px; padding: 10px 15px; }
     .category-card { border-radius: 20px; padding: 15px 8px; }
@@ -173,61 +172,50 @@ body {
     .hero-title { margin-bottom: 10px; }
 }
 
-/* --- НОВЫЙ ДИЗАЙН БУСИН (КАРТИНКАМИ) --- */
+/* БУСИНЫ — без scale, с точными размерами для чёткости */
 .bead-3d {
     position: absolute;
-    width: 86px;  
-    height: 44px; 
-    left: 50%; 
-    
-    /* МАГИЯ ЗДЕСЬ: scale(1.4) работает как лупа! 
-       Он делает бусину крупной и пухлой, не ломая математику скрипта */
-    transform: translateX(-50%) scale(1.4); 
-    
+    width: 120px;   /* 86 * 1.4 ≈ 120 */
+    height: 62px;   /* 44 * 1.4 ≈ 62 */
+    left: 50%;
+    transform: translateX(-50%); /* scale убран */
     cursor: pointer;
     transition: top 0.18s cubic-bezier(0.25, 1, 0.5, 1);
     z-index: 10;
-    
-    /* contain гарантирует, что бусина ВСЕГДА будет идеальной формы (не расплющится) */
     background-size: contain;
     background-repeat: no-repeat;
     background-position: center;
 }
 
-/* ВОТ ОНИ, ПОТЕРЯШКИ! Без них они невидимые: */
-.bead-green { background-image: url('img/bead_green.png'); } 
-.bead-blue  { background-image: url('img/bead_blue.png'); }  
+.bead-green { background-image: url('img/bead_green.png'); }
+.bead-blue  { background-image: url('img/bead_blue.png'); }
 .bead-red   { background-image: url('img/bead_red.png'); }
 
-/* --- НОВАЯ РАСЧЕТНАЯ ЛИНЕЙКА (ПЕРЕКЛАДИНА) --- */
+/* Перекладина */
 .soroban-beam {
     position: absolute;
-    top: 112px; 
-    left: 5px;  
-    width: 350px; 
-    height: 18px; 
-    
-    /* БРОНЕБОЙНЫЙ КОД: Грузим картинку, а под неё кладем идеальный градиент дерева. 
-       Если картинка не загрузится, никто даже не заметит подмены! */
+    top: 112px;
+    left: 5px;
+    width: 350px;
+    height: 18px;
     background-color: #a67c52;
-    background-image: url('img/soroban_beam.png'), linear-gradient(to bottom, #d9b282, #a67c52, #8b633b); 
+    background-image: url('img/soroban_beam.png'), linear-gradient(to bottom, #d9b282, #a67c52, #8b633b);
     background-size: 100% 100%;
     background-repeat: no-repeat;
-    
     border-radius: 4px;
     box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-    z-index: 5; 
+    z-index: 5;
 }
 
-/* --- ДЕРЕВЯННЫЕ СПИЦЫ --- */
+/* Спицы */
 .soroban-rod {
     position: absolute;
     top: 20px;
-    width: 14px; 
+    width: 14px;
     height: 420px;
-    background: linear-gradient(to right, #e3c093, #f5ddba, #d9b282); 
+    background: linear-gradient(to right, #e3c093, #f5ddba, #d9b282);
     border-radius: 7px;
     box-shadow: inset -2px 0 4px rgba(0,0,0,0.15), 2px 2px 5px rgba(0,0,0,0.1);
-    transform: translateX(-50%); 
+    transform: translateX(-50%);
     z-index: 1;
 }
