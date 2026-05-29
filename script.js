@@ -6,10 +6,10 @@ let matchedCount = 0;
 let activeItem = null;
 let startX = 0, startY = 0;
 
-let sorobanMode = 'free'; 
-let sorobanCategory = ''; 
+let sorobanMode = 'free';
+let sorobanCategory = '';
 let currentLessonIndex = 0;
-let isTaskLock = false; 
+let isTaskLock = false;
 
 // База данных
 const roomsData = {
@@ -21,8 +21,8 @@ const roomsData = {
         { id: 'mashina', text: 'Машина', image: 'img/3d_mashina.png', sound: 'audio/w_mashina.wav', syllables: ['ма', 'ши', 'на'], audioSyllables: ['audio/sl_ma.wav', 'audio/sl_shi.wav', 'audio/sl_na.wav'] },
         { id: 'sobaka', text: 'Собака', image: 'img/3d_sobaka.png', sound: 'audio/w_sobaka.wav', syllables: ['со', 'ба', 'ка'], audioSyllables: ['audio/sl_so.wav', 'audio/sl_ba.wav', 'audio/sl_ka.wav'] }
     ],
-    
-    // --- ОБУЧЕНИЕ ---
+
+    // Обучение
     'learn_units': [
         { taskText: "Знакомься, это красная спица Единиц! Здесь живут малыши-единички. Сдвинь одну косточку вверх к планке.", target: 1, hint: "img/card_1.png" },
         { taskText: "Отлично! Одна косточка — это 1. А теперь подними две косточки. Получится цифра 2.", target: 2, hint: "img/card_2.png" },
@@ -34,21 +34,22 @@ const roomsData = {
         { taskText: "Почти все в сборе! Пятёрка сверху и три малыша снизу — это 8.", target: 8, hint: "img/card_8.png" },
         { taskText: "Собери их всех вместе у планки! Пятёрка и четыре малыша дадут самую большую цифру — 9.", target: 9, hint: "img/card_9.png" }
     ],
-    'learn_tens': [], 
+    'learn_tens': [],
     'learn_hundreds': [],
+    // ИСПРАВЛЕННЫЕ "Друзья 10" (корректные цели и формулировки)
     'learn_friends': [
-        { taskText: "9 очень хочет стать 10, поэтому она ищет 1. Чтобы добавить 9: прибавь 10 и убери 1.", target: 10, hint: "img/card_friend_9.png" },
-        { taskText: "8 — это верный друг 2. Чтобы добавить 8: прибавь 10 и убери 2.", target: 8, hint: "img/card_friend_8.png" },
-        { taskText: "7 — это друг 3. Чтобы добавить 7: прибавь 10 и убери 3.", target: 7, hint: "img/card_friend_7.png" },
-        { taskText: "6 — это друг 4. Чтобы добавить 6: прибавь 10 и убери 4.", target: 6, hint: "img/card_friend_6.png" },
-        { taskText: "5 — это друг 5. Чтобы добавить 5: прибавь 10 и убери 5.", target: 5, hint: "img/card_friend_5.png" }
+        { taskText: "Чтобы получить 10 из 9, нужно добавить 1. Поставь на абакусе число 10.", target: 10, hint: "img/card_10.png" },
+        { taskText: "Число 8 получается, если набрать 10 и убрать 2. Набери 8.", target: 8, hint: "img/card_8.png" },
+        { taskText: "Число 7 — это 10 минус 3. Покажи 7.", target: 7, hint: "img/card_7.png" },
+        { taskText: "Число 6 — это 10 минус 4. Набери 6.", target: 6, hint: "img/card_6.png" },
+        { taskText: "Число 5 — это 10 минус 5. Набери 5.", target: 5, hint: "img/card_5.png" }
     ],
     'learn_add': [],
     'learn_sub': [],
     'learn_mult': [],
     'learn_div': [],
 
-    // --- ТРЕНИРОВКА ---
+    // Тренировка
     'play_add': [
         { taskText: "Решите пример: 1 + 2", target: 3 },
         { taskText: "Решите пример: 5 + 1", target: 6 },
@@ -63,7 +64,7 @@ const roomsData = {
     'play_div': []
 };
 
-// --- УПРАВЛЕНИЕ ЛАЙТБОКСОМ ---
+// Лайтбокс
 function openLightbox(src) {
     const lb = document.getElementById('image-lightbox');
     document.getElementById('lightbox-img').src = src;
@@ -76,7 +77,7 @@ function closeLightbox() {
     setTimeout(() => lb.style.display = 'none', 200);
 }
 
-// --- НАВИГАЦИОННАЯ СИСТЕМА ---
+// Навигация
 function goMainFromSubmenu() {
     try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(e){}
     document.getElementById('screen-soroban-menu').classList.remove('active');
@@ -187,7 +188,7 @@ function startSoroban(mode, category, title) {
     document.getElementById('btn-back-to-menu').onclick = goBackFromGame;
 
     document.getElementById('word-image-container').style.display = 'none';
-    document.getElementById('target-zone').style.display = 'none'; 
+    document.getElementById('target-zone').style.display = 'none';
     document.getElementById('drag-zone').style.display = 'none';
 
     document.getElementById('soroban-controls').style.display = 'flex';
@@ -202,18 +203,17 @@ function startSoroban(mode, category, title) {
             document.getElementById('soroban-task-text').innerHTML = "Раздел в разработке. Задания скоро появятся!";
             document.getElementById('soroban-hint-container').style.display = 'none';
             document.getElementById('soroban-nav-arrows').style.display = 'none';
-            isTaskLock = true; 
+            isTaskLock = true;
         } else {
             taskContainer.style.display = 'flex';
             document.getElementById('soroban-nav-arrows').style.display = 'flex';
             nextSorobanTask();
         }
     }
-
     resetAbacusBeads();
 }
 
-// --- ДВИЖОК СЛОВ ---
+// Игра "Слоги"
 function setupWordsGame() {
     const dragZone = document.getElementById('drag-zone');
     const targetZone = document.getElementById('target-zone');
@@ -262,15 +262,128 @@ function changeWord(direction) {
     setupWordsGame();
 }
 
-// --- ДВИЖОК СОРОБАНА ---
+// --- ИСПРАВЛЕННЫЙ DRAG & DROP (с правильным смещением) ---
+function handlePointerStart(e) {
+    if (e.target.classList.contains('matched')) return;
+    activeItem = e.target;
+    activeItem.setPointerCapture(e.pointerId);
+
+    const rect = activeItem.getBoundingClientRect();
+    const offsetX = e.clientX - rect.left;
+    const offsetY = e.clientY - rect.top;
+
+    activeItem._dragOffsetX = offsetX;
+    activeItem._dragOffsetY = offsetY;
+
+    activeItem.style.width = rect.width + 'px';
+    activeItem.style.height = rect.height + 'px';
+    activeItem.style.transform = 'none'; // убираем scale на время перетаскивания
+
+    playSound(activeItem.getAttribute('data-audio'));
+
+    activeItem.classList.add('dragging');
+    activeItem.style.position = 'fixed';
+    activeItem.style.margin = '0';
+    activeItem.style.left = (e.clientX - offsetX) + 'px';
+    activeItem.style.top = (e.clientY - offsetY) + 'px';
+
+    activeItem.addEventListener('pointermove', handlePointerMove);
+    activeItem.addEventListener('pointerup', handlePointerEnd);
+}
+
+function handlePointerMove(e) {
+    if (!activeItem) return;
+    const offsetX = activeItem._dragOffsetX;
+    const offsetY = activeItem._dragOffsetY;
+    activeItem.style.left = (e.clientX - offsetX) + 'px';
+    activeItem.style.top = (e.clientY - offsetY) + 'px';
+}
+
+function handlePointerEnd(e) {
+    if (!activeItem) return;
+    activeItem.releasePointerCapture(e.pointerId);
+    activeItem.classList.remove('dragging');
+    activeItem.removeEventListener('pointermove', handlePointerMove);
+    activeItem.removeEventListener('pointerup', handlePointerEnd);
+
+    const itemSyl = activeItem.getAttribute('data-syl');
+    const clientX = e.clientX;
+    const clientY = e.clientY;
+
+    activeItem.style.display = 'none';
+
+    let targets = document.querySelectorAll('.target-item');
+    let matchedTarget = null;
+
+    targets.forEach(t => {
+        const rect = t.getBoundingClientRect();
+        if (clientX >= rect.left && clientX <= rect.right && clientY >= rect.top && clientY <= rect.bottom) {
+            if (t.getAttribute('data-syl') === itemSyl && !t.classList.contains('matched')) {
+                matchedTarget = t;
+            }
+        }
+    });
+
+    activeItem.style.display = 'flex';
+
+    if (matchedTarget) {
+        try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "medium"}); } catch(e) {}
+        activeItem.classList.add('matched');
+        matchedTarget.classList.add('matched');
+        activeItem.style.display = 'none';
+        matchedTarget.style.backgroundImage = "url('img/brick_bg.png')";
+        matchedCount++;
+        if (matchedCount === roomsData['words'][currentWordIndex].syllables.length) {
+            setTimeout(() => {
+                currentWordIndex++;
+                if (currentWordIndex < roomsData['words'].length) {
+                    setupWordsGame();
+                } else {
+                    playSound('audio/words_win.wav');
+                    setTimeout(goBackFromGame, 3000); // ИСПРАВЛЕНО: goHome -> goBackFromGame
+                }
+            }, 1200);
+        }
+    } else {
+        try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(e) {}
+        playSound('audio/wrong.wav');
+        activeItem.style.transition = 'all 0.3s ease';
+        activeItem.style.position = 'relative';
+        activeItem.style.left = '0px';
+        activeItem.style.top = '0px';
+        activeItem.style.width = '';
+        activeItem.style.height = '';
+        activeItem.style.transform = ''; // восстанавливаем исходный scale
+        setTimeout(() => { activeItem.style.transition = 'none'; }, 300);
+    }
+    delete activeItem._dragOffsetX;
+    delete activeItem._dragOffsetY;
+    activeItem = null;
+}
+
+function shuffleArray(array) {
+    for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+    }
+    return array;
+}
+
+function playSound(soundFile) {
+    if (soundFile) {
+        const audio = new Audio(soundFile);
+        audio.play().catch(err => console.log("Ошибка аудио:", err));
+    }
+}
+
+// --- СОРОБАН ---
 let sorobanState = [
-    { upper: false, lower: 0 }, 
-    { upper: false, lower: 0 }, 
-    { upper: false, lower: 0 }  
+    { upper: false, lower: 0 },
+    { upper: false, lower: 0 },
+    { upper: false, lower: 0 }
 ];
 
-const BEAM_T = 95; 
-let globalLowerBeadsRefs = []; 
+let globalLowerBeadsRefs = [];
 let globalUpperBeadsRefs = [];
 
 function setupSorobanGame() {
@@ -286,75 +399,68 @@ function setupSorobanGame() {
 
     const abacusBody = document.createElement('div');
     abacusBody.style.position = "relative";
-    abacusBody.style.width = "360px"; 
-    abacusBody.style.height = "450px"; 
+    abacusBody.style.width = "360px";
+    abacusBody.style.height = "450px";
     abacusBody.style.background = "none";
     abacusBody.style.boxSizing = "border-box";
 
-    // Наша новая деревянная перекладина
     const beam = document.createElement('div');
     beam.className = "soroban-beam";
     abacusBody.appendChild(beam);
 
     const rodLabels = ["Сотни", "Десятки", "Единицы"];
-    const rodColors = ["bead-green", "bead-blue", "bead-red"]; // Соответствие цвета разряду
+    const rodColors = ["bead-green", "bead-blue", "bead-red"];
 
     for (let s = 0; s < 3; s++) {
         const rod = document.createElement('div');
         rod.className = "soroban-rod";
-        rod.style.left = (85 + s * 95) + "px"; 
+        rod.style.left = (85 + s * 95) + "px";
         
         const label = document.createElement('div');
         label.innerText = rodLabels[s];
         label.style.position = "absolute";
-        label.style.bottom = "-35px"; 
-        label.style.left = "50%"; 
-        label.style.transform = "translateX(-50%)"; 
+        label.style.bottom = "-35px";
+        label.style.left = "50%";
+        label.style.transform = "translateX(-50%)";
         label.style.fontSize = "15px";
         label.style.fontWeight = "bold";
         label.style.color = "#7A90A4";
         rod.appendChild(label);
 
-        // Создаем верхнюю 3D бусину
         const upperBead = document.createElement('div');
         upperBead.className = `bead-3d ${rodColors[s]}`;
-        upperBead.style.top = "5px"; 
+        upperBead.style.top = "5px";
         globalUpperBeadsRefs.push({ img: upperBead, rodIndex: s });
         
         upperBead.onclick = () => {
             if (isTaskLock && sorobanMode !== 'free') return;
             try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(e){}
             sorobanState[s].upper = !sorobanState[s].upper;
-            // Идеальное касание планки сверху
-            upperBead.style.top = (sorobanState[s].upper ? "52px" : "5px"); 
+            upperBead.style.top = (sorobanState[s].upper ? "52px" : "5px");
             updateSorobanScore();
         };
         rod.appendChild(upperBead);
 
-        // Создаем нижние 3D бусины
         const lowerBeads = [];
         for (let b = 0; b < 4; b++) {
             const lowerBead = document.createElement('div');
             lowerBead.className = `bead-3d ${rodColors[s]}`;
-            lowerBead.style.top = (360 - (3 - b) * 34) + "px"; 
+            lowerBead.style.top = (360 - (3 - b) * 34) + "px";
             
             lowerBead.onclick = () => {
                 if (isTaskLock && sorobanMode !== 'free') return;
                 try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(e){}
                 let clickedValue = b + 1;
-                
                 if (sorobanState[s].lower === clickedValue) {
                     sorobanState[s].lower = clickedValue - 1;
                 } else {
                     sorobanState[s].lower = clickedValue;
                 }
-
                 lowerBeads.forEach((bead, idx) => {
                     if (idx < sorobanState[s].lower) {
-                        // Идеальное касание планки снизу
-                        bead.style.top = (112 + idx * 34) + "px"; 
+                        bead.style.top = (112 + idx * 34) + "px";
                     } else {
-                        bead.style.top = (360 - (3 - idx) * 34) + "px"; 
+                        bead.style.top = (360 - (3 - idx) * 34) + "px";
                     }
                 });
                 updateSorobanScore();
@@ -369,7 +475,7 @@ function setupSorobanGame() {
     gameArea.appendChild(abacusContainer);
 }
 
-// Функцию resetAbacusBeads тоже слегка обновим для правильного сброса верхних на 5px
+// ЕДИНСТВЕННАЯ функция resetAbacusBeads (правильная, без пересоздания DOM)
 function resetAbacusBeads() {
     sorobanState = [
         { upper: false, lower: 0 },
@@ -377,10 +483,15 @@ function resetAbacusBeads() {
         { upper: false, lower: 0 }
     ];
     document.getElementById('soroban-score').innerText = "0";
-    globalUpperBeadsRefs.forEach(item => { item.img.style.top = "5px"; });
-    globalLowerBeadsRefs.forEach(item => {
-        item.beads.forEach((bead, idx) => { bead.style.top = (360 - (3 - idx) * 34) + "px"; });
-    });
+    if (globalUpperBeadsRefs.length) {
+        globalUpperBeadsRefs.forEach(item => { item.img.style.top = "5px"; });
+        globalLowerBeadsRefs.forEach(item => {
+            item.beads.forEach((bead, idx) => { bead.style.top = (360 - (3 - idx) * 34) + "px"; });
+        });
+    } else {
+        // Если абакус ещё не создан, создадим его
+        setupSorobanGame();
+    }
 }
 
 function changeSorobanTask(direction) {
@@ -397,7 +508,7 @@ function changeSorobanTask(direction) {
 }
 
 function nextSorobanTask() {
-    if (sorobanMode === 'free') return; 
+    if (sorobanMode === 'free') return;
     const tasks = roomsData[sorobanCategory];
     if (!tasks || tasks.length === 0) return;
 
@@ -419,12 +530,11 @@ function nextSorobanTask() {
     } else {
         hintContainer.style.display = 'none';
     }
-
     isTaskLock = false;
 }
 
 function updateSorobanScore() {
-    playSound('audio/click.wav'); 
+    playSound('audio/click.wav');
     
     let total = 0;
     total += (sorobanState[0].upper ? 5 : 0) * 100 + sorobanState[0].lower * 100;
@@ -434,7 +544,7 @@ function updateSorobanScore() {
     const scoreDisplay = document.getElementById('soroban-score');
     scoreDisplay.innerText = total;
 
-    if (sorobanMode === 'free') return; 
+    if (sorobanMode === 'free') return;
 
     const tasks = roomsData[sorobanCategory];
     if (!tasks || tasks.length === 0) return;
@@ -442,8 +552,7 @@ function updateSorobanScore() {
     const currentTask = tasks[currentLessonIndex];
 
     if (currentTask && total === currentTask.target && !isTaskLock) {
-        isTaskLock = true; 
-        
+        isTaskLock = true;
         scoreDisplay.classList.add('correct-flash');
         document.getElementById('abacus-body-container').classList.add('success-lock');
         try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "heavy"}); } catch(e){}
@@ -452,7 +561,7 @@ function updateSorobanScore() {
             scoreDisplay.classList.remove('correct-flash');
             document.getElementById('abacus-body-container').classList.remove('success-lock');
             
-            if(currentLessonIndex < tasks.length - 1) {
+            if (currentLessonIndex < tasks.length - 1) {
                 currentLessonIndex++;
                 resetAbacusBeads();
                 nextSorobanTask();
@@ -463,120 +572,6 @@ function updateSorobanScore() {
                 playSound('audio/soroban_win.wav');
                 setTimeout(goBackFromGame, 2500);
             }
-        }, 1500); 
-    }
-}
-
-function resetAbacusBeads() {
-    sorobanState = [
-        { upper: false, lower: 0 },
-        { upper: false, lower: 0 },
-        { upper: false, lower: 0 }
-    ];
-    document.getElementById('soroban-score').innerText = "0";
-    setupSorobanGame(); 
-}
-
-function createLargeBeadImg() {
-    const img = document.createElement('img');
-    img.src = "img/soroban_bead.png"; 
-    img.style.position = "absolute";
-    img.style.width = "85px";  
-    img.style.height = "45px"; 
-    img.style.left = "50%"; 
-    img.style.transform = "translateX(-50%)"; 
-    img.style.cursor = "pointer";
-    img.style.transition = "top 0.15s cubic-bezier(0.25, 1, 0.5, 1)"; 
-    return img;
-}
-
-// --- DRAG AND DROP ---
-function handlePointerStart(e) {
-    if (e.target.classList.contains('matched')) return;
-    activeItem = e.target;
-    activeItem.setPointerCapture(e.pointerId);
-    const rect = activeItem.getBoundingClientRect();
-    activeItem.style.width = rect.width + 'px';
-    activeItem.style.height = rect.height + 'px';
-    startX = rect.width / 2;
-    startY = rect.height / 2;
-    playSound(activeItem.getAttribute('data-audio'));
-    activeItem.classList.add('dragging');
-    activeItem.style.position = 'fixed';
-    activeItem.style.margin = '0';
-    activeItem.style.left = (e.clientX - startX) + 'px';
-    activeItem.style.top = (e.clientY - startY) + 'px';
-    activeItem.addEventListener('pointermove', handlePointerMove);
-    activeItem.addEventListener('pointerup', handlePointerEnd);
-}
-function handlePointerMove(e) {
-    if (!activeItem) return;
-    activeItem.style.left = (e.clientX - startX) + 'px';
-    activeItem.style.top = (e.clientY - startY) + 'px';
-}
-function handlePointerEnd(e) {
-    if (!activeItem) return;
-    activeItem.releasePointerCapture(e.pointerId);
-    activeItem.classList.remove('dragging');
-    activeItem.removeEventListener('pointermove', handlePointerMove);
-    activeItem.removeEventListener('pointerup', handlePointerEnd);
-    const itemSyl = activeItem.getAttribute('data-syl');
-    const clientX = e.clientX;
-    const clientY = e.clientY;
-    activeItem.style.display = 'none';
-    let targets = document.querySelectorAll('.target-item');
-    let matchedTarget = null;
-    targets.forEach(t => {
-        const rect = t.getBoundingClientRect();
-        if (clientX >= rect.left && clientX <= rect.right && clientY >= rect.top && clientY <= rect.bottom) {
-            if (t.getAttribute('data-syl') === itemSyl && !t.classList.contains('matched')) {
-                matchedTarget = t;
-            }
-        }
-    });
-    activeItem.style.display = 'flex';
-    if (matchedTarget) {
-        try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "medium"}); } catch(e){}
-        activeItem.classList.add('matched');
-        matchedTarget.classList.add('matched');
-        activeItem.style.display = 'none';
-        matchedTarget.style.backgroundImage = "url('img/brick_bg.png')";
-        matchedCount++;
-        if (matchedCount === roomsData['words'][currentWordIndex].syllables.length) {
-            setTimeout(() => {
-                currentWordIndex++;
-                if (currentWordIndex < roomsData['words'].length) {
-                    setupWordsGame();
-                } else {
-                    playSound('audio/words_win.wav');
-                    setTimeout(goHome, 3000);
-                }
-            }, 1200);
-        }
-    } else {
-        try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(e){}
-        playSound('audio/wrong.wav');
-        activeItem.style.transition = 'all 0.3s ease';
-        activeItem.style.position = 'relative';
-        activeItem.style.left = '0px';
-        activeItem.style.top = '0px';
-        activeItem.style.width = '';
-        activeItem.style.height = '';
-        setTimeout(() => { activeItem.style.transition = 'none'; }, 300);
-    }
-    activeItem = null;
-}
-
-function shuffleArray(array) {
-    for (let i = array.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [array[i], array[j]] = [array[j], array[i]];
-    }
-    return array;
-}
-function playSound(soundFile) {
-    if (soundFile) {
-        const audio = new Audio(soundFile);
-        audio.play().catch(err => console.log("Ошибка аудио:", err));
+        }, 1500);
     }
 }
