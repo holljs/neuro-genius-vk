@@ -14,6 +14,10 @@ let isTaskLock = false;
 let currentSlideIndex = 0;
 let currentSlidesArray = [];
 
+// --- ПЕРЕМЕННЫЕ ДЛЯ УМНОГО АУДИО ---
+let currentAudio = null; 
+let currentSlidesAudioArray = []; 
+
 // База данных комнат и упражнений
 const roomsData = {
     'words': [
@@ -26,56 +30,72 @@ const roomsData = {
     ],
 
     'learn_units': [
-        { taskText: "Знакомься, это красная спица Единиц! Здесь живут малыши-единички. Сдвинь одну косточку вверх к планке.", target: 1, hint: "img/card_1.png" },
-        { taskText: "Отлично! Одна косточка — это 1. А теперь подними две косточки. Получится цифра 2.", target: 2, hint: "img/card_2.png" },
-        { taskText: "Всё верно! Давай добавим ещё. Подними три нижние косточки к перекладине.", target: 3, hint: "img/card_3.png" },
-        { taskText: "Супер! А теперь подними все четыре нижние косточки. Это цифра 4.", target: 4, hint: "img/card_4.png" },
-        { taskText: "Сбрось малышей вниз. Видишь косточку наверху? Это Королева-Пятёрка! Опусти её к планке.", target: 5, hint: "img/card_5.png" },
-        { taskText: "Королева любит гулять с малышами. Опусти Пятёрку вниз и подними одного малыша вверх. Получится 6!", target: 6, hint: "img/card_6.png" },
-        { taskText: "А если Королева Пятёрка и два малыша? Сделай цифру 7.", target: 7, hint: "img/card_7.png" },
-        { taskText: "Почти все в сборе! Пятёрка сверху и три малыша снизу — это 8.", target: 8, hint: "img/card_8.png" },
-        { taskText: "Собери их всех вместе у планки! Пятёрка и четыре малыша дадут самую большую цифру — 9.", target: 9, hint: "img/card_9.png" }
+        { taskText: "Знакомься, красные бусинки — это единички. Сдвинь одну бусинку вверх.", target: 1, hint: "img/card_1.png", taskAudio: "audio/learn_units_1.wav" },
+        { taskText: "Отлично! Подними вторую бусинку вверх, получим два.", target: 2, hint: "img/card_2.png", taskAudio: "audio/learn_units_2.wav" },
+        { taskText: "Поднимаем третью бусинку, получаем... правильно... три.", target: 3, hint: "img/card_3.png", taskAudio: "audio/learn_units_3.wav" },
+        { taskText: "Супер! А теперь подними все четыре нижние бусинки. Это цифра четыре.", target: 4, hint: "img/card_4.png", taskAudio: "audio/learn_units_4.wav" },
+        { taskText: "Сбрось малышей вниз. Видишь бусинку наверху? Это Королева Пять! Опусти бусинку вниз.", target: 5, hint: "img/card_5.png", taskAudio: "audio/learn_units_5.wav" },
+        { taskText: "Королева Пять любит гулять с малышами. Опусти Королеву вниз и подними одного малыша вверх. Получится шесть!", target: 6, hint: "img/card_6.png", taskAudio: "audio/learn_units_6.wav" },
+        { taskText: "А если Королева Пять и два малыша? Сделай цифру семь.", target: 7, hint: "img/card_7.png", taskAudio: "audio/learn_units_7.wav" },
+        { taskText: "Почти все в сборе! Королева Пять сверху и три малыша снизу — это восемь.", target: 8, hint: "img/card_8.png", taskAudio: "audio/learn_units_8.wav" },
+        { taskText: "Собери все красные бусинки у планки! Королева Пять и четыре малыша дадут самую большую цифру — девять.", target: 9, hint: "img/card_9.png", taskAudio: "audio/learn_units_9.wav" }
     ],
     'learn_tens': [],
     'learn_hundreds': [],
 
-    // ИСПРАВЛЕННЫЕ "Друзья 10" с поддержкой квадратных аниме-комиксов и авто-подготовкой счётов
+    // ИСПРАВЛЕННЫЕ "Друзья 10" с поддержкой комиксов, стартовых значений и ОЗВУЧКИ
     'learn_friends': [
         { 
-            taskText: "Прибавляем 9: позови Сенсея (+10) и уступи место другу девятки — Единичке (-1).", 
+            taskText: "Прибавляем 9: тут нужен учитель Десять (+10) и попрощайся с другом девятки — один (-1).", 
             initialValue: 2, 
             target: 11, 
+            taskAudio: "audio/friend9_task.wav",
             slides: [
                 "img/friend_cover_academy.jpg", 
                 "img/friend_cover_friends.jpg", 
                 "img/friend9_step1.jpg",        
                 "img/friend9_step2.jpg",        
                 "img/friend9_step3.jpg"         
-            ] 
+            ],
+            audioSlides: [
+                "audio/anime_intro_academy.wav", 
+                "audio/anime_friends_9_1.wav",   
+                "audio/anime_friend9_step1.wav", 
+                "audio/anime_friend9_step2.wav", 
+                "audio/anime_friend9_step3.wav"  
+            ]
         },
         { 
-            taskText: "Прибавляем 8: позови Сенсея (+10) и попрощайся с другом восьмёрки — Двойкой (-2).", 
+            taskText: "Прибавляем 8: тут нужен учитель Десять (+10) и попрощайся с другом восьми — два (-2).", 
             initialValue: 3, 
             target: 11, 
-            slides: ["img/friend_cover_8_2.jpg"] 
+            taskAudio: "audio/friend8_task.wav",
+            slides: ["img/friend_cover_8_2.jpg"],
+            audioSlides: ["audio/anime_friends_8_2.wav"]
         },
         { 
-            taskText: "Прибавляем 7: позови Сенсея (+10) и освободи место от друга семёрки — Тройки (-3).", 
+            taskText: "Прибавляем 7: тут нужен учитель Десять (+10) и попрощайся с другом семи — три (-3).", 
             initialValue: 4, 
             target: 11, 
-            slides: ["img/friend_cover_7_3.jpg"] 
+            taskAudio: "audio/friend7_task.wav",
+            slides: ["img/friend_cover_7_3.jpg"],
+            audioSlides: ["audio/anime_friends_7_3.wav"]
         },
         { 
-            taskText: "Прибавляем 6: позови Сенсея (+10) и уступи место другу шестёрки — Четвёрке (-4).", 
+            taskText: "Прибавляем 6: тут нужен учитель Десять (+10) и попрощайся с другом шести — четыре (-4).", 
             initialValue: 4, 
             target: 10, 
-            slides: ["img/friend_cover_6_4.jpg"] 
+            taskAudio: "audio/friend6_task.wav",
+            slides: ["img/friend_cover_6_4.jpg"],
+            audioSlides: ["audio/anime_friends_6_4.wav"]
         },
         { 
-            taskText: "Прибавляем 5: позови Сенсея (+10) и отправь отдыхать его брата-близнеца — Пятёрку (-5).", 
+            taskText: "Прибавляем 5: тут нужен учитель Десять (+10) и попрощайся с другом пяти — пять (-5).", 
             initialValue: 6, 
             target: 11, 
-            slides: ["img/friend_cover_5_5.jpg"] 
+            taskAudio: "audio/friend5_task.wav",
+            slides: ["img/friend_cover_5_5.jpg"],
+            audioSlides: ["audio/anime_friends_5_5.wav"]
         }
     ],
     'learn_add': [],
@@ -135,9 +155,9 @@ function openMemorikaMenu() {
     document.getElementById('screen-memorika-menu').classList.add('active');
 }
 function openSorobanLearnMenu() {
-    try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(e){}
-    document.getElementById('screen-soroban-menu').classList.remove('active');
-    document.getElementById('screen-soroban-learn-menu').classList.add('active');
+    try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(e){}
+    document.getElementById('screen-soroban-menu').classList.remove('active');
+    document.getElementById('screen-soroban-learn-menu').classList.add('active');
 }
 
 // UX/UI functions
@@ -160,10 +180,15 @@ function goBackToSorobanMenuFromPlay() {
 function goBackFromGame() {
     try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(e){}
     
+    // ВЫКЛЮЧАЕМ ЗВУК ПРИ ВЫХОДЕ ИЗ КОМНАТЫ
+    if (currentAudio) {
+        currentAudio.pause();
+        currentAudio.currentTime = 0;
+    }
+
     const oldAbacus = document.getElementById('abacus-body-container');
     if (oldAbacus) {
         oldAbacus.remove();
-        // Очищаем память от старых косточек!
         globalLowerBeadsRefs = [];
         globalUpperBeadsRefs = [];
     }
@@ -305,7 +330,6 @@ function changeWord(direction) {
 
 // --- БРОНЕБОЙНЫЙ DRAG & DROP ---
 function handlePointerStart(e) {
-    // 1. ПРЕДОХРАНИТЕЛЬ: Если мы уже что-то тащим, игнорируем другие пальцы!
     if (activeItem) return; 
     
     if (e.target.classList.contains('matched')) return;
@@ -334,8 +358,6 @@ function handlePointerStart(e) {
 
     activeItem.addEventListener('pointermove', handlePointerMove);
     activeItem.addEventListener('pointerup', handlePointerEnd);
-    
-    // 2. ПРЕДОХРАНИТЕЛЬ: Ловим системные глюки (свайпы телефона, случайные касания экрана)
     activeItem.addEventListener('pointercancel', handlePointerEnd); 
 }
 
@@ -350,7 +372,6 @@ function handlePointerMove(e) {
 function handlePointerEnd(e) {
     if (!activeItem) return;
     
-    // Снимаем ВСЕ слушатели, включая отмену
     activeItem.releasePointerCapture(e.pointerId);
     activeItem.classList.remove('dragging');
     activeItem.removeEventListener('pointermove', handlePointerMove);
@@ -412,7 +433,7 @@ function handlePointerEnd(e) {
     
     delete activeItem._dragOffsetX;
     delete activeItem._dragOffsetY;
-    activeItem = null; // Освобождаем "руки" игры для следующей дощечки
+    activeItem = null;
 }
 
 function shuffleArray(array) {
@@ -423,10 +444,15 @@ function shuffleArray(array) {
     return array;
 }
 
+// --- УМНЫЙ АУДИОПЛЕЕР ---
 function playSound(soundFile) {
     if (soundFile) {
-        const audio = new Audio(soundFile);
-        audio.play().catch(err => console.log("Ошибка аудио:", err));
+        if (currentAudio) {
+            currentAudio.pause();
+            currentAudio.currentTime = 0;
+        }
+        currentAudio = new Audio(soundFile);
+        currentAudio.play().catch(err => console.log("Ошибка аудио:", err));
     }
 }
 
@@ -529,7 +555,6 @@ function setupSorobanGame() {
     gameArea.appendChild(abacusContainer);
 }
 
-// Оптимизированный сброс бусин с поддержкой initialValue (без перерисовки DOM)
 function resetAbacusBeads() {
     let startVal = 0;
     if (sorobanMode !== 'free') {
@@ -551,22 +576,19 @@ function resetAbacusBeads() {
 
     document.getElementById('soroban-score').innerText = startVal;
 
-    // Если абакуса нет (или мы его очистили при выходе) — создаем заново
     if (globalUpperBeadsRefs.length === 0) {
         setupSorobanGame();
     }
 
-    // Независимо от того, был абакус или мы его только что создали,
-    // жестко расставляем косточки по местам согласно startVal:
     for (let s = 0; s < 3; s++) {
         globalUpperBeadsRefs[s].img.style.top = (sorobanState[s].upper ? "52px" : "5px");
         
         const lowerBeads = globalLowerBeadsRefs[s].beads;
         lowerBeads.forEach((bead, idx) => {
             if (idx < sorobanState[s].lower) {
-                bead.style.top = (112 + idx * 34) + "px"; // Подняты к перекладине
+                bead.style.top = (112 + idx * 34) + "px"; 
             } else {
-                bead.style.top = (360 - (3 - idx) * 34) + "px"; // Опущены вниз
+                bead.style.top = (360 - (3 - idx) * 34) + "px"; 
             }
         });
     }
@@ -600,10 +622,15 @@ function nextSorobanTask() {
     document.getElementById('soroban-task-text').innerHTML = 
         `${currentTask.taskText} <span class="target-highlight">(${currentTask.target})</span>`;
     
-    // Интеграция слайдера-комикса
+    // Интеграция слайдера-комикса И АУДИО
     if (currentTask.slides && currentTask.slides.length > 0 && !currentTask._comicShown) {
-        openComicSlider(currentTask.slides);
+        openComicSlider(currentTask.slides, currentTask.audioSlides);
         currentTask._comicShown = true;
+    } else {
+        // Читаем задание, если комикс уже просмотрен
+        if (currentTask.taskAudio) {
+            playSound(currentTask.taskAudio);
+        }
     }
 
     const hintCard = document.getElementById('soroban-hint-card');
@@ -618,7 +645,8 @@ function nextSorobanTask() {
 }
 
 function updateSorobanScore() {
-    playSound('audio/click.wav');
+    // Временно глушим клики косточек, чтобы не прерывать голос задания
+    try { new Audio('audio/click.wav').play(); } catch(e) {}
     
     let total = 0;
     total += (sorobanState[0].upper ? 5 : 0) * 100 + sorobanState[0].lower * 100;
@@ -660,9 +688,10 @@ function updateSorobanScore() {
     }
 }
 
-// --- КОМИКС КАРУСЕЛЬ-СЛАЙДЕР ---
-function openComicSlider(slides) {
+// --- КОМИКС КАРУСЕЛЬ-СЛАЙДЕР С ОЗВУЧКОЙ ---
+function openComicSlider(slides, audioSlides) {
     currentSlidesArray = slides;
+    currentSlidesAudioArray = audioSlides || [];
     currentSlideIndex = 0;
     document.getElementById('comic-slider-modal').style.display = 'flex';
     updateSliderContent();
@@ -679,10 +708,15 @@ function updateSliderContent() {
     const dotsContainer = document.getElementById('comic-slider-dots');
     dotsContainer.innerHTML = '';
     currentSlidesArray.forEach((_, idx) => {
-        const dot = document.createElement('div');
-        dot.className = `comic-dot ${idx === currentSlideIndex ? 'active' : ''}`;
-        dotsContainer.appendChild(dot);
-    });
+        const dot = document.createElement('div');
+        dot.className = `comic-dot ${idx === currentSlideIndex ? 'active' : ''}`;
+        dotsContainer.appendChild(dot);
+    });
+
+    // Озвучка текущего слайда!
+    if (currentSlidesAudioArray && currentSlidesAudioArray[currentSlideIndex]) {
+        playSound(currentSlidesAudioArray[currentSlideIndex]);
+    }
 }
 
 function moveSlide(direction) {
@@ -696,4 +730,10 @@ function moveSlide(direction) {
 function closeComicSlider() {
     try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "medium"}); } catch(e){}
     document.getElementById('comic-slider-modal').style.display = 'none';
+
+    // Озвучка самого задания на абакусе после закрытия комикса
+    const tasks = roomsData[sorobanCategory];
+    if (tasks && tasks[currentLessonIndex] && tasks[currentLessonIndex].taskAudio) {
+        playSound(tasks[currentLessonIndex].taskAudio);
+    }
 }
