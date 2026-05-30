@@ -135,11 +135,12 @@ function openMemorikaMenu() {
     document.getElementById('screen-memorika-menu').classList.add('active');
 }
 function openSorobanLearnMenu() {
-    try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(e){}
-    document.getElementById('screen-soroban-menu').classList.remove('active');
-    document.getElementById('screen-soroban-learn-menu').classList.add('active');
+    try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(e){}
+    document.getElementById('screen-soroban-menu').classList.remove('active');
+    document.getElementById('screen-soroban-learn-menu').classList.add('active');
 }
-UX/UI functions
+
+// UX/UI functions
 function openSorobanPlayMenu() {
     try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(e){}
     document.getElementById('screen-soroban-menu').classList.remove('active');
@@ -669,10 +670,10 @@ function updateSliderContent() {
     const dotsContainer = document.getElementById('comic-slider-dots');
     dotsContainer.innerHTML = '';
     currentSlidesArray.forEach((_, idx) => {
-        const dot = document.createElement('div');
-        dot.className = `comic-dot \${idx === currentSlideIndex ? 'active' : ''}`;
-        dotsContainer.appendChild(dot);
-    });
+        const dot = document.createElement('div');
+        dot.className = `comic-dot ${idx === currentSlideIndex ? 'active' : ''}`;
+        dotsContainer.appendChild(dot);
+    });
 }
 
 function moveSlide(direction) {
