@@ -159,8 +159,14 @@ function goBackToSorobanMenuFromPlay() {
 
 function goBackFromGame() {
     try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(e){}
+    
     const oldAbacus = document.getElementById('abacus-body-container');
-    if (oldAbacus) oldAbacus.remove();
+    if (oldAbacus) {
+        oldAbacus.remove();
+        // Очищаем память от старых косточек!
+        globalLowerBeadsRefs = [];
+        globalUpperBeadsRefs = [];
+    }
     
     document.getElementById('screen-room').classList.remove('active');
     document.getElementById('game-area').classList.remove('active');
@@ -545,21 +551,24 @@ function resetAbacusBeads() {
 
     document.getElementById('soroban-score').innerText = startVal;
 
-    if (globalUpperBeadsRefs.length) {
-        for (let s = 0; s < 3; s++) {
-            globalUpperBeadsRefs[s].img.style.top = (sorobanState[s].upper ? "52px" : "5px");
-            
-            const lowerBeads = globalLowerBeadsRefs[s].beads;
-            lowerBeads.forEach((bead, idx) => {
-                if (idx < sorobanState[s].lower) {
-                    bead.style.top = (112 + idx * 34) + "px";
-                } else {
-                    bead.style.top = (360 - (3 - idx) * 34) + "px";
-                }
-            });
-        }
-    } else {
+    // Если абакуса нет (или мы его очистили при выходе) — создаем заново
+    if (globalUpperBeadsRefs.length === 0) {
         setupSorobanGame();
+    }
+
+    // Независимо от того, был абакус или мы его только что создали,
+    // жестко расставляем косточки по местам согласно startVal:
+    for (let s = 0; s < 3; s++) {
+        globalUpperBeadsRefs[s].img.style.top = (sorobanState[s].upper ? "52px" : "5px");
+        
+        const lowerBeads = globalLowerBeadsRefs[s].beads;
+        lowerBeads.forEach((bead, idx) => {
+            if (idx < sorobanState[s].lower) {
+                bead.style.top = (112 + idx * 34) + "px"; // Подняты к перекладине
+            } else {
+                bead.style.top = (360 - (3 - idx) * 34) + "px"; // Опущены вниз
+            }
+        });
     }
 }
 
