@@ -98,38 +98,20 @@ const roomsData = {
             audioSlides: ["audio/anime_friends_5_5.wav"]
         }
     ],
-    'learn_add': [],
-    'learn_sub': [],
-    'learn_mult': [],
-    'learn_div': [],
 
-    'play_add': [
-        { taskText: "Решите пример: 1 + 2", target: 3 },
-        { taskText: "Решите пример: 5 + 1", target: 6 },
-        { taskText: "Вычислите: 3 + 5", target: 8 }
-    ],
-    'play_sub': [
-        { taskText: "Вычислите: 4 - 2", target: 2 },
-        { taskText: "Решите пример: 9 - 4", target: 5 },
-        { taskText: "Вычислите: 2 + 2 - 3", target: 1 }
-    ],
-    'play_mult': [],
-    'play_div': []
-};
-
-// --- ТАЙНЫЙ ОРДЕН КОРОЛЕВЫ ПЯТЬ (Друзья 5 / Помощь брата) ---
+    // --- ТАЙНЫЙ ОРДЕН КОРОЛЕВЫ ПЯТЬ (Друзья 5 / Помощь брата) ---
     'learn_friends_5': [
         { 
             taskText: "Прибавляем четыре: опусти Королеву Пять (+5) и попрощайся с братом четверки — один (-1).", 
-            initialValue: 2, // На счетах стоит 2. Прибавляем 4.
-            target: 6,       // Должно получиться 6
+            initialValue: 2, 
+            target: 6,       
             taskAudio: "audio/brother4_task.wav",
             slides: [
-                "img/brother_cover_academy.jpg", // Обложка Ордена Пяти
-                "img/brother_cover_4_1.jpg",     // Постер "Братцы 4 и 1"
-                "img/brother4_step1.jpg",        // Кадр 1: Проблема (некуда двинуть 4)
-                "img/brother4_step2.jpg",        // Кадр 2: Помощь Королевы Пять
-                "img/brother4_step3.jpg"         // Кадр 3: Брат 1 уходит
+                "img/brother_cover_academy.jpg", 
+                "img/brother_cover_4_1.jpg",     
+                "img/brother4_step1.jpg",        
+                "img/brother4_step2.jpg",        
+                "img/brother4_step3.jpg"         
             ],
             audioSlides: [
                 "audio/anime_intro_five.wav",
@@ -147,8 +129,26 @@ const roomsData = {
             slides: ["img/brother_cover_3_2.jpg"],
             audioSlides: ["audio/anime_brothers_3_2.wav"]
         }
-        // Сюда по аналогии добавятся задания для +2 (брат 3) и +1 (брат 4)
     ],
+
+    'learn_add': [],
+    'learn_sub': [],
+    'learn_mult': [],
+    'learn_div': [],
+
+    'play_add': [
+        { taskText: "Решите пример: 1 + 2", target: 3 },
+        { taskText: "Решите пример: 5 + 1", target: 6 },
+        { taskText: "Вычислите: 3 + 5", target: 8 }
+    ],
+    'play_sub': [
+        { taskText: "Вычислите: 4 - 2", target: 2 },
+        { taskText: "Решите пример: 9 - 4", target: 5 },
+        { taskText: "Вычислите: 2 + 2 - 3", target: 1 }
+    ],
+    'play_mult': [],
+    'play_div': []
+}; // <--- ВОТ ТЕПЕРЬ БАЗА ЗАКРЫТА ПРАВИЛЬНО, В САМОМ КОНЦЕ
 
 // Лайтбокс
 function openLightbox(src) {
