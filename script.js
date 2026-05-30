@@ -11,7 +11,10 @@ let sorobanCategory = '';
 let currentLessonIndex = 0;
 let isTaskLock = false;
 
-// База данных
+let currentSlideIndex = 0;
+let currentSlidesArray = [];
+
+// База данных комнат и упражнений
 const roomsData = {
     'words': [
         { id: 'lisa', text: 'Лиса', image: 'img/3d_lisa.png', sound: 'audio/w_lisa.wav', syllables: ['ли', 'са'], audioSyllables: ['audio/sl_li.wav', 'audio/sl_sa.wav'] },
@@ -22,7 +25,6 @@ const roomsData = {
         { id: 'sobaka', text: 'Собака', image: 'img/3d_sobaka.png', sound: 'audio/w_sobaka.wav', syllables: ['со', 'ба', 'ка'], audioSyllables: ['audio/sl_so.wav', 'audio/sl_ba.wav', 'audio/sl_ka.wav'] }
     ],
 
-    // Обучение
     'learn_units': [
         { taskText: "Знакомься, это красная спица Единиц! Здесь живут малыши-единички. Сдвинь одну косточку вверх к планке.", target: 1, hint: "img/card_1.png" },
         { taskText: "Отлично! Одна косточка — это 1. А теперь подними две косточки. Получится цифра 2.", target: 2, hint: "img/card_2.png" },
@@ -36,20 +38,51 @@ const roomsData = {
     ],
     'learn_tens': [],
     'learn_hundreds': [],
-    // ИСПРАВЛЕННЫЕ "Друзья 10" (корректные цели и формулировки)
+
+    // ИСПРАВЛЕННЫЕ "Друзья 10" с поддержкой квадратных аниме-комиксов и авто-подготовкой счётов
     'learn_friends': [
-        { taskText: "Чтобы получить 10 из 9, нужно добавить 1. Поставь на абакусе число 10.", target: 10, hint: "img/card_10.png" },
-        { taskText: "Число 8 получается, если набрать 10 и убрать 2. Набери 8.", target: 8, hint: "img/card_8.png" },
-        { taskText: "Число 7 — это 10 минус 3. Покажи 7.", target: 7, hint: "img/card_7.png" },
-        { taskText: "Число 6 — это 10 минус 4. Набери 6.", target: 6, hint: "img/card_6.png" },
-        { taskText: "Число 5 — это 10 минус 5. Набери 5.", target: 5, hint: "img/card_5.png" }
+        { 
+            taskText: "Прибавляем 9: позови Сенсея (+10) и уступи место другу девятки — Единичке (-1).", 
+            initialValue: 2, 
+            target: 11, 
+            slides: [
+                "img/friend_cover_academy.jpg", 
+                "img/friend_cover_friends.jpg", 
+                "img/friend9_step1.jpg",        
+                "img/friend9_step2.jpg",        
+                "img/friend9_step3.jpg"         
+            ] 
+        },
+        { 
+            taskText: "Прибавляем 8: позови Сенсея (+10) и попрощайся с другом восьмёрки — Двойкой (-2).", 
+            initialValue: 3, 
+            target: 11, 
+            slides: ["img/friend_cover_8_2.jpg"] 
+        },
+        { 
+            taskText: "Прибавляем 7: позови Сенсея (+10) и освободи место от друга семёрки — Тройки (-3).", 
+            initialValue: 4, 
+            target: 11, 
+            slides: ["img/friend_cover_7_3.jpg"] 
+        },
+        { 
+            taskText: "Прибавляем 6: позови Сенсея (+10) и уступи место другу шестёрки — Четвёрке (-4).", 
+            initialValue: 4, 
+            target: 10, 
+            slides: ["img/friend_cover_6_4.jpg"] 
+        },
+        { 
+            taskText: "Прибавляем 5: позови Сенсея (+10) и отправь отдыхать его брата-близнеца — Пятёрку (-5).", 
+            initialValue: 6, 
+            target: 11, 
+            slides: ["img/friend_cover_5_5.jpg"] 
+        }
     ],
     'learn_add': [],
     'learn_sub': [],
     'learn_mult': [],
     'learn_div': [],
 
-    // Тренировка
     'play_add': [
         { taskText: "Решите пример: 1 + 2", target: 3 },
         { taskText: "Решите пример: 5 + 1", target: 6 },
@@ -77,7 +110,7 @@ function closeLightbox() {
     setTimeout(() => lb.style.display = 'none', 200);
 }
 
-// Навигация
+// Навигационная система
 function goMainFromSubmenu() {
     try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(e){}
     document.getElementById('screen-soroban-menu').classList.remove('active');
@@ -90,36 +123,33 @@ function goMainFromMemorika() {
     document.getElementById('screen-menu').classList.add('active');
 }
 
+// Открытие экранов меню
 function openSorobanMenu() {
     try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(e){}
     document.getElementById('screen-menu').classList.remove('active');
     document.getElementById('screen-soroban-menu').classList.add('active');
 }
-
 function openMemorikaMenu() {
     try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(e){}
     document.getElementById('screen-menu').classList.remove('active');
     document.getElementById('screen-memorika-menu').classList.add('active');
 }
-
 function openSorobanLearnMenu() {
     try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(e){}
     document.getElementById('screen-soroban-menu').classList.remove('active');
     document.getElementById('screen-soroban-learn-menu').classList.add('active');
 }
-
+UX/UI functions
 function openSorobanPlayMenu() {
     try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(e){}
     document.getElementById('screen-soroban-menu').classList.remove('active');
     document.getElementById('screen-soroban-play-menu').classList.add('active');
 }
-
 function goBackToSorobanMenuFromLearn() {
     try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(e){}
     document.getElementById('screen-soroban-learn-menu').classList.remove('active');
     document.getElementById('screen-soroban-menu').classList.add('active');
 }
-
 function goBackToSorobanMenuFromPlay() {
     try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(e){}
     document.getElementById('screen-soroban-play-menu').classList.remove('active');
@@ -175,6 +205,10 @@ function startSoroban(mode, category, title) {
     sorobanCategory = category;
     currentLessonIndex = 0;
     isTaskLock = false;
+
+    if (roomsData[category]) {
+        roomsData[category].forEach(t => t._comicShown = false);
+    }
 
     document.getElementById('game-room-title').innerText = title;
     
@@ -262,7 +296,7 @@ function changeWord(direction) {
     setupWordsGame();
 }
 
-// --- ИСПРАВЛЕННЫЙ DRAG & DROP (с правильным смещением) ---
+// Безошибочный Drag & Drop с вычислением смещения
 function handlePointerStart(e) {
     if (e.target.classList.contains('matched')) return;
     activeItem = e.target;
@@ -277,7 +311,7 @@ function handlePointerStart(e) {
 
     activeItem.style.width = rect.width + 'px';
     activeItem.style.height = rect.height + 'px';
-    activeItem.style.transform = 'none'; // убираем scale на время перетаскивания
+    activeItem.style.transform = 'none';
 
     playSound(activeItem.getAttribute('data-audio'));
 
@@ -340,7 +374,7 @@ function handlePointerEnd(e) {
                     setupWordsGame();
                 } else {
                     playSound('audio/words_win.wav');
-                    setTimeout(goBackFromGame, 3000); // ИСПРАВЛЕНО: goHome -> goBackFromGame
+                    setTimeout(goBackFromGame, 3000); // Исправлено: goHome -> goBackFromGame
                 }
             }, 1200);
         }
@@ -353,7 +387,7 @@ function handlePointerEnd(e) {
         activeItem.style.top = '0px';
         activeItem.style.width = '';
         activeItem.style.height = '';
-        activeItem.style.transform = ''; // восстанавливаем исходный scale
+        activeItem.style.transform = '';
         setTimeout(() => { activeItem.style.transition = 'none'; }, 300);
     }
     delete activeItem._dragOffsetX;
@@ -376,7 +410,7 @@ function playSound(soundFile) {
     }
 }
 
-// --- СОРОБАН ---
+// --- ДВИЖОК СОРОБАНА ---
 let sorobanState = [
     { upper: false, lower: 0 },
     { upper: false, lower: 0 },
@@ -475,21 +509,42 @@ function setupSorobanGame() {
     gameArea.appendChild(abacusContainer);
 }
 
-// ЕДИНСТВЕННАЯ функция resetAbacusBeads (правильная, без пересоздания DOM)
+// Оптимизированный сброс бусин с поддержкой initialValue (без перерисовки DOM)
 function resetAbacusBeads() {
+    let startVal = 0;
+    if (sorobanMode !== 'free') {
+        const tasks = roomsData[sorobanCategory];
+        if (tasks && tasks[currentLessonIndex] && tasks[currentLessonIndex].initialValue !== undefined) {
+            startVal = tasks[currentLessonIndex].initialValue;
+        }
+    }
+
+    let hundreds = Math.floor(startVal / 100) % 10;
+    let tens = Math.floor(startVal / 10) % 10;
+    let units = startVal % 10;
+
     sorobanState = [
-        { upper: false, lower: 0 },
-        { upper: false, lower: 0 },
-        { upper: false, lower: 0 }
+        { upper: hundreds >= 5, lower: hundreds % 5 },
+        { upper: tens >= 5, lower: tens % 5 },
+        { upper: units >= 5, lower: units % 5 }
     ];
-    document.getElementById('soroban-score').innerText = "0";
+
+    document.getElementById('soroban-score').innerText = startVal;
+
     if (globalUpperBeadsRefs.length) {
-        globalUpperBeadsRefs.forEach(item => { item.img.style.top = "5px"; });
-        globalLowerBeadsRefs.forEach(item => {
-            item.beads.forEach((bead, idx) => { bead.style.top = (360 - (3 - idx) * 34) + "px"; });
-        });
+        for (let s = 0; s < 3; s++) {
+            globalUpperBeadsRefs[s].img.style.top = (sorobanState[s].upper ? "52px" : "5px");
+            
+            const lowerBeads = globalLowerBeadsRefs[s].beads;
+            lowerBeads.forEach((bead, idx) => {
+                if (idx < sorobanState[s].lower) {
+                    bead.style.top = (112 + idx * 34) + "px";
+                } else {
+                    bead.style.top = (360 - (3 - idx) * 34) + "px";
+                }
+            });
+        }
     } else {
-        // Если абакус ещё не создан, создадим его
         setupSorobanGame();
     }
 }
@@ -522,6 +577,12 @@ function nextSorobanTask() {
     document.getElementById('soroban-task-text').innerHTML = 
         `${currentTask.taskText} <span class="target-highlight">(${currentTask.target})</span>`;
     
+    // Интеграция слайдера-комикса
+    if (currentTask.slides && currentTask.slides.length > 0 && !currentTask._comicShown) {
+        openComicSlider(currentTask.slides);
+        currentTask._comicShown = true;
+    }
+
     const hintCard = document.getElementById('soroban-hint-card');
     if (currentTask.hint && sorobanMode === 'learn') {
         hintCard.onerror = function() { hintContainer.style.display = 'none'; };
@@ -574,4 +635,42 @@ function updateSorobanScore() {
             }
         }, 1500);
     }
+}
+
+// --- КОМИКС КАРУСЕЛЬ-СЛАЙДЕР ---
+function openComicSlider(slides) {
+    currentSlidesArray = slides;
+    currentSlideIndex = 0;
+    document.getElementById('comic-slider-modal').style.display = 'flex';
+    updateSliderContent();
+}
+
+function updateSliderContent() {
+    document.getElementById('comic-slider-img').src = currentSlidesArray[currentSlideIndex];
+    document.getElementById('btn-comic-prev').classList.toggle('disabled', currentSlideIndex === 0);
+    
+    const isLast = currentSlideIndex === currentSlidesArray.length - 1;
+    document.getElementById('btn-comic-next').style.visibility = isLast ? 'hidden' : 'visible';
+    document.getElementById('btn-comic-start').style.display = isLast ? 'block' : 'none';
+
+    const dotsContainer = document.getElementById('comic-slider-dots');
+    dotsContainer.innerHTML = '';
+    currentSlidesArray.forEach((_, idx) => {
+        const dot = document.createElement('div');
+        dot.className = `comic-dot \${idx === currentSlideIndex ? 'active' : ''}`;
+        dotsContainer.appendChild(dot);
+    });
+}
+
+function moveSlide(direction) {
+    try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(e){}
+    currentSlideIndex += direction;
+    if (currentSlideIndex < 0) currentSlideIndex = 0;
+    if (currentSlideIndex >= currentSlidesArray.length) currentSlideIndex = currentSlidesArray.length - 1;
+    updateSliderContent();
+}
+
+function closeComicSlider() {
+    try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "medium"}); } catch(e){}
+    document.getElementById('comic-slider-modal').style.display = 'none';
 }

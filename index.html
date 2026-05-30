@@ -9,187 +9,205 @@
 </head>
 <body>
 
-<div id="image-lightbox" onclick="closeLightbox()">
-    <img id="lightbox-img" src="">
-    <div class="lightbox-text">Нажмите, чтобы закрыть</div>
-</div>
+    <div id="image-lightbox" onclick="closeLightbox()">
+        <img id="lightbox-img" src="">
+        <div class="lightbox-text">Нажмите, чтобы закрыть</div>
+    </div>
 
-<div id="screen-menu" class="screen active">
-    <div class="header">
-        <div class="header-title-row">
-            <span style="font-size: 26px; font-weight: 800; color: var(--accent-color);">Нейро-Гений</span>
-        </div>
-    </div>
-    <div class="hero-title">Тренажёры интеллекта:</div>
-    <div class="menu-grid" style="grid-template-columns: 1fr;">
-        <div class="category-card" onclick="openRoom('words', 'Слоги')">
-            <div class="category-icon-placeholder" style="max-width: 80px;"><img src="img/icon_words.png" alt=""></div>
-            <div class="category-title">Слоги</div>
-            <div class="category-subtitle">Составь слово</div>
-        </div>
-        <div class="category-card" onclick="openSorobanMenu()">
-            <div class="category-icon-placeholder" style="max-width: 80px;"><img src="img/icon_soroban.png" alt=""></div>
-            <div class="category-title">Ментальная арифметика</div>
-            <div class="category-subtitle">Счёты Соробан</div>
-        </div>
-        <div class="category-card" onclick="openMemorikaMenu()">
-            <div class="category-icon-placeholder" style="max-width: 80px;"><img src="img/icon_memo.png" alt="" style="opacity: 0.5;"></div>
-            <div class="category-title">Меморика</div>
-            <div class="category-subtitle">Развитие супер-памяти</div>
-        </div>
-    </div>
-</div>
-
-<div id="screen-memorika-menu" class="screen" style="overflow-y: auto;">
-    <div class="header" style="position: sticky; top: 0; z-index: 10;">
-        <div class="header-title-row"><span id="room-title">Меморика</span></div>
-        <div class="header-top">
-            <div class="back-btn" onclick="goMainFromMemorika()">⬅ В главное меню</div>
-        </div>
-    </div>
-    <div class="hero-title">Выберите технику:</div>
-    <div class="menu-grid sub-grid" style="grid-template-columns: 1fr;">
-        <div class="category-card sub-card" onclick="alert('Комната Стихов в разработке. Скоро мы будем рисовать ассоциации!')">
-            <div class="category-title sub-title">Стихи</div>
-            <div class="category-subtitle">Учим стихи через пиктограммы</div>
-        </div>
-        <div class="category-card sub-card" onclick="alert('Гардеробная Наполеона скоро откроется!')">
-            <div class="category-title sub-title">Гардеробная</div>
-            <div class="category-subtitle">Метод Локи (Дворец памяти)</div>
-        </div>
-        <div class="category-card sub-card" onclick="alert('Цепочка по рассказу скоро откроется!')">
-            <div class="category-title sub-title">Цепочка по рассказу</div>
-            <div class="category-subtitle">Связывание образов</div>
-        </div>
-    </div>
-</div>
-
-<div id="screen-soroban-menu" class="screen">
-    <div class="header" style="position: sticky; top: 0; z-index: 10;">
-        <div class="header-title-row"><span id="room-title">Ментальная арифметика</span></div>
-        <div class="header-top">
-            <div class="back-btn" onclick="goMainFromSubmenu()">⬅ В главное меню</div>
-        </div>
-    </div>
-    <div class="hero-title">Выберите режим:</div>
-    <div class="menu-grid" style="grid-template-columns: 1fr;">
-        <div class="category-card" onclick="startSoroban('free', 'free', 'Свободный режим')">
-            <div class="category-title">Свободный режим</div>
-            <div class="category-subtitle">Изучайте косточки без заданий</div>
-        </div>
-        <div class="category-card" onclick="openSorobanLearnMenu()">
-            <div class="category-title">Обучение</div>
-            <div class="category-subtitle">Правила и разряды</div>
-        </div>
-        <div class="category-card" onclick="openSorobanPlayMenu()">
-            <div class="category-title">Тренировка</div>
-            <div class="category-subtitle">Решение примеров</div>
-        </div>
-    </div>
-</div>
-
-<div id="screen-soroban-learn-menu" class="screen" style="overflow-y: auto;">
-    <div class="header" style="position: sticky; top: 0; z-index: 10;">
-        <div class="header-title-row"><span id="room-title">Обучение</span></div>
-        <div class="header-top">
-            <div class="back-btn" onclick="goBackToSorobanMenuFromLearn()">⬅ Назад</div>
-        </div>
-    </div>
-    <div class="menu-grid soroban-sub-grid-split">
-        <div class="sub-column">
-            <div class="sub-title-header">Разряды</div>
-            <div class="category-card sub-card" onclick="startSoroban('learn', 'learn_units', 'Единицы')">
-                <div class="category-title sub-title">Единицы</div>
-            </div>
-            <div class="category-card sub-card" onclick="startSoroban('learn', 'learn_tens', 'Десятки')">
-                <div class="category-title sub-title">Десятки</div>
-            </div>
-            <div class="category-card sub-card" onclick="startSoroban('learn', 'learn_hundreds', 'Сотни')">
-                <div class="category-title sub-title">Сотни</div>
-            </div>
-            <div class="sub-title-header" style="margin-top: 15px;">Друзья</div>
-            <div class="category-card sub-card" onclick="startSoroban('learn', 'learn_friends', 'Друзья 10')">
-                <div class="category-title sub-title">Друзья 10</div>
+    <div id="screen-menu" class="screen active">
+        <div class="header">
+            <div class="header-title-row">
+                <span style="font-size: 26px; font-weight: 800; color: var(--accent-color);">Нейро-Гений</span>
             </div>
         </div>
-        <div class="sub-column">
-            <div class="sub-title-header">Действия</div>
-            <div class="category-card sub-card" onclick="startSoroban('learn', 'learn_add', 'Сложение')">
+        <div class="hero-title">Тренажёры интеллекта:</div>
+        <div class="menu-grid">
+            <div class="category-card" onclick="openRoom('words', 'Слоги')">
+                <div class="category-icon-placeholder"><img src="img/icon_words.png" alt=""></div>
+                <div class="category-title">Слоги</div>
+                <div class="category-subtitle">Составь слово</div>
+            </div>
+            <div class="category-card" onclick="openSorobanMenu()">
+                <div class="category-icon-placeholder"><img src="img/icon_soroban.png" alt=""></div>
+                <div class="category-title">Ментальная арифметика</div>
+                <div class="category-subtitle">Счёты Соробан</div>
+            </div>
+            <div class="category-card" onclick="openMemorikaMenu()">
+                <div class="category-icon-placeholder" style="opacity: 0.5;"><img src="img/icon_memo.png" alt=""></div>
+                <div class="category-title">Меморика</div>
+                <div class="category-subtitle">Развитие супер-памяти</div>
+            </div>
+        </div>
+    </div> 
+
+    <div id="screen-memorika-menu" class="screen" style="overflow-y: auto;">
+        <div class="header" style="position: sticky; top: 0; z-index: 10;">
+            <div class="header-title-row"><span id="room-title">Меморика</span></div>
+            <div class="header-top">
+                <div class="back-btn" onclick="goMainFromMemorika()">⬅ В главное меню</div>
+            </div>
+        </div>
+        <div class="hero-title">Выберите технику:</div>
+        <div class="menu-grid sub-grid">
+            <div class="category-card sub-card" onclick="alert('Комната Стихов в разработке. Скоро мы будем рисовать ассоциации!')">
+                <div class="category-title sub-title">Стихи</div>
+                <div class="category-subtitle">Учим стихи через пиктограммы</div>
+            </div>
+            <div class="category-card sub-card" onclick="alert('Гардеробная Наполеона скоро откроется!')">
+                <div class="category-title sub-title">Гардеробная</div>
+                <div class="category-subtitle">Метод Локи (Дворец памяти)</div>
+            </div>
+            <div class="category-card sub-card" onclick="alert('Цепочка по рассказу скоро откроется!')">
+                <div class="category-title sub-title">Цепочка по рассказу</div>
+                <div class="category-subtitle">Связывание образов</div>
+            </div>
+        </div>
+    </div>
+
+    <div id="screen-soroban-menu" class="screen">
+        <div class="header" style="position: sticky; top: 0; z-index: 10;">
+            <div class="header-title-row"><span id="room-title">Ментальная арифметика</span></div>
+            <div class="header-top">
+                <div class="back-btn" onclick="goMainFromSubmenu()">⬅ В главное меню</div>
+            </div>
+        </div>
+        <div class="hero-title">Выберите режим:</div>
+        <div class="menu-grid">
+            <div class="category-card" onclick="startSoroban('free', 'free', 'Свободный режим')">
+                <div class="category-title">Свободный режим</div>
+                <div class="category-subtitle">Изучайте косточки без заданий</div>
+            </div>
+            <div class="category-card" onclick="openSorobanLearnMenu()">
+                <div class="category-title">Обучение</div>
+                <div class="category-subtitle">Правила и разряды</div>
+            </div>
+            <div class="category-card" onclick="openSorobanPlayMenu()">
+                <div class="category-title">Тренировка</div>
+                <div class="category-subtitle">Решение примеров</div>
+            </div>
+        </div>
+    </div>
+
+    <div id="screen-soroban-learn-menu" class="screen" style="overflow-y: auto;">
+        <div class="header" style="position: sticky; top: 0; z-index: 10;">
+            <div class="header-title-row"><span id="room-title">Обучение</span></div>
+            <div class="header-top">
+                <div class="back-btn" onclick="goBackToSorobanMenuFromLearn()">⬅ Назад</div>
+            </div>
+        </div>
+        
+        <div class="menu-grid soroban-sub-grid-split">
+            <div class="sub-column">
+                <div class="sub-title-header">Разряды</div>
+                <div class="category-card sub-card" onclick="startSoroban('learn', 'learn_units', 'Единицы')">
+                    <div class="category-title sub-title">Единицы</div>
+                </div>
+                <div class="category-card sub-card" onclick="startSoroban('learn', 'learn_tens', 'Десятки')">
+                    <div class="category-title sub-title">Десятки</div>
+                </div>
+                <div class="category-card sub-card" onclick="startSoroban('learn', 'learn_hundreds', 'Сотни')">
+                    <div class="category-title sub-title">Сотни</div>
+                </div>
+                <div class="sub-title-header" style="margin-top: 15px;">Друзья</div>
+                <div class="category-card sub-card" onclick="startSoroban('learn', 'learn_friends', 'Друзья 10')">
+                    <div class="category-title sub-title">Друзья 10</div>
+                </div>
+            </div>
+            
+            <div class="sub-column">
+                <div class="sub-title-header">Действия</div>
+                <div class="category-card sub-card" onclick="startSoroban('learn', 'learn_add', 'Сложение')">
+                    <div class="category-title sub-title">Сложение</div>
+                </div>
+                <div class="category-card sub-card" onclick="startSoroban('learn', 'learn_sub', 'Вычитание')">
+                    <div class="category-title sub-title">Вычитание</div>
+                </div>
+                <div class="category-card sub-card" onclick="startSoroban('learn', 'learn_mult', 'Умножение')">
+                    <div class="category-title sub-title">Умножение</div>
+                </div>
+                <div class="category-card sub-card" onclick="startSoroban('learn', 'learn_div', 'Деление')">
+                    <div class="category-title sub-title">Деление</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="screen-soroban-play-menu" class="screen" style="overflow-y: auto;">
+        <div class="header" style="position: sticky; top: 0; z-index: 10;">
+            <div class="header-title-row"><span id="room-title">Тренировка</span></div>
+            <div class="header-top">
+                <div class="back-btn" onclick="goBackToSorobanMenuFromPlay()">⬅ Назад к режимам</div>
+            </div>
+        </div>
+        <div class="menu-grid sub-grid" style="margin-top: 15px;">
+            <div class="category-card sub-card" onclick="startSoroban('play', 'play_add', 'Тренировка: Сложение')">
                 <div class="category-title sub-title">Сложение</div>
             </div>
-            <div class="category-card sub-card" onclick="startSoroban('learn', 'learn_sub', 'Вычитание')">
+            <div class="category-card sub-card" onclick="startSoroban('play', 'play_sub', 'Тренировка: Вычитание')">
                 <div class="category-title sub-title">Вычитание</div>
             </div>
-            <div class="category-card sub-card" onclick="startSoroban('learn', 'learn_mult', 'Умножение')">
+            <div class="category-card sub-card" onclick="startSoroban('play', 'play_mult', 'Тренировка: Умножение')">
                 <div class="category-title sub-title">Умножение</div>
             </div>
-            <div class="category-card sub-card" onclick="startSoroban('learn', 'learn_div', 'Деление')">
+            <div class="category-card sub-card" onclick="startSoroban('play', 'play_div', 'Тренировка: Деление')">
                 <div class="category-title sub-title">Деление</div>
             </div>
         </div>
     </div>
-</div>
 
-<div id="screen-soroban-play-menu" class="screen" style="overflow-y: auto;">
-    <div class="header" style="position: sticky; top: 0; z-index: 10;">
-        <div class="header-title-row"><span id="room-title">Тренировка</span></div>
-        <div class="header-top">
-            <div class="back-btn" onclick="goBackToSorobanMenuFromPlay()">⬅ Назад к режимам</div>
-        </div>
-    </div>
-    <div class="menu-grid sub-grid" style="margin-top: 15px;">
-        <div class="category-card sub-card" onclick="startSoroban('play', 'play_add', 'Тренировка: Сложение')">
-            <div class="category-title sub-title">Сложение</div>
-        </div>
-        <div class="category-card sub-card" onclick="startSoroban('play', 'play_sub', 'Тренировка: Вычитание')">
-            <div class="category-title sub-title">Вычитание</div>
-        </div>
-        <div class="category-card sub-card" onclick="startSoroban('play', 'play_mult', 'Тренировка: Умножение')">
-            <div class="category-title sub-title">Умножение</div>
-        </div>
-        <div class="category-card sub-card" onclick="startSoroban('play', 'play_div', 'Тренировка: Деление')">
-            <div class="category-title sub-title">Деление</div>
-        </div>
-    </div>
-</div>
-
-<div id="screen-room" class="screen">
-    <div class="header">
-        <div class="header-title-row"><span id="game-room-title">Комната</span></div>
-        <div class="header-top">
-            <div class="back-btn" id="btn-back-to-menu">⬅ Назад</div>
-        </div>
-    </div>
-    <div class="room-content-area">
-        <div id="game-area" class="game-container">
-            <div id="word-image-container">
-                <img id="word-3d-image" src="" alt="">
-                <div class="nav-arrows-container" style="position: absolute; top: 110px; gap: 150px;">
-                    <div id="btn-prev-word" class="nav-arrow-btn" onclick="changeWord(-1)">◀</div>
-                    <div id="btn-next-word" class="nav-arrow-btn" onclick="changeWord(1)">▶</div>
-                </div>
+    <div id="screen-room" class="screen">
+        <div class="header">
+            <div class="header-title-row"><span id="game-room-title">Комната</span></div>
+            <div class="header-top">
+                <div class="back-btn" id="btn-back-to-menu">⬅ Назад</div>
             </div>
-            <div class="target-column" id="target-zone"></div>
-            <div class="drag-column" id="drag-zone"></div>
-
-            <div id="soroban-controls" style="display:none; width:100%; flex-direction:column; align-items:center;">
-                <div id="soroban-task-container" style="display:none;">
-                    <div id="soroban-task-text">Загрузка задания...</div>
-                    <div id="soroban-hint-container" style="display:none; flex-direction:column; align-items:center;">
-                        <img id="soroban-hint-card" src="" alt="Подсказка" onclick="openLightbox(this.src)">
-                        <div class="hint-label">Нажмите для увеличения</div>
-                    </div>
-                    <div class="nav-arrows-container" id="soroban-nav-arrows">
-                        <div id="btn-prev-soroban" class="nav-arrow-btn" onclick="changeSorobanTask(-1)">◀</div>
-                        <div id="btn-next-soroban" class="nav-arrow-btn" onclick="changeSorobanTask(1)">▶</div>
+        </div>
+        <div class="room-content-area">
+            <div id="game-area" class="game-container">
+                
+                <div id="word-image-container">
+                    <img id="word-3d-image" src="" alt="">
+                    <div class="nav-arrows-container" style="position: absolute; top: 110px; gap: 150px;">
+                        <div id="btn-prev-word" class="nav-arrow-btn" onclick="changeWord(-1)">◀</div>
+                        <div id="btn-next-word" class="nav-arrow-btn" onclick="changeWord(1)">▶</div>
                     </div>
                 </div>
+                <div class="target-column" id="target-zone"></div>
+                <div class="drag-column" id="drag-zone"></div>
+
+                <div id="soroban-controls" style="display:none; width:100%; flex-direction:column; align-items:center;">
+                    <div id="soroban-task-container" style="display:none;">
+                        <div id="soroban-task-text">Загрузка задания...</div>
+                        <div id="soroban-hint-container" style="display:none; flex-direction:column; align-items:center;">
+                            <img id="soroban-hint-card" src="" alt="Подсказка" onclick="openLightbox(this.src)">
+                            <div class="hint-label">Нажмите для увеличения</div>
+                        </div>
+                        <div class="nav-arrows-container" id="soroban-nav-arrows">
+                            <div id="btn-prev-soroban" class="nav-arrow-btn" onclick="changeSorobanTask(-1)">◀</div>
+                            <div id="btn-next-soroban" class="nav-arrow-btn" onclick="changeSorobanTask(1)">▶</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="soroban-score" style="display:none;">0</div>
+
             </div>
-            <div id="soroban-score" style="display:none;">0</div>
         </div>
     </div>
-</div>
 
-<script src="script.js"></script>
+    <!-- Модальное окно аниме-слайдера для квадратных комиксов -->
+    <div id="comic-slider-modal" class="comic-modal">
+        <div class="comic-slider-box">
+            <img id="comic-slider-img" src="" alt="Обучающий комикс">
+            <div class="comic-slider-nav">
+                <div id="btn-comic-prev" class="comic-nav-btn" onclick="moveSlide(-1)">◀</div>
+                <div id="comic-slider-dots"></div>
+                <div id="btn-comic-next" class="comic-nav-btn" onclick="moveSlide(1)">▶</div>
+            </div>
+            <button id="btn-comic-start" onclick="closeComicSlider()">В бой! 🥷</button>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
 </body>
 </html>
