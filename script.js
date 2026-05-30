@@ -117,6 +117,39 @@ const roomsData = {
     'play_div': []
 };
 
+// --- ТАЙНЫЙ ОРДЕН КОРОЛЕВЫ ПЯТЬ (Друзья 5 / Помощь брата) ---
+    'learn_friends_5': [
+        { 
+            taskText: "Прибавляем четыре: опусти Королеву Пять (+5) и попрощайся с братом четверки — один (-1).", 
+            initialValue: 2, // На счетах стоит 2. Прибавляем 4.
+            target: 6,       // Должно получиться 6
+            taskAudio: "audio/brother4_task.wav",
+            slides: [
+                "img/brother_cover_academy.jpg", // Обложка Ордена Пяти
+                "img/brother_cover_4_1.jpg",     // Постер "Братцы 4 и 1"
+                "img/brother4_step1.jpg",        // Кадр 1: Проблема (некуда двинуть 4)
+                "img/brother4_step2.jpg",        // Кадр 2: Помощь Королевы Пять
+                "img/brother4_step3.jpg"         // Кадр 3: Брат 1 уходит
+            ],
+            audioSlides: [
+                "audio/anime_intro_five.wav",
+                "audio/anime_brothers_4_1.wav",
+                "audio/anime_brother4_step1.wav",
+                "audio/anime_brother4_step2.wav",
+                "audio/anime_brother4_step3.wav"
+            ]
+        },
+        { 
+            taskText: "Прибавляем три: опусти Королеву Пять (+5) и попрощайся с братом тройки — два (-2).", 
+            initialValue: 3, 
+            target: 6, 
+            taskAudio: "audio/brother3_task.wav",
+            slides: ["img/brother_cover_3_2.jpg"],
+            audioSlides: ["audio/anime_brothers_3_2.wav"]
+        }
+        // Сюда по аналогии добавятся задания для +2 (брат 3) и +1 (брат 4)
+    ],
+
 // Лайтбокс
 function openLightbox(src) {
     const lb = document.getElementById('image-lightbox');
