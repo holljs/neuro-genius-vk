@@ -136,6 +136,39 @@ const roomsData = {
     'learn_mult': [],
     'learn_div': [],
 
+// --- ТРЕНАЖЕР: НАБЕРИ ЧИСЛО (26 заданий вразброс) ---
+    'play_numbers': [
+        // Разминка (однозначные и двузначные)
+        { taskText: "Набери цифру 5", target: 5, taskAudio: "audio/play_num_5.wav" },
+        { taskText: "Набери цифру 9", target: 9, taskAudio: "audio/play_num_9.wav" },
+        { taskText: "Сделай число 12", target: 12, taskAudio: "audio/play_num_12.wav" },
+        { taskText: "Сделай число 20", target: 20, taskAudio: "audio/play_num_20.wav" },
+        { taskText: "Набери число 37", target: 37, taskAudio: "audio/play_num_37.wav" },
+        { taskText: "Набери число 46", target: 46, taskAudio: "audio/play_num_46.wav" },
+        { taskText: "Сделай число 50", target: 50, taskAudio: "audio/play_num_50.wav" },
+        { taskText: "Набери число 64", target: 64, taskAudio: "audio/play_num_64.wav" },
+        { taskText: "Набери число 71", target: 71, taskAudio: "audio/play_num_71.wav" },
+        { taskText: "Сделай число 85", target: 85, taskAudio: "audio/play_num_85.wav" },
+        { taskText: "Набери число 93", target: 93, taskAudio: "audio/play_num_93.wav" },
+        
+        // Подключаем зеленую спицу (трехзначные числа)
+        { taskText: "Сделай число 100", target: 100, taskAudio: "audio/play_num_100.wav" },
+        { taskText: "Набери число 105", target: 105, taskAudio: "audio/play_num_105.wav" },
+        { taskText: "Сделай число 115", target: 115, taskAudio: "audio/play_num_115.wav" },
+        { taskText: "Набери число 123", target: 123, taskAudio: "audio/play_num_123.wav" },
+        { taskText: "Сделай число 240", target: 240, taskAudio: "audio/play_num_240.wav" },
+        { taskText: "Набери число 302", target: 302, taskAudio: "audio/play_num_302.wav" },
+        { taskText: "Набери число 456", target: 456, taskAudio: "audio/play_num_456.wav" },
+        { taskText: "Сделай число 500", target: 500, taskAudio: "audio/play_num_500.wav" },
+        { taskText: "Набери число 518", target: 518, taskAudio: "audio/play_num_518.wav" },
+        { taskText: "Набери число 607", target: 607, taskAudio: "audio/play_num_607.wav" },
+        { taskText: "Сделай число 731", target: 731, taskAudio: "audio/play_num_731.wav" },
+        { taskText: "Набери число 842", target: 842, taskAudio: "audio/play_num_842.wav" },
+        { taskText: "Сделай число 900", target: 900, taskAudio: "audio/play_num_900.wav" },
+        { taskText: "Набери число 950", target: 950, taskAudio: "audio/play_num_950.wav" },
+        { taskText: "А теперь самое большое: 999!", target: 999, taskAudio: "audio/play_num_999.wav" }
+    ],
+    
     'play_add': [
         { taskText: "Решите пример: 1 + 2", target: 3 },
         { taskText: "Решите пример: 5 + 1", target: 6 },
