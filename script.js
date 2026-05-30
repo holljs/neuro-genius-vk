@@ -296,9 +296,13 @@ function changeWord(direction) {
     setupWordsGame();
 }
 
-// Безошибочный Drag & Drop с вычислением смещения
+// --- БРОНЕБОЙНЫЙ DRAG & DROP ---
 function handlePointerStart(e) {
+    // 1. ПРЕДОХРАНИТЕЛЬ: Если мы уже что-то тащим, игнорируем другие пальцы!
+    if (activeItem) return; 
+    
     if (e.target.classList.contains('matched')) return;
+    
     activeItem = e.target;
     activeItem.setPointerCapture(e.pointerId);
 
@@ -323,6 +327,9 @@ function handlePointerStart(e) {
 
     activeItem.addEventListener('pointermove', handlePointerMove);
     activeItem.addEventListener('pointerup', handlePointerEnd);
+    
+    // 2. ПРЕДОХРАНИТЕЛЬ: Ловим системные глюки (свайпы телефона, случайные касания экрана)
+    activeItem.addEventListener('pointercancel', handlePointerEnd); 
 }
 
 function handlePointerMove(e) {
@@ -335,10 +342,13 @@ function handlePointerMove(e) {
 
 function handlePointerEnd(e) {
     if (!activeItem) return;
+    
+    // Снимаем ВСЕ слушатели, включая отмену
     activeItem.releasePointerCapture(e.pointerId);
     activeItem.classList.remove('dragging');
     activeItem.removeEventListener('pointermove', handlePointerMove);
     activeItem.removeEventListener('pointerup', handlePointerEnd);
+    activeItem.removeEventListener('pointercancel', handlePointerEnd); 
 
     const itemSyl = activeItem.getAttribute('data-syl');
     const clientX = e.clientX;
@@ -361,7 +371,7 @@ function handlePointerEnd(e) {
     activeItem.style.display = 'flex';
 
     if (matchedTarget) {
-        try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "medium"}); } catch(e) {}
+        try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "medium"}); } catch(err) {}
         activeItem.classList.add('matched');
         matchedTarget.classList.add('matched');
         activeItem.style.display = 'none';
@@ -374,12 +384,12 @@ function handlePointerEnd(e) {
                     setupWordsGame();
                 } else {
                     playSound('audio/words_win.wav');
-                    setTimeout(goBackFromGame, 3000); // Исправлено: goHome -> goBackFromGame
+                    setTimeout(goBackFromGame, 3000); 
                 }
             }, 1200);
         }
     } else {
-        try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(e) {}
+        try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(err) {}
         playSound('audio/wrong.wav');
         activeItem.style.transition = 'all 0.3s ease';
         activeItem.style.position = 'relative';
@@ -387,12 +397,15 @@ function handlePointerEnd(e) {
         activeItem.style.top = '0px';
         activeItem.style.width = '';
         activeItem.style.height = '';
-        activeItem.style.transform = '';
-        setTimeout(() => { activeItem.style.transition = 'none'; }, 300);
+        activeItem.style.transform = ''; 
+        setTimeout(() => { 
+            if(activeItem) activeItem.style.transition = 'none'; 
+        }, 300);
     }
+    
     delete activeItem._dragOffsetX;
     delete activeItem._dragOffsetY;
-    activeItem = null;
+    activeItem = null; // Освобождаем "руки" игры для следующей дощечки
 }
 
 function shuffleArray(array) {
