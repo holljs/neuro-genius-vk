@@ -152,8 +152,21 @@ const roomsData = {
         }
     ],
 
-    'learn_add': [],
-    'learn_sub': [],
+    'learn_add': [
+        { taskText: "На спице уже есть два малыша. Прибавь к ним ещё двух. Стало 4!", initialValue: 2, target: 4, taskAudio: "audio/learn_add_1.wav" },
+        { taskText: "На спице три малыша. Прибавь к ним Королеву Пять, опусти её вниз. Получится 8.", initialValue: 3, target: 8, taskAudio: "audio/learn_add_2.wav" },
+        { taskText: "На синей спице один ученик. Прибавь к нему ещё двух учеников-десятков. Стало 30.", initialValue: 10, target: 30, taskAudio: "audio/learn_add_3.wav" },
+        { taskText: "Попробуем сразу две спицы! У нас число 12. Прибавь Королеву Пять. Стало 17.", initialValue: 12, target: 17, taskAudio: "audio/learn_add_4.wav" },
+        { taskText: "А теперь сотни! Сэнсэй Пятьсот уже здесь. Прибавь к нему четырех ниндзя снизу. Получится 900!", initialValue: 500, target: 900, taskAudio: "audio/learn_add_5.wav" }
+    ],
+    
+    'learn_sub': [
+        { taskText: "На спице четыре малыша. Убери двух отдыхать, опусти их вниз. Останется 2.", initialValue: 4, target: 2, taskAudio: "audio/learn_sub_1.wav" },
+        { taskText: "На спице число 8. Королева Пять уходит наверх. Подними её. Останется 3.", initialValue: 8, target: 3, taskAudio: "audio/learn_sub_2.wav" },
+        { taskText: "У нас 40. Три ученика-десятка уходят. Опусти их вниз. Останется 10.", initialValue: 40, target: 10, taskAudio: "audio/learn_sub_3.wav" },
+        { taskText: "Число 27. Королева Пять уходит наверх. Останется 22.", initialValue: 27, target: 22, taskAudio: "audio/learn_sub_4.wav" },
+        { taskText: "С зеленой спицы уходят четыре ниндзя. Было 900, опусти ниндзя вниз, и останется только Сэнсэй Пятьсот.", initialValue: 900, target: 500, taskAudio: "audio/learn_sub_5.wav" }
+    ],
     'learn_mult': [],
     'learn_div': [],
 
