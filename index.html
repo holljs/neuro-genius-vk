@@ -135,7 +135,15 @@
         </div>
     </div>
 
-    <div class="menu-grid sub-grid" style="margin-top: 15px;">
+    <div id="screen-soroban-play-menu" class="screen" style="overflow-y: auto;">
+        <div class="header" style="position: sticky; top: 0; z-index: 10;">
+            <div class="header-title-row"><span id="room-title">Тренировка</span></div>
+            <div class="header-top">
+                <div class="back-btn" onclick="goBackToSorobanMenuFromPlay()">⬅ Назад</div>
+            </div>
+        </div>
+        
+        <div class="menu-grid sub-grid" style="margin-top: 15px;">
             <div class="category-card sub-card" onclick="startSoroban('play', 'play_numbers', 'Тренировка: Набери число')">
                 <div class="category-title sub-title">Набери число</div>
             </div>
@@ -157,6 +165,7 @@
                 <div class="category-title sub-title">Деление</div>
             </div>
         </div>
+    </div>
 
     <div id="screen-room" class="screen">
         <div class="header">
