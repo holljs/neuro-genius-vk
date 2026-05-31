@@ -217,6 +217,60 @@ const roomsData = {
     'play_div': []
 }; // <--- ВОТ ТЕПЕРЬ БАЗА ЗАКРЫТА ПРАВИЛЬНО, В САМОМ КОНЦЕ
 
+// --- БЕСКОНЕЧНЫЙ ГЕНЕРАТОР ПРИМЕРОВ ---
+function generateEndlessTask(category) {
+    let a, b, sign;
+
+    if (category === 'play_simple') {
+        // Прямой счет (без перехода через 5 и 10)
+        const pairs = [
+            [1,'+',2], [2,'+',2], [5,'+',3], [3,'+',1], [1,'+',1], [6,'+',2], [7,'+',1],
+            [4,'-',2], [8,'-',5], [9,'-',4], [7,'-',2], [3,'-',1], [6,'-',5], [9,'-',5]
+        ];
+        let pick = pairs[Math.floor(Math.random() * pairs.length)];
+        let mult = Math.random() > 0.5 ? 10 : 1; // 50% шанс, что это будут десятки
+        a = pick[0] * mult; b = pick[2] * mult; sign = pick[1];
+    } 
+    else if (category === 'play_friends_5') {
+        // Орден Пяти (формулы +4, +3, +2, +1)
+        const pairs = [
+            [4,'+',1], [3,'+',2], [2,'+',3], [1,'+',4], [4,'+',2], [4,'+',3], [3,'+',4]
+        ];
+        let pick = pairs[Math.floor(Math.random() * pairs.length)];
+        let mult = Math.random() > 0.5 ? 10 : 1;
+        a = pick[0] * mult; b = pick[2] * mult; sign = pick[1];
+    } 
+    else if (category === 'play_friends_10') {
+        // Друзья 10 (переход через десяток)
+        const pairs = [
+            [9,'+',1], [8,'+',2], [7,'+',3], [6,'+',4], [5,'+',5], [4,'+',6], [3,'+',7], 
+            [2,'+',8], [1,'+',9], [8,'+',3], [7,'+',4], [6,'+',5], [9,'+',9], [8,'+',8]
+        ];
+        let pick = pairs[Math.floor(Math.random() * pairs.length)];
+        let mult = Math.random() > 0.5 ? 10 : 1;
+        a = pick[0] * mult; b = pick[2] * mult; sign = pick[1];
+    }
+
+    let target = sign === '+' ? a + b : a - b;
+    
+    return {
+        taskText: `Реши пример: <br><span style="font-size:32px;">${a} ${sign} ${b} = ?</span>`,
+        initialValue: a,
+        target: target
+    };
+}
+
+// Заполняем базу 10-ю случайными примерами
+function fillEndlessTasks(category) {
+    let tasks = [];
+    for(let i = 0; i < 10; i++) {
+        tasks.push(generateEndlessTask(category));
+    }
+    roomsData[category] = tasks;
+}
+
+// --- КОНЕЦ ГЕНЕРАТОРА ---
+
 // Лайтбокс
 function openLightbox(src) {
     const lb = document.getElementById('image-lightbox');
@@ -224,11 +278,12 @@ function openLightbox(src) {
     lb.style.display = 'flex';
     setTimeout(() => lb.style.opacity = '1', 10);
 }
+
 function closeLightbox() {
     const lb = document.getElementById('image-lightbox');
     lb.style.opacity = '0';
     setTimeout(() => lb.style.display = 'none', 200);
-}
+}        
 
 // Навигационная система
 function goMainFromSubmenu() {
@@ -338,11 +393,17 @@ function startSoroban(mode, category, title) {
     currentLessonIndex = 0;
     isTaskLock = false;
 
+    // ЕСЛИ ЭТО БЕСКОНЕЧНЫЙ РЕЖИМ, ГЕНЕРИРУЕМ НОВУЮ БАЗУ НА ЛЕТУ
+    if (mode === 'play' && (category === 'play_simple' || category === 'play_friends_5' || category === 'play_friends_10')) {
+        fillEndlessTasks(category);
+    }
+
+    // ВОТ ЭТОТ КУСОК ВАЖНО ВЕРНУТЬ, чтобы комиксы работали
     if (roomsData[category]) {
         roomsData[category].forEach(t => t._comicShown = false);
     }
 
-    document.getElementById('game-room-title').innerText = title;
+    document.getElementById('game-room-title').innerText = title
     
     document.getElementById('screen-soroban-menu').classList.remove('active');
     document.getElementById('screen-soroban-learn-menu').classList.remove('active');
