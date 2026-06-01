@@ -189,9 +189,9 @@ const roomsData = {
     
     'learn_div': [
         { 
-            taskText: "Деление — это раздача поровну! Разделим 8 сюрикенов на двоих ниндзя. Каждому достанется 4. Покажи ответ 4!", 
+            taskText: "Деление — это раздача поровну! Разделим 6 яблок на двоих ниндзя. Каждому достанется 3. Покажи ответ 3!", 
             initialValue: 0, 
-            target: 4, 
+            target: 3, 
             taskAudio: "audio/learn_div_1.wav",
             slides: [
                 "img/div_cover_1.jpg"
@@ -199,6 +199,7 @@ const roomsData = {
             audioSlides: [
                 "audio/anime_div_slide1.wav"
             ]
+        },
         },
         { taskText: "Разделим 42 на 2. Сначала раздадим десятки: 40 пополам будет 20. Подними 20.", initialValue: 0, target: 20, taskAudio: "audio/learn_div_2.wav" },
         { taskText: "Теперь раздадим единицы: 2 пополам будет 1. Прибавь 1 к десяткам. Наш ответ: 21!", initialValue: 20, target: 21, taskAudio: "audio/learn_div_3.wav" }
