@@ -718,7 +718,9 @@ function setupSorobanGame() {
 
 function resetAbacusBeads() {
     let startVal = 0;
-    if (sorobanMode !== 'free') {
+    
+    // ИСПРАВЛЕНИЕ: начальные косточки ставим ТОЛЬКО в режиме Обучения ('learn')!
+    if (sorobanMode === 'learn') {
         const tasks = roomsData[sorobanCategory];
         if (tasks && tasks[currentLessonIndex] && tasks[currentLessonIndex].initialValue !== undefined) {
             startVal = tasks[currentLessonIndex].initialValue;
@@ -780,8 +782,13 @@ function nextSorobanTask() {
 
     const currentTask = tasks[currentLessonIndex];
     
-    document.getElementById('soroban-task-text').innerHTML = 
-        `${currentTask.taskText} <span class="target-highlight">(${currentTask.target})</span>`;
+    // ИСПРАВЛЕНИЕ: Прячем ответ в Тренировке ('play'), показываем только в Обучении!
+    if (sorobanMode === 'play') {
+        document.getElementById('soroban-task-text').innerHTML = currentTask.taskText;
+    } else {
+        document.getElementById('soroban-task-text').innerHTML = 
+            `${currentTask.taskText} <span class="target-highlight">(${currentTask.target})</span>`;
+    }
     
     // Интеграция слайдера-комикса И АУДИО
     if (currentTask.slides && currentTask.slides.length > 0 && !currentTask._comicShown) {
