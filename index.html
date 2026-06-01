@@ -158,10 +158,10 @@
                 <div class="category-title sub-title">Академия Десяти</div>
             </div>
             
-            <div class="category-card sub-card" onclick="alert('Раздел Умножения откроется чуть позже!')" style="opacity: 0.6;">
+            <div class="category-card sub-card" onclick="startSoroban('play', 'play_mult', 'Тренировка: Умножение')">
                 <div class="category-title sub-title">Умножение</div>
             </div>
-            <div class="category-card sub-card" onclick="alert('Раздел Деления откроется чуть позже!')" style="opacity: 0.6;">
+            <div class="category-card sub-card" onclick="startSoroban('play', 'play_div', 'Тренировка: Деление')">
                 <div class="category-title sub-title">Деление</div>
             </div>
         </div>
@@ -190,6 +190,12 @@
                 <div id="soroban-controls" style="display:none; width:100%; flex-direction:column; align-items:center;">
                     <div id="soroban-task-container" style="display:none;">
                         <div id="soroban-task-text">Загрузка задания...</div>
+                        
+                        <!-- НОВАЯ КНОПКА СВИТКА (изначально скрыта) -->
+                        <div id="scroll-btn" style="display:none; margin-top: 10px; cursor: pointer; color: #FF9800; font-weight: bold; font-size: 18px;" onclick="openLightbox('img/scroll_table.jpg')">
+                            📜 Посмотреть Свиток Сэнсэя
+                        </div>
+                        
                         <div id="soroban-hint-container" style="display:none; flex-direction:column; align-items:center;">
                             <img id="soroban-hint-card" src="" alt="Подсказка" onclick="openLightbox(this.src)">
                             <div class="hint-label">Нажмите для увеличения</div>
