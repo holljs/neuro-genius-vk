@@ -167,8 +167,42 @@ const roomsData = {
         { taskText: "Число 27. Королева Пять уходит наверх. Останется 22.", initialValue: 27, target: 22, taskAudio: "audio/learn_sub_4.wav" },
         { taskText: "Было 900, опусти четыре бусины вниз, и останется только Сэнсэй Пятьсот.", initialValue: 900, target: 500, taskAudio: "audio/learn_sub_5.wav" }
     ],
-    'learn_mult': [],
-    'learn_div': [],
+    
+    'learn_mult': [
+        { 
+            taskText: "Секретная техника! Пример мы держим в уме, а на счётах собираем только ответ. 2 умножить на 3 будет 6. Сделай цифру 6!", 
+            initialValue: 0, 
+            target: 6, 
+            taskAudio: "audio/learn_mult_1.wav",
+            slides: [
+                "img/mult_cover_1.jpg", 
+                "img/mult_cover_2.jpg"
+            ],
+            audioSlides: [
+                "audio/anime_mult_slide1.wav", 
+                "audio/anime_mult_slide2.wav"
+            ]
+        },
+        { taskText: "Умножим 12 на 3. Сначала умножаем десятки: 10 на 3 будет 30. Подними 30.", initialValue: 0, target: 30, taskAudio: "audio/learn_mult_2.wav" },
+        { taskText: "Теперь единицы: 2 умножить на 3 будет 6. Прибавь 6 к нашим десяткам. Получилось 36!", initialValue: 30, target: 36, taskAudio: "audio/learn_mult_3.wav" }
+    ],
+    
+    'learn_div': [
+        { 
+            taskText: "Деление — это раздача поровну! Разделим 8 сюрикенов на двоих ниндзя. Каждому достанется 4. Покажи ответ 4!", 
+            initialValue: 0, 
+            target: 4, 
+            taskAudio: "audio/learn_div_1.wav",
+            slides: [
+                "img/div_cover_1.jpg"
+            ],
+            audioSlides: [
+                "audio/anime_div_slide1.wav"
+            ]
+        },
+        { taskText: "Разделим 42 на 2. Сначала раздадим десятки: 40 пополам будет 20. Подними 20.", initialValue: 0, target: 20, taskAudio: "audio/learn_div_2.wav" },
+        { taskText: "Теперь раздадим единицы: 2 пополам будет 1. Прибавь 1 к десяткам. Наш ответ: 21!", initialValue: 20, target: 21, taskAudio: "audio/learn_div_3.wav" }
+    ],
 
 // --- ТРЕНАЖЕР: НАБЕРИ ЧИСЛО (26 заданий вразброс) ---
     'play_numbers': [
