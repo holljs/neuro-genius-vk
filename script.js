@@ -200,7 +200,6 @@ const roomsData = {
                 "audio/anime_div_slide1.wav"
             ]
         },
-        },
         { taskText: "Разделим 42 на 2. Сначала раздадим десятки: 40 пополам будет 20. Подними 20.", initialValue: 0, target: 20, taskAudio: "audio/learn_div_2.wav" },
         { taskText: "Теперь раздадим единицы: 2 пополам будет 1. Прибавь 1 к десяткам. Наш ответ: 21!", initialValue: 20, target: 21, taskAudio: "audio/learn_div_3.wav" }
     ],
@@ -254,43 +253,47 @@ const roomsData = {
 
 // --- БЕСКОНЕЧНЫЙ ГЕНЕРАТОР ПРИМЕРОВ ---
 function generateEndlessTask(category) {
-    let a, b, sign;
+    let a, b, sign, target;
 
     if (category === 'play_simple') {
-        // Прямой счет (без перехода через 5 и 10)
-        const pairs = [
-            [1,'+',2], [2,'+',2], [5,'+',3], [3,'+',1], [1,'+',1], [6,'+',2], [7,'+',1],
-            [4,'-',2], [8,'-',5], [9,'-',4], [7,'-',2], [3,'-',1], [6,'-',5], [9,'-',5]
-        ];
+        const pairs = [[1,'+',2], [2,'+',2], [5,'+',3], [3,'+',1], [1,'+',1], [6,'+',2], [7,'+',1], [4,'-',2], [8,'-',5], [9,'-',4], [7,'-',2], [3,'-',1], [6,'-',5], [9,'-',5]];
         let pick = pairs[Math.floor(Math.random() * pairs.length)];
-        let mult = Math.random() > 0.5 ? 10 : 1; // 50% шанс, что это будут десятки
+        let mult = Math.random() > 0.5 ? 10 : 1;
         a = pick[0] * mult; b = pick[2] * mult; sign = pick[1];
+        target = sign === '+' ? a + b : a - b;
     } 
     else if (category === 'play_friends_5') {
-        // Орден Пяти (формулы +4, +3, +2, +1)
-        const pairs = [
-            [4,'+',1], [3,'+',2], [2,'+',3], [1,'+',4], [4,'+',2], [4,'+',3], [3,'+',4]
-        ];
+        const pairs = [[4,'+',1], [3,'+',2], [2,'+',3], [1,'+',4], [4,'+',2], [4,'+',3], [3,'+',4]];
         let pick = pairs[Math.floor(Math.random() * pairs.length)];
         let mult = Math.random() > 0.5 ? 10 : 1;
         a = pick[0] * mult; b = pick[2] * mult; sign = pick[1];
+        target = sign === '+' ? a + b : a - b;
     } 
     else if (category === 'play_friends_10') {
-        // Друзья 10 (переход через десяток)
-        const pairs = [
-            [9,'+',1], [8,'+',2], [7,'+',3], [6,'+',4], [5,'+',5], [4,'+',6], [3,'+',7], 
-            [2,'+',8], [1,'+',9], [8,'+',3], [7,'+',4], [6,'+',5], [9,'+',9], [8,'+',8]
-        ];
+        const pairs = [[9,'+',1], [8,'+',2], [7,'+',3], [6,'+',4], [5,'+',5], [4,'+',6], [3,'+',7], [2,'+',8], [1,'+',9], [8,'+',3], [7,'+',4], [6,'+',5], [9,'+',9], [8,'+',8]];
         let pick = pairs[Math.floor(Math.random() * pairs.length)];
         let mult = Math.random() > 0.5 ? 10 : 1;
         a = pick[0] * mult; b = pick[2] * mult; sign = pick[1];
+        target = sign === '+' ? a + b : a - b;
+    }
+    else if (category === 'play_mult') {
+        // Умножение от 2х2 до 9х9
+        a = Math.floor(Math.random() * 8) + 2; 
+        b = Math.floor(Math.random() * 8) + 2; 
+        sign = '×';
+        target = a * b;
+    }
+    else if (category === 'play_div') {
+        // Деление без остатка (генерируем ответ и делитель, вычисляем исходное число)
+        b = Math.floor(Math.random() * 8) + 2; // Делитель (2..9)
+        target = Math.floor(Math.random() * 8) + 2; // Ответ (2..9)
+        a = b * target; // Делимое
+        sign = ':';
     }
 
-    let target = sign === '+' ? a + b : a - b;
-    
     return {
         taskText: `Реши пример: <br><span style="font-size:32px;">${a} ${sign} ${b} = ?</span>`,
-        initialValue: a,
+        initialValue: 0, // В тренировке спицы всегда пустые
         target: target
     };
 }
@@ -429,7 +432,7 @@ function startSoroban(mode, category, title) {
     isTaskLock = false;
 
     // ЕСЛИ ЭТО БЕСКОНЕЧНЫЙ РЕЖИМ, ГЕНЕРИРУЕМ НОВУЮ БАЗУ НА ЛЕТУ
-    if (mode === 'play' && (category === 'play_simple' || category === 'play_friends_5' || category === 'play_friends_10')) {
+    if (mode === 'play' && (category === 'play_simple' || category === 'play_friends_5' || category === 'play_friends_10' || category === 'play_mult' || category === 'play_div')) {
         fillEndlessTasks(category);
     }
 
@@ -845,6 +848,15 @@ function nextSorobanTask() {
         hintContainer.style.display = 'none';
     }
     isTaskLock = false;
+    // Показываем кнопку Свитка только в тренировке Умножения и Деления
+    const scrollBtn = document.getElementById('scroll-btn');
+    if (scrollBtn) {
+        if (sorobanMode === 'play' && (sorobanCategory === 'play_mult' || sorobanCategory === 'play_div')) {
+            scrollBtn.style.display = 'block';
+        } else {
+            scrollBtn.style.display = 'none';
+        }
+    }
 }
 
 function updateSorobanScore() {
