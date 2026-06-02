@@ -974,45 +974,45 @@ function setupFingers() {
     const container = document.getElementById('finger-zones');
     container.innerHTML = '';
     
-    // Умная сетка! Теперь у каждого пальчика свой отступ сверху, высота и даже НАКЛОН!
+    // Координаты без поворотов, подберите под свою картинку
     const fingerPositions = [
-        { left: '10%', top: '35%', width: '8%', height: '35%', rotate: '-30deg' },  // 1. Левый большой
-        { left: '21%', top: '18%', width: '7%', height: '40%', rotate: '-10deg' },  // 2. Левый указательный
-        { left: '30%', top: '14%', width: '6.5%', height: '42%', rotate: '-3deg' }, // 3. Левый средний
-        { left: '38%', top: '18%', width: '6%', height: '38%', rotate: '5deg' },    // 4. Левый безымянный
-        { left: '44%', top: '28%', width: '5.5%', height: '30%', rotate: '15deg' }, // 5. Левый мизинец
-        
-        { left: '50.5%', top: '28%', width: '5.5%', height: '30%', rotate: '-15deg' },// 6. Правый мизинец
-        { left: '56.5%', top: '18%', width: '6%', height: '38%', rotate: '-5deg' },   // 7. Правый безымянный
-        { left: '63.5%', top: '14%', width: '6.5%', height: '42%', rotate: '3deg' },  // 8. Правый средний
-        { left: '72%', top: '18%', width: '7%', height: '40%', rotate: '10deg' },     // 9. Правый указательный
-        { left: '82%', top: '35%', width: '8%', height: '35%', rotate: '30deg' }      // 10. Правый большой
+        { left: '8%',  top: '55%', width: '8%', height: '30%' },
+        { left: '18%', top: '30%', width: '7%', height: '40%' },
+        { left: '27%', top: '20%', width: '7%', height: '45%' },
+        { left: '36%', top: '28%', width: '7%', height: '42%' },
+        { left: '44%', top: '45%', width: '7%', height: '35%' },
+        { left: '51%', top: '45%', width: '7%', height: '35%' },
+        { left: '59%', top: '28%', width: '7%', height: '42%' },
+        { left: '68%', top: '20%', width: '7%', height: '45%' },
+        { left: '77%', top: '30%', width: '7%', height: '40%' },
+        { left: '86%', top: '55%', width: '8%', height: '30%' }
     ];
 
     for (let i = 1; i <= 10; i++) {
         let zone = document.createElement('div');
+        let pos = fingerPositions[i-1];
         zone.style.position = 'absolute';
-        zone.style.left = fingerPositions[i-1].left;
-        zone.style.top = fingerPositions[i-1].top;
-        zone.style.width = fingerPositions[i-1].width;
-        zone.style.height = fingerPositions[i-1].height;
-        zone.style.transform = `rotate(${fingerPositions[i-1].rotate})`; // Магия поворота!
+        zone.style.left = pos.left;
+        zone.style.top = pos.top;
+        zone.style.width = pos.width;
+        zone.style.height = pos.height;
         zone.style.cursor = 'pointer';
         
-        // Создаем затемнение "загнутого" пальца
         let overlay = document.createElement('div');
         overlay.id = 'finger-overlay-' + i;
-        overlay.innerHTML = '❌'; 
+        // ПОЛОСКА вместо крестика:
+        overlay.innerHTML = '━'; 
         overlay.style.width = '100%';
         overlay.style.height = '100%';
-        overlay.style.backgroundColor = 'rgba(0, 0, 0, 0.4)';
-        overlay.style.display = 'none'; 
+        overlay.style.backgroundColor = 'rgba(0, 0, 0, 0.5)';
+        overlay.style.display = 'none';
         overlay.style.alignItems = 'center';
         overlay.style.justifyContent = 'center';
-        overlay.style.fontSize = '24px';
+        overlay.style.fontSize = '28px';
+        overlay.style.fontWeight = 'bold';
         overlay.style.color = 'white';
-        overlay.style.borderRadius = '30px'; 
-
+        overlay.style.borderRadius = '16px';
+        
         zone.appendChild(overlay);
         zone.onclick = () => clickFinger(i);
         container.appendChild(zone);
