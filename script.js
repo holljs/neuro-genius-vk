@@ -974,11 +974,27 @@ function setupFingers() {
     const container = document.getElementById('finger-zones');
     container.innerHTML = '';
     
-    // Создаем 10 невидимых колонок поверх картинки
+    // Точные координаты для каждого пальца под твою картинку (left и width в %)
+    const fingerPositions = [
+        { left: '9%', width: '8%' },   // 1. Мизинец лев.
+        { left: '17.5%', width: '8%' },// 2. Безымянный лев.
+        { left: '26%', width: '8%' },  // 3. Средний лев.
+        { left: '34.5%', width: '8%' },// 4. Указательный лев.
+        { left: '42%', width: '8%' },  // 5. Большой лев.
+        { left: '50%', width: '8%' },  // 6. Большой прав.
+        { left: '58%', width: '8%' },  // 7. Указательный прав.
+        { left: '65.5%', width: '8%' },// 8. Средний прав.
+        { left: '74%', width: '8%' },  // 9. Безымянный прав.
+        { left: '82%', width: '8%' }   // 10. Мизинец прав.
+    ];
+
     for (let i = 1; i <= 10; i++) {
         let zone = document.createElement('div');
-        zone.style.flex = '1';
-        zone.style.height = '100%';
+        zone.style.position = 'absolute';
+        zone.style.left = fingerPositions[i-1].left;
+        zone.style.width = fingerPositions[i-1].width;
+        zone.style.top = '12%';    // Отступаем сверху
+        zone.style.height = '45%'; // Закрываем только длину пальцев, а не всю руку
         zone.style.cursor = 'pointer';
         
         // Создаем затемнение "загнутого" пальца
@@ -987,13 +1003,13 @@ function setupFingers() {
         overlay.innerHTML = '❌'; 
         overlay.style.width = '100%';
         overlay.style.height = '100%';
-        overlay.style.backgroundColor = 'rgba(0, 0, 0, 0.4)';
+        overlay.style.backgroundColor = 'rgba(0, 0, 0, 0.5)';
         overlay.style.display = 'none'; // Изначально скрыто
         overlay.style.alignItems = 'center';
         overlay.style.justifyContent = 'center';
         overlay.style.fontSize = '24px';
         overlay.style.color = 'white';
-        overlay.style.borderRadius = '8px';
+        overlay.style.borderRadius = '30px'; // Делаем красивую круглую "пилюлю" по форме пальца
 
         zone.appendChild(overlay);
         zone.onclick = () => clickFinger(i);
