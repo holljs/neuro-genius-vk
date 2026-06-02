@@ -495,7 +495,7 @@ function setupWordsGame() {
     wordData.syllables.forEach((syl, index) => {
         const slot = document.createElement('div');
         slot.className = 'target-item';
-        slot.style.backgroundImage = "url('img/slot_bg.png')";
+        slot.style.backgroundImage = "url('img/slot_bg.png?v=2')";
         slot.innerText = syl;
         slot.setAttribute('data-syl', syl);
         slot.setAttribute('data-index', index);
