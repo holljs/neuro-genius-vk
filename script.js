@@ -974,45 +974,45 @@ function setupFingers() {
     const container = document.getElementById('finger-zones');
     container.innerHTML = '';
     
-    // Координаты для стандартного фото двух рук (пальцы вверх)
-    // При необходимости подкорректируйте left/top/width/height под ваше изображение
+    // Умная сетка! Теперь у каждого пальчика свой отступ сверху, высота и даже НАКЛОН!
     const fingerPositions = [
-        { left: '5%', top: '55%', width: '9%', height: '35%' },  // 1 большой левый
-        { left: '16%', top: '30%', width: '8%', height: '45%' },  // 2 указательный
-        { left: '26%', top: '20%', width: '7%', height: '50%' },  // 3 средний
-        { left: '36%', top: '28%', width: '7%', height: '45%' },  // 4 безымянный
-        { left: '44%', top: '42%', width: '7%', height: '38%' },  // 5 мизинец
-        { left: '51%', top: '42%', width: '7%', height: '38%' },  // 6 правый мизинец
-        { left: '59%', top: '28%', width: '7%', height: '45%' },  // 7 безымянный
-        { left: '69%', top: '20%', width: '7%', height: '50%' },  // 8 средний
-        { left: '79%', top: '30%', width: '8%', height: '45%' },  // 9 указательный
-        { left: '88%', top: '55%', width: '9%', height: '35%' }   // 10 большой правый
+        { left: '10%', top: '35%', width: '8%', height: '35%', rotate: '-30deg' },  // 1. Левый большой
+        { left: '21%', top: '18%', width: '7%', height: '40%', rotate: '-10deg' },  // 2. Левый указательный
+        { left: '30%', top: '14%', width: '6.5%', height: '42%', rotate: '-3deg' }, // 3. Левый средний
+        { left: '38%', top: '18%', width: '6%', height: '38%', rotate: '5deg' },    // 4. Левый безымянный
+        { left: '44%', top: '28%', width: '5.5%', height: '30%', rotate: '15deg' }, // 5. Левый мизинец
+        
+        { left: '50.5%', top: '28%', width: '5.5%', height: '30%', rotate: '-15deg' },// 6. Правый мизинец
+        { left: '56.5%', top: '18%', width: '6%', height: '38%', rotate: '-5deg' },   // 7. Правый безымянный
+        { left: '63.5%', top: '14%', width: '6.5%', height: '42%', rotate: '3deg' },  // 8. Правый средний
+        { left: '72%', top: '18%', width: '7%', height: '40%', rotate: '10deg' },     // 9. Правый указательный
+        { left: '82%', top: '35%', width: '8%', height: '35%', rotate: '30deg' }      // 10. Правый большой
     ];
 
     for (let i = 1; i <= 10; i++) {
         let zone = document.createElement('div');
-        let pos = fingerPositions[i-1];
         zone.style.position = 'absolute';
-        zone.style.left = pos.left;
-        zone.style.top = pos.top;
-        zone.style.width = pos.width;
-        zone.style.height = pos.height;
+        zone.style.left = fingerPositions[i-1].left;
+        zone.style.top = fingerPositions[i-1].top;
+        zone.style.width = fingerPositions[i-1].width;
+        zone.style.height = fingerPositions[i-1].height;
+        zone.style.transform = `rotate(${fingerPositions[i-1].rotate})`; // Магия поворота!
         zone.style.cursor = 'pointer';
         
+        // Создаем затемнение "загнутого" пальца
         let overlay = document.createElement('div');
         overlay.id = 'finger-overlay-' + i;
-        overlay.innerHTML = '━';   // горизонтальная полоска (можно заменить на '❌' или '━')
+        overlay.innerHTML = '❌'; 
         overlay.style.width = '100%';
         overlay.style.height = '100%';
-        overlay.style.backgroundColor = 'rgba(0, 0, 0, 0.6)';
-        overlay.style.display = 'none';
+        overlay.style.backgroundColor = 'rgba(0, 0, 0, 0.4)';
+        overlay.style.display = 'none'; 
         overlay.style.alignItems = 'center';
         overlay.style.justifyContent = 'center';
-        overlay.style.fontSize = '28px';
-        overlay.style.fontWeight = 'bold';
+        overlay.style.fontSize = '24px';
         overlay.style.color = 'white';
-        overlay.style.borderRadius = '20px';
-        
+        overlay.style.borderRadius = '30px'; 
+
         zone.appendChild(overlay);
         zone.onclick = () => clickFinger(i);
         container.appendChild(zone);
