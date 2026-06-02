@@ -974,18 +974,19 @@ function setupFingers() {
     const container = document.getElementById('finger-zones');
     container.innerHTML = '';
     
-    // Координаты без поворотов, подберите под свою картинку
+    // Координаты для стандартного фото двух рук (пальцы вверх)
+    // При необходимости подкорректируйте left/top/width/height под ваше изображение
     const fingerPositions = [
-        { left: '8%',  top: '55%', width: '8%', height: '30%' },
-        { left: '18%', top: '30%', width: '7%', height: '40%' },
-        { left: '27%', top: '20%', width: '7%', height: '45%' },
-        { left: '36%', top: '28%', width: '7%', height: '42%' },
-        { left: '44%', top: '45%', width: '7%', height: '35%' },
-        { left: '51%', top: '45%', width: '7%', height: '35%' },
-        { left: '59%', top: '28%', width: '7%', height: '42%' },
-        { left: '68%', top: '20%', width: '7%', height: '45%' },
-        { left: '77%', top: '30%', width: '7%', height: '40%' },
-        { left: '86%', top: '55%', width: '8%', height: '30%' }
+        { left: '5%', top: '55%', width: '9%', height: '35%' },  // 1 большой левый
+        { left: '16%', top: '30%', width: '8%', height: '45%' },  // 2 указательный
+        { left: '26%', top: '20%', width: '7%', height: '50%' },  // 3 средний
+        { left: '36%', top: '28%', width: '7%', height: '45%' },  // 4 безымянный
+        { left: '44%', top: '42%', width: '7%', height: '38%' },  // 5 мизинец
+        { left: '51%', top: '42%', width: '7%', height: '38%' },  // 6 правый мизинец
+        { left: '59%', top: '28%', width: '7%', height: '45%' },  // 7 безымянный
+        { left: '69%', top: '20%', width: '7%', height: '50%' },  // 8 средний
+        { left: '79%', top: '30%', width: '8%', height: '45%' },  // 9 указательный
+        { left: '88%', top: '55%', width: '9%', height: '35%' }   // 10 большой правый
     ];
 
     for (let i = 1; i <= 10; i++) {
@@ -1000,18 +1001,17 @@ function setupFingers() {
         
         let overlay = document.createElement('div');
         overlay.id = 'finger-overlay-' + i;
-        // ПОЛОСКА вместо крестика:
-        overlay.innerHTML = '━'; 
+        overlay.innerHTML = '━';   // горизонтальная полоска (можно заменить на '❌' или '━')
         overlay.style.width = '100%';
         overlay.style.height = '100%';
-        overlay.style.backgroundColor = 'rgba(0, 0, 0, 0.5)';
+        overlay.style.backgroundColor = 'rgba(0, 0, 0, 0.6)';
         overlay.style.display = 'none';
         overlay.style.alignItems = 'center';
         overlay.style.justifyContent = 'center';
         overlay.style.fontSize = '28px';
         overlay.style.fontWeight = 'bold';
         overlay.style.color = 'white';
-        overlay.style.borderRadius = '16px';
+        overlay.style.borderRadius = '20px';
         
         zone.appendChild(overlay);
         zone.onclick = () => clickFinger(i);
