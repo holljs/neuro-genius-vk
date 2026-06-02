@@ -974,18 +974,18 @@ function setupFingers() {
     const container = document.getElementById('finger-zones');
     container.innerHTML = '';
     
-    // Новые точные координаты! Ширина 6%, сдвинули вправо к центру, подогнали под пальцы
+    // Идеальные координаты специально для новой картинки!
     const fingerPositions = [
-        { left: '21%', width: '6%' },   // 1. Левый большой
-        { left: '30%', width: '6%' },   // 2. Левый указательный
-        { left: '36.5%', width: '5.5%' }, // 3. Левый средний
-        { left: '42.5%', width: '5.5%' }, // 4. Левый безымянный
-        { left: '48.5%', width: '5%' },   // 5. Левый мизинец
-        { left: '55%', width: '5%' },     // 6. Правый мизинец
-        { left: '60.5%', width: '5.5%' }, // 7. Правый безымянный
-        { left: '67%', width: '5.5%' },   // 8. Правый средний
-        { left: '73.5%', width: '6%' },   // 9. Правый указательный
-        { left: '81%', width: '6%' }      // 10. Правый большой
+        { left: '8%', width: '7%' },    // 1. Левый мизинец
+        { left: '17%', width: '7%' },   // 2. Левый безымянный
+        { left: '26%', width: '7%' },   // 3. Левый средний
+        { left: '36%', width: '7%' },   // 4. Левый указательный
+        { left: '43%', width: '7%' },   // 5. Левый большой
+        { left: '51%', width: '7%' },   // 6. Правый большой
+        { left: '58%', width: '7%' },   // 7. Правый указательный
+        { left: '68%', width: '7%' },   // 8. Правый средний
+        { left: '77%', width: '7%' },   // 9. Правый безымянный
+        { left: '86%', width: '7%' }    // 10. Правый мизинец
     ];
 
     for (let i = 1; i <= 10; i++) {
@@ -993,8 +993,8 @@ function setupFingers() {
         zone.style.position = 'absolute';
         zone.style.left = fingerPositions[i-1].left;
         zone.style.width = fingerPositions[i-1].width;
-        zone.style.top = '22%';    // Опустили крестик чуть ниже, чтобы не торчал над пальцами
-        zone.style.height = '40%'; // Сделали короче, чтобы не залезал на запястье
+        zone.style.top = '15%';    // Опускаем ниже верхнего края
+        zone.style.height = '40%'; // Делаем коротким, чтобы не лезло на запястье
         zone.style.cursor = 'pointer';
         
         // Создаем затемнение "загнутого" пальца
@@ -1009,7 +1009,7 @@ function setupFingers() {
         overlay.style.justifyContent = 'center';
         overlay.style.fontSize = '24px';
         overlay.style.color = 'white';
-        overlay.style.borderRadius = '30px'; // Красивая круглая форма
+        overlay.style.borderRadius = '30px'; // Идеальная форма пальчика
 
         zone.appendChild(overlay);
         zone.onclick = () => clickFinger(i);
