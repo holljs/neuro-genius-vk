@@ -952,3 +952,74 @@ function closeComicSlider() {
         playSound(tasks[currentLessonIndex].taskAudio);
     }
 }
+
+// ==========================================
+//        МЕМОРИКА: МАГИЯ УМНОЖЕНИЯ НА 9
+// ==========================================
+
+function openMagic9() {
+    try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(e){}
+    document.getElementById('screen-memorika-menu').classList.remove('active');
+    document.getElementById('screen-magic-9').classList.add('active');
+    setupFingers();
+}
+
+function goBackToMemorika() {
+    try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(e){}
+    document.getElementById('screen-magic-9').classList.remove('active');
+    document.getElementById('screen-memorika-menu').classList.add('active');
+}
+
+function setupFingers() {
+    const container = document.getElementById('finger-zones');
+    container.innerHTML = '';
+    
+    // Создаем 10 невидимых колонок поверх картинки
+    for (let i = 1; i <= 10; i++) {
+        let zone = document.createElement('div');
+        zone.style.flex = '1';
+        zone.style.height = '100%';
+        zone.style.cursor = 'pointer';
+        
+        // Создаем затемнение "загнутого" пальца
+        let overlay = document.createElement('div');
+        overlay.id = 'finger-overlay-' + i;
+        overlay.innerHTML = '❌'; 
+        overlay.style.width = '100%';
+        overlay.style.height = '100%';
+        overlay.style.backgroundColor = 'rgba(0, 0, 0, 0.4)';
+        overlay.style.display = 'none'; // Изначально скрыто
+        overlay.style.alignItems = 'center';
+        overlay.style.justifyContent = 'center';
+        overlay.style.fontSize = '24px';
+        overlay.style.color = 'white';
+        overlay.style.borderRadius = '8px';
+
+        zone.appendChild(overlay);
+        zone.onclick = () => clickFinger(i);
+        container.appendChild(zone);
+    }
+    document.getElementById('magic-9-result').innerHTML = "Выбери палец ☝️";
+}
+
+function clickFinger(num) {
+    try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "medium"}); } catch(e){}
+    
+    // Сбрасываем все пальцы
+    for(let i = 1; i <= 10; i++) {
+        document.getElementById('finger-overlay-' + i).style.display = 'none';
+    }
+    
+    // Показываем "загнутый" палец
+    document.getElementById('finger-overlay-' + num).style.display = 'flex';
+    
+    // Считаем магию
+    let tens = num - 1;
+    let units = 10 - num;
+    let result = tens * 10 + units;
+    
+    // Выводим результат
+    document.getElementById('magic-9-result').innerHTML = 
+        `9 × ${num} = <span style="font-size:42px; color:#E91E63;">${result}</span><br>
+         <span style="font-size:16px; color:#777; font-weight: normal;">(Слева десятков: <b>${tens}</b>, Справа единиц: <b>${units}</b>)</span>`;
+}
