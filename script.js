@@ -954,39 +954,57 @@ function closeComicSlider() {
 }
 
 // ==========================================
-//        МЕМОРИКА: МАГИЯ УМНОЖЕНИЯ НА 9
+//        МЕМОРИКА: ЛАЙФХАКИ УМНОЖЕНИЯ
 // ==========================================
 
-function openMagic9() {
+// Навигация подменю Лайфхаков
+function openMultiplicationMenu() {
     try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(e){}
     document.getElementById('screen-memorika-menu').classList.remove('active');
+    document.getElementById('screen-multiplication-menu').classList.add('active');
+}
+
+function goBackToMemorikaFromMult() {
+    try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(e){}
+    document.getElementById('screen-multiplication-menu').classList.remove('active');
+    document.getElementById('screen-memorika-menu').classList.add('active');
+}
+
+// Навигация комнаты Магия 9
+function openMagic9() {
+    try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(e){}
+    document.getElementById('screen-multiplication-menu').classList.remove('active');
     document.getElementById('screen-magic-9').classList.add('active');
     setupFingers();
 }
 
-function goBackToMemorika() {
+function goBackToMultFromMagic9() {
     try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(e){}
     document.getElementById('screen-magic-9').classList.remove('active');
-    document.getElementById('screen-memorika-menu').classList.add('active');
+    document.getElementById('screen-multiplication-menu').classList.add('active');
+    // Выключаем звук, если ребенок вышел во время озвучки
+    if (currentAudio) {
+        currentAudio.pause();
+        currentAudio.currentTime = 0;
+    }
 }
 
+// Логика Магии на 9
 function setupFingers() {
     const container = document.getElementById('finger-zones');
     container.innerHTML = '';
     
-    // Умная сетка! Теперь у каждого пальчика свой отступ сверху, высота и даже НАКЛОН!
     const fingerPositions = [
-        { left: '10%', top: '35%', width: '8%', height: '35%', rotate: '-30deg' },  // 1. Левый большой
-        { left: '21%', top: '18%', width: '7%', height: '40%', rotate: '-10deg' },  // 2. Левый указательный
-        { left: '30%', top: '14%', width: '6.5%', height: '42%', rotate: '-3deg' }, // 3. Левый средний
-        { left: '38%', top: '18%', width: '6%', height: '38%', rotate: '5deg' },    // 4. Левый безымянный
-        { left: '44%', top: '28%', width: '5.5%', height: '30%', rotate: '15deg' }, // 5. Левый мизинец
-        
-        { left: '50.5%', top: '28%', width: '5.5%', height: '30%', rotate: '-15deg' },// 6. Правый мизинец
-        { left: '56.5%', top: '18%', width: '6%', height: '38%', rotate: '-5deg' },   // 7. Правый безымянный
-        { left: '63.5%', top: '14%', width: '6.5%', height: '42%', rotate: '3deg' },  // 8. Правый средний
-        { left: '72%', top: '18%', width: '7%', height: '40%', rotate: '10deg' },     // 9. Правый указательный
-        { left: '82%', top: '35%', width: '8%', height: '35%', rotate: '30deg' }      // 10. Правый большой
+        { left: '10%', top: '35%', width: '8%', height: '35%', rotate: '-30deg' },  // 1
+        { left: '21%', top: '18%', width: '7%', height: '40%', rotate: '-10deg' },  // 2
+        { left: '30%', top: '14%', width: '6.5%', height: '42%', rotate: '-3deg' }, // 3
+        { left: '38%', top: '18%', width: '6%', height: '38%', rotate: '5deg' },    // 4
+        { left: '44%', top: '28%', width: '5.5%', height: '30%', rotate: '15deg' }, // 5
+        { left: '50.5%', top: '28%', width: '5.5%', height: '30%', rotate: '-15deg' },// 6
+        { left: '56.5%', top: '18%', width: '6%', height: '38%', rotate: '-5deg' },   // 7
+        { left: '63.5%', top: '14%', width: '6.5%', height: '42%', rotate: '3deg' },  // 8
+        { left: '72%', top: '18%', width: '7%', height: '40%', rotate: '10deg' },     // 9
+        { left: '82%', top: '35%', width: '8%', height: '35%', rotate: '30deg' }      // 10
     ];
 
     for (let i = 1; i <= 10; i++) {
@@ -996,21 +1014,17 @@ function setupFingers() {
         zone.style.top = fingerPositions[i-1].top;
         zone.style.width = fingerPositions[i-1].width;
         zone.style.height = fingerPositions[i-1].height;
-        zone.style.transform = `rotate(${fingerPositions[i-1].rotate})`; // Магия поворота!
+        zone.style.transform = `rotate(${fingerPositions[i-1].rotate})`;
         zone.style.cursor = 'pointer';
         
-        // Создаем затемнение "загнутого" пальца
+        // Затемняем палец (без крестика!), чтобы казалось, что он загнут
         let overlay = document.createElement('div');
         overlay.id = 'finger-overlay-' + i;
-        overlay.innerHTML = '❌'; 
         overlay.style.width = '100%';
         overlay.style.height = '100%';
-        overlay.style.backgroundColor = 'rgba(0, 0, 0, 0.4)';
+        overlay.style.backgroundColor = 'rgba(0, 0, 0, 0.65)'; // Густая тень
+        overlay.style.boxShadow = 'inset 0px 4px 10px rgba(0,0,0,0.5)'; // Эффект глубины
         overlay.style.display = 'none'; 
-        overlay.style.alignItems = 'center';
-        overlay.style.justifyContent = 'center';
-        overlay.style.fontSize = '24px';
-        overlay.style.color = 'white';
         overlay.style.borderRadius = '30px'; 
 
         zone.appendChild(overlay);
@@ -1023,21 +1037,19 @@ function setupFingers() {
 function clickFinger(num) {
     try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "medium"}); } catch(e){}
     
-    // Сбрасываем все пальцы
     for(let i = 1; i <= 10; i++) {
         document.getElementById('finger-overlay-' + i).style.display = 'none';
     }
+    document.getElementById('finger-overlay-' + num).style.display = 'block';
     
-    // Показываем "загнутый" палец
-    document.getElementById('finger-overlay-' + num).style.display = 'flex';
-    
-    // Считаем магию
     let tens = num - 1;
     let units = 10 - num;
     let result = tens * 10 + units;
     
-    // Выводим результат
     document.getElementById('magic-9-result').innerHTML = 
         `9 × ${num} = <span style="font-size:42px; color:#E91E63;">${result}</span><br>
          <span style="font-size:16px; color:#777; font-weight: normal;">(Слева десятков: <b>${tens}</b>, Справа единиц: <b>${units}</b>)</span>`;
+         
+    // 📢 ВКЛЮЧАЕМ ОЗВУЧКУ!
+    playSound(`audio/magic9_${num}.wav`);
 }
