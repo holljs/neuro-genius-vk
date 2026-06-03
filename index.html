@@ -64,13 +64,41 @@
                 <div class="category-title sub-title">Стихи и рисование</div>
                 <div class="category-subtitle">Рисуем и запоминаем</div>
             </div>
-            <div class="category-card sub-card" onclick="openMagic9()">
+            <div class="category-card sub-card" onclick="openMultiplicationMenu()">
                 <div class="category-title sub-title">Лайфхаки умножения</div>
                 <div class="category-subtitle">Учим таблицу весело</div>
             </div>
         </div>
     </div>
     <!-- === КОНЕЦ МЕНЮ МЕМОРИКИ === -->
+
+    <div id="screen-multiplication-menu" class="screen" style="overflow-y: auto;">
+        <div class="header" style="position: sticky; top: 0; z-index: 10;">
+            <div class="header-title-row"><span id="room-title">Лайфхаки</span></div>
+            <div class="header-top">
+                <div class="back-btn" onclick="goBackToMemorikaFromMult()">⬅ Назад</div>
+            </div>
+        </div>
+        <div class="hero-title">Выбери фокус:</div>
+        <div class="menu-grid sub-grid">
+            <div class="category-card sub-card" onclick="openMagic9()">
+                <div class="category-title sub-title">Магия на 9</div>
+                <div class="category-subtitle">Считаем на пальцах</div>
+            </div>
+            <div class="category-card sub-card" onclick="alert('Умножение на 5 скоро откроется!')">
+                <div class="category-title sub-title">Магия на 5</div>
+                <div class="category-subtitle">Секрет с половинкой</div>
+            </div>
+        </div>
+    </div>
+    <div id="screen-magic-9" class="screen" style="overflow-y: auto;">
+        <div class="header" style="position: sticky; top: 0; z-index: 10;">
+            <div class="header-title-row"><span id="room-title">Лайфхаки</span></div>
+            <div class="header-top">
+                <div class="back-btn" onclick="goBackToMultFromMagic9()">⬅ Назад</div>
+            </div>
+        </div>
+        <div class="hero-title">Магия умножения на 9!</div>
 
     <div id="screen-magic-9" class="screen" style="overflow-y: auto;">
         <div class="header" style="position: sticky; top: 0; z-index: 10;">
