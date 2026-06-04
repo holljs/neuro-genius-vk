@@ -989,67 +989,77 @@ function goBackToMultFromMagic9() {
     }
 }
 
-function setupFingers() {
-    const container = document.getElementById('finger-zones');
-    container.innerHTML = '';
-    
-    // Находим картинку рук и даем ей удобный ID, чтобы легко менять
-    const handsImg = document.querySelector('.hands-container img');
-    if (handsImg) handsImg.id = 'hands-image';
-    
-    // Сбрасываем на стартовую картинку (где все пальцы открыты)
-    // ВАЖНО: назови стартовую картинку hands_0.jpg
-    if (document.getElementById('hands-image')) {
-        document.getElementById('hands-image').src = 'img/hands_0.jpg'; 
-    }
+// ==========================================
+//        МЕМОРИКА: ЛАЙФХАКИ УМНОЖЕНИЯ
+// ==========================================
 
-   // Идеальные невидимые зоны для ладошек, смотрящих ВВЕРХ (hands_0.jpg)
-    const fingerPositions = [
-        { left: '9%', top: '35%', width: '10%', height: '35%', rotate: '-35deg' }, // 1. Левый большой
-        { left: '20%', top: '15%', width: '9%', height: '40%', rotate: '-10deg' }, // 2. Левый указательный
-        { left: '30%', top: '10%', width: '9%', height: '45%', rotate: '0deg' },   // 3. Левый средний
-        { left: '39%', top: '15%', width: '8%', height: '40%', rotate: '10deg' },  // 4. Левый безымянный
-        { left: '46%', top: '28%', width: '8%', height: '30%', rotate: '20deg' },  // 5. Левый мизинец
-        
-        { left: '55%', top: '28%', width: '8%', height: '30%', rotate: '-20deg' }, // 6. Правый мизинец
-        { left: '62%', top: '15%', width: '8%', height: '40%', rotate: '-10deg' }, // 7. Правый безымянный
-        { left: '70%', top: '10%', width: '9%', height: '45%', rotate: '0deg' },   // 8. Правый средний
-        { left: '80%', top: '15%', width: '9%', height: '40%', rotate: '10deg' },  // 9. Правый указательный
-        { left: '89%', top: '35%', width: '10%', height: '35%', rotate: '35deg' }  // 10. Правый большой
-    ];
+let currentMagicFinger = 0; // Переменная для хранения текущего пальца
 
-    for (let i = 1; i <= 10; i++) {
-        let zone = document.createElement('div');
-        zone.style.position = 'absolute';
-        zone.style.left = fingerPositions[i-1].left;
-        zone.style.top = fingerPositions[i-1].top;
-        zone.style.width = fingerPositions[i-1].width;
-        zone.style.height = fingerPositions[i-1].height;
-        zone.style.transform = `rotate(${fingerPositions[i-1].rotate})`;
-        zone.style.cursor = 'pointer';
-        
-        // Больше никаких теней (overlay)! Просто вешаем клик на невидимую зону
-        zone.onclick = () => clickFinger(i);
-        container.appendChild(zone);
-    }
-    document.getElementById('magic-9-result').innerHTML = "Выбери палец ☝️";
+// Навигация подменю Лайфхаков
+function openMultiplicationMenu() {
+    try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(e){}
+    document.getElementById('screen-memorika-menu').classList.remove('active');
+    document.getElementById('screen-multiplication-menu').classList.add('active');
 }
 
-function clickFinger(num) {
-    try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "medium"}); } catch(e){}
+function goBackToMemorikaFromMult() {
+    try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(e){}
+    document.getElementById('screen-multiplication-menu').classList.remove('active');
+    document.getElementById('screen-memorika-menu').classList.add('active');
+}
+
+// Навигация комнаты Магия 9
+function openMagic9() {
+    try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(e){}
+    document.getElementById('screen-multiplication-menu').classList.remove('active');
+    document.getElementById('screen-magic-9').classList.add('active');
     
-    // 1. МАГИЯ: Просто меняем картинку на ту, где нужный палец загнут!
-    document.getElementById('hands-image').src = `img/hands_${num}.jpg`;
+    // Сбрасываем всё на старт при входе в комнату
+    currentMagicFinger = 0;
+    document.getElementById('hands-image').src = 'img/hands_0.jpg';
+    document.getElementById('magic-9-result').innerHTML = "Нажми стрелочку вправо ☝️";
+    document.getElementById('btn-prev-magic').classList.add('disabled');
+    document.getElementById('btn-next-magic').classList.remove('disabled');
+}
+
+function goBackToMultFromMagic9() {
+    try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(e){}
+    document.getElementById('screen-magic-9').classList.remove('active');
+    document.getElementById('screen-multiplication-menu').classList.add('active');
+    // Выключаем звук при выходе
+    if (currentAudio) {
+        currentAudio.pause();
+        currentAudio.currentTime = 0;
+    }
+}
+
+// НОВАЯ ЛОГИКА: Переключение стрелочками
+function changeMagicFinger(direction) {
+    try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(e){}
+    
+    currentMagicFinger += direction;
+    
+    // Ограничиваем от 1 до 10
+    if (currentMagicFinger < 1) currentMagicFinger = 1;
+    if (currentMagicFinger > 10) currentMagicFinger = 10;
+
+    // Включаем/отключаем стрелочки на краях
+    document.getElementById('btn-prev-magic').classList.toggle('disabled', currentMagicFinger === 1);
+    document.getElementById('btn-next-magic').classList.toggle('disabled', currentMagicFinger === 10);
+
+    // 1. Меняем картинку
+    document.getElementById('hands-image').src = `img/hands_${currentMagicFinger}.jpg`;
     
     // 2. Считаем результат
-    let tens = num - 1;
-    let units = 10 - num;
+    let tens = currentMagicFinger - 1;
+    let units = 10 - currentMagicFinger;
     let result = tens * 10 + units;
     
+    // 3. Выводим текст
     document.getElementById('magic-9-result').innerHTML = 
-        `9 × ${num} = <span style="font-size:42px; color:#E91E63;">${result}</span><br>
+        `9 × ${currentMagicFinger} = <span style="font-size:42px; color:#E91E63;">${result}</span><br>
          <span style="font-size:16px; color:#777; font-weight: normal;">(Слева десятков: <b>${tens}</b>, Справа единиц: <b>${units}</b>)</span>`;
          
-    // 3. Запускаем твою новую озвучку!
-    playSound(`audio/magic9_${num}.wav`);
+    // 4. Запускаем озвучку
+    playSound(`audio/magic9_${currentMagicFinger}.wav`);
 }
