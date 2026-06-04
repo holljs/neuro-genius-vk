@@ -1003,18 +1003,19 @@ function setupFingers() {
         document.getElementById('hands-image').src = 'img/hands_0.jpg'; 
     }
 
-    // Оставляем наши идеальные невидимые зоны для кликов
+   // Идеальные невидимые зоны для ладошек, смотрящих ВВЕРХ (hands_0.jpg)
     const fingerPositions = [
-        { left: '10%', top: '35%', width: '8%', height: '35%', rotate: '-30deg' },  // 1
-        { left: '21%', top: '18%', width: '7%', height: '40%', rotate: '-10deg' },  // 2
-        { left: '30%', top: '14%', width: '6.5%', height: '42%', rotate: '-3deg' }, // 3
-        { left: '38%', top: '18%', width: '6%', height: '38%', rotate: '5deg' },    // 4
-        { left: '44%', top: '28%', width: '5.5%', height: '30%', rotate: '15deg' }, // 5
-        { left: '50.5%', top: '28%', width: '5.5%', height: '30%', rotate: '-15deg' },// 6
-        { left: '56.5%', top: '18%', width: '6%', height: '38%', rotate: '-5deg' },   // 7
-        { left: '63.5%', top: '14%', width: '6.5%', height: '42%', rotate: '3deg' },  // 8
-        { left: '72%', top: '18%', width: '7%', height: '40%', rotate: '10deg' },     // 9
-        { left: '82%', top: '35%', width: '8%', height: '35%', rotate: '30deg' }      // 10
+        { left: '9%', top: '35%', width: '10%', height: '35%', rotate: '-35deg' }, // 1. Левый большой
+        { left: '20%', top: '15%', width: '9%', height: '40%', rotate: '-10deg' }, // 2. Левый указательный
+        { left: '30%', top: '10%', width: '9%', height: '45%', rotate: '0deg' },   // 3. Левый средний
+        { left: '39%', top: '15%', width: '8%', height: '40%', rotate: '10deg' },  // 4. Левый безымянный
+        { left: '46%', top: '28%', width: '8%', height: '30%', rotate: '20deg' },  // 5. Левый мизинец
+        
+        { left: '55%', top: '28%', width: '8%', height: '30%', rotate: '-20deg' }, // 6. Правый мизинец
+        { left: '62%', top: '15%', width: '8%', height: '40%', rotate: '-10deg' }, // 7. Правый безымянный
+        { left: '70%', top: '10%', width: '9%', height: '45%', rotate: '0deg' },   // 8. Правый средний
+        { left: '80%', top: '15%', width: '9%', height: '40%', rotate: '10deg' },  // 9. Правый указательный
+        { left: '89%', top: '35%', width: '10%', height: '35%', rotate: '35deg' }  // 10. Правый большой
     ];
 
     for (let i = 1; i <= 10; i++) {
