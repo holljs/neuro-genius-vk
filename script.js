@@ -989,11 +989,21 @@ function goBackToMultFromMagic9() {
     }
 }
 
-// Логика Магии на 9
 function setupFingers() {
     const container = document.getElementById('finger-zones');
     container.innerHTML = '';
     
+    // Находим картинку рук и даем ей удобный ID, чтобы легко менять
+    const handsImg = document.querySelector('.hands-container img');
+    if (handsImg) handsImg.id = 'hands-image';
+    
+    // Сбрасываем на стартовую картинку (где все пальцы открыты)
+    // ВАЖНО: назови стартовую картинку hands_0.jpg
+    if (document.getElementById('hands-image')) {
+        document.getElementById('hands-image').src = 'img/hands_0.jpg'; 
+    }
+
+    // Оставляем наши идеальные невидимые зоны для кликов
     const fingerPositions = [
         { left: '10%', top: '35%', width: '8%', height: '35%', rotate: '-30deg' },  // 1
         { left: '21%', top: '18%', width: '7%', height: '40%', rotate: '-10deg' },  // 2
@@ -1017,17 +1027,7 @@ function setupFingers() {
         zone.style.transform = `rotate(${fingerPositions[i-1].rotate})`;
         zone.style.cursor = 'pointer';
         
-        // Затемняем палец (без крестика!), чтобы казалось, что он загнут
-        let overlay = document.createElement('div');
-        overlay.id = 'finger-overlay-' + i;
-        overlay.style.width = '100%';
-        overlay.style.height = '100%';
-        overlay.style.backgroundColor = 'rgba(0, 0, 0, 0.65)'; // Густая тень
-        overlay.style.boxShadow = 'inset 0px 4px 10px rgba(0,0,0,0.5)'; // Эффект глубины
-        overlay.style.display = 'none'; 
-        overlay.style.borderRadius = '30px'; 
-
-        zone.appendChild(overlay);
+        // Больше никаких теней (overlay)! Просто вешаем клик на невидимую зону
         zone.onclick = () => clickFinger(i);
         container.appendChild(zone);
     }
@@ -1037,11 +1037,10 @@ function setupFingers() {
 function clickFinger(num) {
     try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "medium"}); } catch(e){}
     
-    for(let i = 1; i <= 10; i++) {
-        document.getElementById('finger-overlay-' + i).style.display = 'none';
-    }
-    document.getElementById('finger-overlay-' + num).style.display = 'block';
+    // 1. МАГИЯ: Просто меняем картинку на ту, где нужный палец загнут!
+    document.getElementById('hands-image').src = `img/hands_${num}.jpg`;
     
+    // 2. Считаем результат
     let tens = num - 1;
     let units = 10 - num;
     let result = tens * 10 + units;
@@ -1050,6 +1049,6 @@ function clickFinger(num) {
         `9 × ${num} = <span style="font-size:42px; color:#E91E63;">${result}</span><br>
          <span style="font-size:16px; color:#777; font-weight: normal;">(Слева десятков: <b>${tens}</b>, Справа единиц: <b>${units}</b>)</span>`;
          
-    // 📢 ВКЛЮЧАЕМ ОЗВУЧКУ!
+    // 3. Запускаем твою новую озвучку!
     playSound(`audio/magic9_${num}.wav`);
 }
