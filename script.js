@@ -957,42 +957,6 @@ function closeComicSlider() {
 //        МЕМОРИКА: ЛАЙФХАКИ УМНОЖЕНИЯ
 // ==========================================
 
-// Навигация подменю Лайфхаков
-function openMultiplicationMenu() {
-    try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(e){}
-    document.getElementById('screen-memorika-menu').classList.remove('active');
-    document.getElementById('screen-multiplication-menu').classList.add('active');
-}
-
-function goBackToMemorikaFromMult() {
-    try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(e){}
-    document.getElementById('screen-multiplication-menu').classList.remove('active');
-    document.getElementById('screen-memorika-menu').classList.add('active');
-}
-
-// Навигация комнаты Магия 9
-function openMagic9() {
-    try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(e){}
-    document.getElementById('screen-multiplication-menu').classList.remove('active');
-    document.getElementById('screen-magic-9').classList.add('active');
-    setupFingers();
-}
-
-function goBackToMultFromMagic9() {
-    try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(e){}
-    document.getElementById('screen-magic-9').classList.remove('active');
-    document.getElementById('screen-multiplication-menu').classList.add('active');
-    // Выключаем звук, если ребенок вышел во время озвучки
-    if (currentAudio) {
-        currentAudio.pause();
-        currentAudio.currentTime = 0;
-    }
-}
-
-// ==========================================
-//        МЕМОРИКА: ЛАЙФХАКИ УМНОЖЕНИЯ
-// ==========================================
-
 let currentMagicFinger = 0; // Переменная для хранения текущего пальца
 
 // Навигация подменю Лайфхаков
