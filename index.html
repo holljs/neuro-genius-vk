@@ -56,7 +56,7 @@
                 <div class="category-title sub-title">Цепочка по рассказу</div>
                 <div class="category-subtitle">Связывание образов</div>
             </div>
-            <div class="category-card sub-card" onclick="alert('Комната Стихов и рисования в разработке!')">
+            <div class="category-card sub-card" onclick="openPoems()">
                 <div class="category-title sub-title">Стихи и рисование</div>
                 <div class="category-subtitle">Рисуем и запоминаем</div>
             </div>
@@ -117,6 +117,100 @@
             Выбери палец стрелочками ☝️
         </div>
     </div>
+
+<div id="screen-poems" class="screen" style="overflow-y: auto;">
+        <div class="header" style="position: sticky; top: 0; z-index: 10;">
+            <div class="header-title-row"><span id="room-title">Стихи-ассоциации</span></div>
+            <div class="header-top">
+                <div class="back-btn" onclick="goBackToMemorikaFromPoems()">⬅ Назад</div>
+            </div>
+        </div>
+        <div class="hero-title">Запоминаем трудные примеры!</div>
+        
+        <div class="poem-card" style="text-align: center; margin: 15px auto; width: 90%; max-width: 350px; background: #fff; border-radius: 20px; box-shadow: 0 8px 20px rgba(0,0,0,0.08); padding: 20px; box-sizing: border-box; border: 2px solid #e3f2fd;">
+            <div id="poem-math" style="font-size: 42px; font-weight: 900; color: #333; margin-bottom: 15px;">6 × 8 = <span style="color:#E91E63">48</span></div>
+            <img id="poem-img" src="img/poem_48.jpg" style="width: 100%; border-radius: 15px; margin-bottom: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
+            <div id="poem-text" style="font-size: 18px; color: #444; font-weight: bold; line-height: 1.4; background: #fff9c4; padding: 10px; border-radius: 10px;">
+                Шесть на восемь — сорок восемь,<br>Мы бегемота кушать просим!
+            </div>
+        </div>
+
+        <div class="nav-arrows-container" style="margin-top: 15px; justify-content: center; gap: 60px; padding-bottom: 30px;">
+            <div id="btn-prev-poem" class="nav-arrow-btn" onclick="changePoem(-1)">◀</div>
+            <div id="btn-next-poem" class="nav-arrow-btn" onclick="changePoem(1)">▶</div>
+        </div>
+    </div>
+    ```
+
+### Шаг 3: Добавляем логику и базу стихов (`script.js`)
+Открой свой файл `script.js`, спустись в самый-самый низ и просто добавь этот блок кода (он создаст базу наших стихов и заставит стрелочки работать):
+
+```javascript
+// ==========================================
+//        МЕМОРИКА: СТИХИ-АССОЦИАЦИИ
+// ==========================================
+
+const poemsData = [
+    {
+        math: "6 × 8 = <span style='color:#E91E63'>48</span>",
+        image: "img/poem_48.jpg",
+        text: "Шесть на восемь — сорок восемь,<br>Мы бегемота кушать просим!",
+        audio: "audio/poem_48.wav"
+    },
+    {
+        math: "7 × 8 = <span style='color:#E91E63'>56</span>",
+        image: "img/poem_56.jpg",
+        text: "Семь на восемь — пятьдесят шесть,<br>У лося рога-то есть!",
+        audio: "audio/poem_56.wav"
+    },
+    {
+        math: "6 × 7 = <span style='color:#E91E63'>42</span>",
+        image: "img/poem_42.jpg",
+        text: "Шесть на семь — сорок два,<br>На дворе растёт трава!",
+        audio: "audio/poem_42.wav"
+    }
+];
+
+let currentPoemIndex = 0;
+
+function openPoems() {
+    try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(e){}
+    document.getElementById('screen-memorika-menu').classList.remove('active');
+    document.getElementById('screen-poems').classList.add('active');
+    currentPoemIndex = 0;
+    updatePoemCard();
+}
+
+function goBackToMemorikaFromPoems() {
+    try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(e){}
+    document.getElementById('screen-poems').classList.remove('active');
+    document.getElementById('screen-memorika-menu').classList.add('active');
+    if (currentAudio) {
+        currentAudio.pause();
+        currentAudio.currentTime = 0;
+    }
+}
+
+function updatePoemCard() {
+    const poem = poemsData[currentPoemIndex];
+    document.getElementById('poem-math').innerHTML = poem.math;
+    document.getElementById('poem-img').src = poem.image;
+    document.getElementById('poem-text').innerHTML = poem.text;
+    
+    document.getElementById('btn-prev-poem').classList.toggle('disabled', currentPoemIndex === 0);
+    document.getElementById('btn-next-poem').classList.toggle('disabled', currentPoemIndex === poemsData.length - 1);
+    
+    playSound(poem.audio);
+}
+
+function changePoem(direction) {
+    try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(e){}
+    currentPoemIndex += direction;
+    if (currentPoemIndex < 0) currentPoemIndex = 0;
+    if (currentPoemIndex >= poemsData.length) currentPoemIndex = poemsData.length - 1;
+    updatePoemCard();
+}
+    
     <!-- === КОНЕЦ ЭКРАНА МАГИИ НА 9 === -->
     <div id="screen-soroban-menu" class="screen">
         <div class="header" style="position: sticky; top: 0; z-index: 10;">
