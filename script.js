@@ -1018,16 +1018,18 @@ let currentPoemIndex = 0;
 
 function openPoems() {
     try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(e){}
-    document.getElementById('screen-memorika-menu').classList.remove('active');
+    // Прячем меню лайфхаков, а не меморики!
+    document.getElementById('screen-multiplication-menu').classList.remove('active');
     document.getElementById('screen-poems').classList.add('active');
     currentPoemIndex = 0;
     updatePoemCard();
 }
 
-function goBackToMemorikaFromPoems() {
+function goBackToMultFromPoems() {
     try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(e){}
     document.getElementById('screen-poems').classList.remove('active');
-    document.getElementById('screen-memorika-menu').classList.add('active');
+    // Возвращаемся в меню лайфхаков!
+    document.getElementById('screen-multiplication-menu').classList.add('active');
     if (currentAudio) {
         currentAudio.pause();
         currentAudio.currentTime = 0;
