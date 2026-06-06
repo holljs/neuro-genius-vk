@@ -13,12 +13,12 @@ let isTaskLock = false;
 
 let currentSlideIndex = 0;
 let currentSlidesArray = [];
-
-// --- ПЕРЕМЕННЫЕ ДЛЯ УМНОГО АУДИО ---
 let currentAudio = null; 
 let currentSlidesAudioArray = []; 
 
-// База данных комнат и упражнений
+// ==========================================
+//        БАЗА ДАННЫХ (ROOMS DATA)
+// ==========================================
 const roomsData = {
     'words': [
         { id: 'lisa', text: 'Лиса', image: 'img/3d_lisa.png', sound: 'audio/w_lisa.wav', syllables: ['ли', 'са'], audioSyllables: ['audio/sl_li.wav', 'audio/sl_sa.wav'] },
@@ -64,27 +64,14 @@ const roomsData = {
         { taskText: "Сэнсэй Пятьсот и четыре ниндзя дадут самое большое число на этой спице — 900.", target: 900, taskAudio: "audio/learn_hun_9.wav" }
     ],
 
-    // ИСПРАВЛЕННЫЕ "Друзья 10" с поддержкой комиксов, стартовых значений и ОЗВУЧКИ
     'learn_friends': [
         { 
             taskText: "Прибавляем 9: тут нужен учитель Десять (+10) и попрощайся с другом девятки — один (-1).", 
             initialValue: 2, 
             target: 11, 
             taskAudio: "audio/friend9_task.wav",
-            slides: [
-                "img/friend_cover_academy.jpg", 
-                "img/friend_cover_friends.jpg", 
-                "img/friend9_step1.jpg",        
-                "img/friend9_step2.jpg",        
-                "img/friend9_step3.jpg"         
-            ],
-            audioSlides: [
-                "audio/anime_intro_academy.wav", 
-                "audio/anime_friends_9_1.wav",   
-                "audio/anime_friend9_step1.wav", 
-                "audio/anime_friend9_step2.wav", 
-                "audio/anime_friend9_step3.wav"  
-            ]
+            slides: ["img/friend_cover_academy.jpg", "img/friend_cover_friends.jpg", "img/friend9_step1.jpg", "img/friend9_step2.jpg", "img/friend9_step3.jpg"],
+            audioSlides: ["audio/anime_intro_academy.wav", "audio/anime_friends_9_1.wav", "audio/anime_friend9_step1.wav", "audio/anime_friend9_step2.wav", "audio/anime_friend9_step3.wav"]
         },
         { 
             taskText: "Прибавляем 8: тут нужен учитель Десять (+10) и попрощайся с другом восьми — два (-2).", 
@@ -120,27 +107,14 @@ const roomsData = {
         }
     ],
 
-    // --- ТАЙНЫЙ ОРДЕН КОРОЛЕВЫ ПЯТЬ (Друзья 5 / Помощь брата) ---
     'learn_friends_5': [
         { 
             taskText: "Прибавляем четыре: опусти Королеву Пять (+5) и попрощайся с братом четверки — один (-1).", 
             initialValue: 2, 
             target: 6,       
             taskAudio: "audio/brother4_task.wav",
-            slides: [
-                "img/brother_cover_academy.jpg", 
-                "img/brother_cover_4_1.jpg",     
-                "img/brother4_step1.jpg",        
-                "img/brother4_step2.jpg",        
-                "img/brother4_step3.jpg"         
-            ],
-            audioSlides: [
-                "audio/anime_intro_five.wav",
-                "audio/anime_brothers_4_1.wav",
-                "audio/anime_brother4_step1.wav",
-                "audio/anime_brother4_step2.wav",
-                "audio/anime_brother4_step3.wav"
-            ]
+            slides: ["img/brother_cover_academy.jpg", "img/brother_cover_4_1.jpg", "img/brother4_step1.jpg", "img/brother4_step2.jpg", "img/brother4_step3.jpg"],
+            audioSlides: ["audio/anime_intro_five.wav", "audio/anime_brothers_4_1.wav", "audio/anime_brother4_step1.wav", "audio/anime_brother4_step2.wav", "audio/anime_brother4_step3.wav"]
         },
         { 
             taskText: "Прибавляем три: опусти Королеву Пять (+5) и попрощайся с братом тройки — два (-2).", 
@@ -174,14 +148,8 @@ const roomsData = {
             initialValue: 0, 
             target: 6, 
             taskAudio: "audio/learn_mult_1.wav",
-            slides: [
-                "img/mult_cover_1.jpg", 
-                "img/mult_cover_2.jpg"
-            ],
-            audioSlides: [
-                "audio/anime_mult_slide1.wav", 
-                "audio/anime_mult_slide2.wav"
-            ]
+            slides: ["img/mult_cover_1.jpg", "img/mult_cover_2.jpg"],
+            audioSlides: ["audio/anime_mult_slide1.wav", "audio/anime_mult_slide2.wav"]
         },
         { taskText: "Умножим 12 на 3. Сначала умножаем десятки: 10 на 3 будет 30. Подними 30.", initialValue: 0, target: 30, taskAudio: "audio/learn_mult_2.wav" },
         { taskText: "Теперь единицы: 2 умножить на 3 будет 6. Прибавь 6 к нашим десяткам. Получилось 36!", initialValue: 30, target: 36, taskAudio: "audio/learn_mult_3.wav" }
@@ -193,20 +161,14 @@ const roomsData = {
             initialValue: 0, 
             target: 3, 
             taskAudio: "audio/learn_div_1.wav",
-            slides: [
-                "img/div_cover_1.jpg"
-            ],
-            audioSlides: [
-                "audio/anime_div_slide1.wav"
-            ]
+            slides: ["img/div_cover_1.jpg"],
+            audioSlides: ["audio/anime_div_slide1.wav"]
         },
         { taskText: "Разделим 42 на 2. Сначала раздадим десятки: 40 пополам будет 20. Подними 20.", initialValue: 0, target: 20, taskAudio: "audio/learn_div_2.wav" },
         { taskText: "Теперь раздадим единицы: 2 пополам будет 1. Прибавь 1 к десяткам. Наш ответ: 21!", initialValue: 20, target: 21, taskAudio: "audio/learn_div_3.wav" }
     ],
 
-// --- ТРЕНАЖЕР: НАБЕРИ ЧИСЛО (26 заданий вразброс) ---
     'play_numbers': [
-        // Разминка (однозначные и двузначные)
         { taskText: "Набери цифру 5", target: 5, taskAudio: "audio/play_num_5.wav" },
         { taskText: "Набери цифру 9", target: 9, taskAudio: "audio/play_num_9.wav" },
         { taskText: "Сделай число 12", target: 12, taskAudio: "audio/play_num_12.wav" },
@@ -219,7 +181,6 @@ const roomsData = {
         { taskText: "Сделай число 85", target: 85, taskAudio: "audio/play_num_85.wav" },
         { taskText: "Набери число 93", target: 93, taskAudio: "audio/play_num_93.wav" },
         
-        // Подключаем зеленую спицу (трехзначные числа)
         { taskText: "Сделай число 100", target: 100, taskAudio: "audio/play_num_100.wav" },
         { taskText: "Набери число 105", target: 105, taskAudio: "audio/play_num_105.wav" },
         { taskText: "Сделай число 115", target: 115, taskAudio: "audio/play_num_115.wav" },
@@ -249,9 +210,11 @@ const roomsData = {
     ],
     'play_mult': [],
     'play_div': []
-}; // <--- ВОТ ТЕПЕРЬ БАЗА ЗАКРЫТА ПРАВИЛЬНО, В САМОМ КОНЦЕ
+}; 
 
-// --- БЕСКОНЕЧНЫЙ ГЕНЕРАТОР ПРИМЕРОВ ---
+// ==========================================
+//        ГЕНЕРАТОР ПРИМЕРОВ
+// ==========================================
 function generateEndlessTask(category) {
     let a, b, sign, target;
 
@@ -277,28 +240,25 @@ function generateEndlessTask(category) {
         target = sign === '+' ? a + b : a - b;
     }
     else if (category === 'play_mult') {
-        // Умножение от 2х2 до 9х9
         a = Math.floor(Math.random() * 8) + 2; 
         b = Math.floor(Math.random() * 8) + 2; 
         sign = '×';
         target = a * b;
     }
     else if (category === 'play_div') {
-        // Деление без остатка (генерируем ответ и делитель, вычисляем исходное число)
-        b = Math.floor(Math.random() * 8) + 2; // Делитель (2..9)
-        target = Math.floor(Math.random() * 8) + 2; // Ответ (2..9)
-        a = b * target; // Делимое
+        b = Math.floor(Math.random() * 8) + 2; 
+        target = Math.floor(Math.random() * 8) + 2; 
+        a = b * target; 
         sign = ':';
     }
 
     return {
         taskText: `Реши пример: <br><span style="font-size:32px;">${a} ${sign} ${b} = ?</span>`,
-        initialValue: 0, // В тренировке спицы всегда пустые
+        initialValue: 0, 
         target: target
     };
 }
 
-// Заполняем базу 10-ю случайными примерами
 function fillEndlessTasks(category) {
     let tasks = [];
     for(let i = 0; i < 10; i++) {
@@ -307,9 +267,9 @@ function fillEndlessTasks(category) {
     roomsData[category] = tasks;
 }
 
-// --- КОНЕЦ ГЕНЕРАТОРА ---
-
-// Лайтбокс
+// ==========================================
+//        ЛАЙТБОКС И НАВИГАЦИЯ
+// ==========================================
 function openLightbox(src) {
     const lb = document.getElementById('image-lightbox');
     document.getElementById('lightbox-img').src = src;
@@ -323,7 +283,6 @@ function closeLightbox() {
     setTimeout(() => lb.style.display = 'none', 200);
 }        
 
-// Навигационная система
 function goMainFromSubmenu() {
     try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(e){}
     document.getElementById('screen-soroban-menu').classList.remove('active');
@@ -336,7 +295,6 @@ function goMainFromMemorika() {
     document.getElementById('screen-menu').classList.add('active');
 }
 
-// Открытие экранов меню
 function openSorobanMenu() {
     try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(e){}
     document.getElementById('screen-menu').classList.remove('active');
@@ -353,7 +311,6 @@ function openSorobanLearnMenu() {
     document.getElementById('screen-soroban-learn-menu').classList.add('active');
 }
 
-// UX/UI functions
 function openSorobanPlayMenu() {
     try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(e){}
     document.getElementById('screen-soroban-menu').classList.remove('active');
@@ -373,7 +330,6 @@ function goBackToSorobanMenuFromPlay() {
 function goBackFromGame() {
     try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(e){}
     
-    // ВЫКЛЮЧАЕМ ЗВУК ПРИ ВЫХОДЕ ИЗ КОМНАТЫ
     if (currentAudio) {
         currentAudio.pause();
         currentAudio.currentTime = 0;
@@ -431,12 +387,10 @@ function startSoroban(mode, category, title) {
     currentLessonIndex = 0;
     isTaskLock = false;
 
-    // ЕСЛИ ЭТО БЕСКОНЕЧНЫЙ РЕЖИМ, ГЕНЕРИРУЕМ НОВУЮ БАЗУ НА ЛЕТУ
     if (mode === 'play' && (category === 'play_simple' || category === 'play_friends_5' || category === 'play_friends_10' || category === 'play_mult' || category === 'play_div')) {
         fillEndlessTasks(category);
     }
 
-    // ВОТ ЭТОТ КУСОК ВАЖНО ВЕРНУТЬ, чтобы комиксы работали
     if (roomsData[category]) {
         roomsData[category].forEach(t => t._comicShown = false);
     }
@@ -478,7 +432,9 @@ function startSoroban(mode, category, title) {
     resetAbacusBeads();
 }
 
-// Игра "Слоги"
+// ==========================================
+//        ИГРА СЛОГИ
+// ==========================================
 function setupWordsGame() {
     const dragZone = document.getElementById('drag-zone');
     const targetZone = document.getElementById('target-zone');
@@ -527,10 +483,8 @@ function changeWord(direction) {
     setupWordsGame();
 }
 
-// --- БРОНЕБОЙНЫЙ DRAG & DROP ---
 function handlePointerStart(e) {
     if (activeItem) return; 
-    
     if (e.target.classList.contains('matched')) return;
     
     activeItem = e.target;
@@ -643,7 +597,9 @@ function shuffleArray(array) {
     return array;
 }
 
-// --- УМНЫЙ АУДИОПЛЕЕР ---
+// ==========================================
+//        АУДИОПЛЕЕР
+// ==========================================
 function playSound(soundFile) {
     if (soundFile) {
         if (currentAudio) {
@@ -655,7 +611,9 @@ function playSound(soundFile) {
     }
 }
 
-// --- ДВИЖОК СОРОБАНА ---
+// ==========================================
+//        СОРОБАН
+// ==========================================
 let sorobanState = [
     { upper: false, lower: 0 },
     { upper: false, lower: 0 },
@@ -757,7 +715,6 @@ function setupSorobanGame() {
 function resetAbacusBeads() {
     let startVal = 0;
     
-    // ИСПРАВЛЕНИЕ: начальные косточки ставим ТОЛЬКО в режиме Обучения ('learn')!
     if (sorobanMode === 'learn') {
         const tasks = roomsData[sorobanCategory];
         if (tasks && tasks[currentLessonIndex] && tasks[currentLessonIndex].initialValue !== undefined) {
@@ -820,7 +777,6 @@ function nextSorobanTask() {
 
     const currentTask = tasks[currentLessonIndex];
     
-    // ИСПРАВЛЕНИЕ: Прячем ответ в Тренировке ('play'), показываем только в Обучении!
     if (sorobanMode === 'play') {
         document.getElementById('soroban-task-text').innerHTML = currentTask.taskText;
     } else {
@@ -828,12 +784,10 @@ function nextSorobanTask() {
             `${currentTask.taskText} <span class="target-highlight">(${currentTask.target})</span>`;
     }
     
-    // Интеграция слайдера-комикса И АУДИО
     if (currentTask.slides && currentTask.slides.length > 0 && !currentTask._comicShown) {
         openComicSlider(currentTask.slides, currentTask.audioSlides);
         currentTask._comicShown = true;
     } else {
-        // Читаем задание, если комикс уже просмотрен
         if (currentTask.taskAudio) {
             playSound(currentTask.taskAudio);
         }
@@ -848,7 +802,7 @@ function nextSorobanTask() {
         hintContainer.style.display = 'none';
     }
     isTaskLock = false;
-    // Показываем кнопку Свитка только в тренировке Умножения и Деления
+
     const scrollBtn = document.getElementById('scroll-btn');
     if (scrollBtn) {
         if (sorobanMode === 'play' && (sorobanCategory === 'play_mult' || sorobanCategory === 'play_div')) {
@@ -860,7 +814,6 @@ function nextSorobanTask() {
 }
 
 function updateSorobanScore() {
-    // Временно глушим клики косточек, чтобы не прерывать голос задания
     try { new Audio('audio/click.wav').play(); } catch(e) {}
     
     let total = 0;
@@ -903,7 +856,6 @@ function updateSorobanScore() {
     }
 }
 
-// --- КОМИКС КАРУСЕЛЬ-СЛАЙДЕР С ОЗВУЧКОЙ ---
 function openComicSlider(slides, audioSlides) {
     currentSlidesArray = slides;
     currentSlidesAudioArray = audioSlides || [];
@@ -928,7 +880,6 @@ function updateSliderContent() {
         dotsContainer.appendChild(dot);
     });
 
-    // Озвучка текущего слайда!
     if (currentSlidesAudioArray && currentSlidesAudioArray[currentSlideIndex]) {
         playSound(currentSlidesAudioArray[currentSlideIndex]);
     }
@@ -946,7 +897,6 @@ function closeComicSlider() {
     try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "medium"}); } catch(e){}
     document.getElementById('comic-slider-modal').style.display = 'none';
 
-    // Озвучка самого задания на абакусе после закрытия комикса
     const tasks = roomsData[sorobanCategory];
     if (tasks && tasks[currentLessonIndex] && tasks[currentLessonIndex].taskAudio) {
         playSound(tasks[currentLessonIndex].taskAudio);
@@ -954,12 +904,10 @@ function closeComicSlider() {
 }
 
 // ==========================================
-//        МЕМОРИКА: ЛАЙФХАКИ УМНОЖЕНИЯ
+//        МЕМОРИКА: ЛАЙФХАКИ (МАГИЯ НА 9)
 // ==========================================
+let currentMagicFinger = 0; 
 
-let currentMagicFinger = 0; // Переменная для хранения текущего пальца
-
-// Навигация подменю Лайфхаков
 function openMultiplicationMenu() {
     try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(e){}
     document.getElementById('screen-memorika-menu').classList.remove('active');
@@ -972,13 +920,11 @@ function goBackToMemorikaFromMult() {
     document.getElementById('screen-memorika-menu').classList.add('active');
 }
 
-// Навигация комнаты Магия 9
 function openMagic9() {
     try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(e){}
     document.getElementById('screen-multiplication-menu').classList.remove('active');
     document.getElementById('screen-magic-9').classList.add('active');
     
-    // Сбрасываем всё на старт при входе в комнату
     currentMagicFinger = 0;
     document.getElementById('hands-image').src = 'img/hands_0.jpg';
     document.getElementById('magic-9-result').innerHTML = "Нажми стрелочку вправо ☝️";
@@ -990,40 +936,96 @@ function goBackToMultFromMagic9() {
     try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(e){}
     document.getElementById('screen-magic-9').classList.remove('active');
     document.getElementById('screen-multiplication-menu').classList.add('active');
-    // Выключаем звук при выходе
     if (currentAudio) {
         currentAudio.pause();
         currentAudio.currentTime = 0;
     }
 }
 
-// НОВАЯ ЛОГИКА: Переключение стрелочками
 function changeMagicFinger(direction) {
     try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(e){}
     
     currentMagicFinger += direction;
     
-    // Ограничиваем от 1 до 10
     if (currentMagicFinger < 1) currentMagicFinger = 1;
     if (currentMagicFinger > 10) currentMagicFinger = 10;
 
-    // Включаем/отключаем стрелочки на краях
     document.getElementById('btn-prev-magic').classList.toggle('disabled', currentMagicFinger === 1);
     document.getElementById('btn-next-magic').classList.toggle('disabled', currentMagicFinger === 10);
 
-    // 1. Меняем картинку
     document.getElementById('hands-image').src = `img/hands_${currentMagicFinger}.jpg`;
     
-    // 2. Считаем результат
     let tens = currentMagicFinger - 1;
     let units = 10 - currentMagicFinger;
     let result = tens * 10 + units;
     
-    // 3. Выводим текст
     document.getElementById('magic-9-result').innerHTML = 
         `9 × ${currentMagicFinger} = <span style="font-size:42px; color:#E91E63;">${result}</span><br>
          <span style="font-size:16px; color:#777; font-weight: normal;">(Слева десятков: <b>${tens}</b>, Справа единиц: <b>${units}</b>)</span>`;
          
-    // 4. Запускаем озвучку
     playSound(`audio/magic9_${currentMagicFinger}.wav`);
+}
+
+// ==========================================
+//        МЕМОРИКА: СТИХИ-АССОЦИАЦИИ
+// ==========================================
+const poemsData = [
+    {
+        math: "6 × 8 = <span style='color:#E91E63'>48</span>",
+        image: "img/poem_48.jpg",
+        text: "Шесть на восемь — сорок восемь,<br>Мы бегемота кушать просим!",
+        audio: "audio/poem_48.wav"
+    },
+    {
+        math: "7 × 8 = <span style='color:#E91E63'>56</span>",
+        image: "img/poem_56.jpg",
+        text: "Семь на восемь — пятьдесят шесть,<br>У лося рога-то есть!",
+        audio: "audio/poem_56.wav"
+    },
+    {
+        math: "6 × 7 = <span style='color:#E91E63'>42</span>",
+        image: "img/poem_42.jpg",
+        text: "Шесть на семь — сорок два,<br>На дворе растёт трава!",
+        audio: "audio/poem_42.wav"
+    }
+];
+
+let currentPoemIndex = 0;
+
+function openPoems() {
+    try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(e){}
+    document.getElementById('screen-memorika-menu').classList.remove('active');
+    document.getElementById('screen-poems').classList.add('active');
+    currentPoemIndex = 0;
+    updatePoemCard();
+}
+
+function goBackToMemorikaFromPoems() {
+    try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(e){}
+    document.getElementById('screen-poems').classList.remove('active');
+    document.getElementById('screen-memorika-menu').classList.add('active');
+    if (currentAudio) {
+        currentAudio.pause();
+        currentAudio.currentTime = 0;
+    }
+}
+
+function updatePoemCard() {
+    const poem = poemsData[currentPoemIndex];
+    document.getElementById('poem-math').innerHTML = poem.math;
+    document.getElementById('poem-img').src = poem.image;
+    document.getElementById('poem-text').innerHTML = poem.text;
+    
+    document.getElementById('btn-prev-poem').classList.toggle('disabled', currentPoemIndex === 0);
+    document.getElementById('btn-next-poem').classList.toggle('disabled', currentPoemIndex === poemsData.length - 1);
+    
+    playSound(poem.audio);
+}
+
+function changePoem(direction) {
+    try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(e){}
+    currentPoemIndex += direction;
+    if (currentPoemIndex < 0) currentPoemIndex = 0;
+    if (currentPoemIndex >= poemsData.length) currentPoemIndex = poemsData.length - 1;
+    updatePoemCard();
 }
