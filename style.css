@@ -322,3 +322,47 @@ body {
     #btn-comic-start { padding: 12px; font-size: 16px; }
     .comic-nav-btn { width: 40px; height: 40px; }
 }
+
+/* === УМНЫЙ ЛАЙТБОКС С ПРОКРУТКОЙ (ДЛЯ СВИТКА) === */
+#image-lightbox {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: rgba(0, 0, 0, 0.95); /* Чуть темнее фон для контраста */
+    display: none; 
+    z-index: 10000;
+}
+
+.lightbox-scroll-area {
+    width: 100%;
+    height: 100%;
+    overflow: auto; /* Позволяет листать пальцем куда угодно! */
+    padding: 20px;
+    padding-bottom: 100px; /* Оставляем место внизу, чтобы кнопка не закрывала текст */
+    box-sizing: border-box;
+}
+
+#lightbox-img {
+    min-width: 600px; /* ПРИНУДИТЕЛЬНО делаем картинку огромной на мобилке! */
+    width: 100%;
+    height: auto;
+    display: block;
+    border-radius: 10px;
+    margin: 0 auto;
+}
+
+.lightbox-close-btn {
+    position: fixed;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #E91E63;
+    color: white;
+    padding: 12px 30px;
+    border-radius: 30px;
+    font-weight: bold;
+    font-size: 18px;
+    box-shadow: 0 4px 15px rgba(233, 30, 99, 0.4);
+    cursor: pointer;
+    z-index: 10001;
+}
