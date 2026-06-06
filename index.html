@@ -16,7 +16,6 @@
         <div class="lightbox-close-btn" onclick="closeLightbox()">✖ Закрыть</div>
     </div>
 
-    <!-- === ГЛАВНОЕ МЕНЮ === -->
     <div id="screen-menu" class="screen active">
         <div class="header">
             <div class="header-title-row">
@@ -43,7 +42,6 @@
         </div>
     </div> 
 
-    <!-- === МЕНЮ МЕМОРИКИ === -->
     <div id="screen-memorika-menu" class="screen" style="overflow-y: auto;">
         <div class="header" style="position: sticky; top: 0; z-index: 10;">
             <div class="header-title-row"><span id="room-title">Меморика</span></div>
@@ -72,7 +70,6 @@
         </div>
     </div>
 
-    <!-- === МЕНЮ ЛАЙФХАКОВ УМНОЖЕНИЯ === -->
     <div id="screen-multiplication-menu" class="screen" style="overflow-y: auto;">
         <div class="header" style="position: sticky; top: 0; z-index: 10;">
             <div class="header-title-row"><span id="room-title">Лайфхаки</span></div>
@@ -86,6 +83,12 @@
                 <div class="category-title sub-title">Магия на 9</div>
                 <div class="category-subtitle">Считаем на пальцах</div>
             </div>
+            
+            <div class="category-card sub-card" onclick="openPoems()">
+                <div class="category-title sub-title">Стихи-ассоциации</div>
+                <div class="category-subtitle">Трудные примеры</div>
+            </div>
+            
             <div class="category-card sub-card" onclick="alert('Умножение на 5 скоро откроется!')">
                 <div class="category-title sub-title">Магия на 5</div>
                 <div class="category-subtitle">Секрет с половинкой</div>
@@ -93,7 +96,6 @@
         </div>
     </div>
 
-    <!-- === ЭКРАН: МАГИЯ НА 9 === -->
     <div id="screen-magic-9" class="screen" style="overflow-y: auto;">
         <div class="header" style="position: sticky; top: 0; z-index: 10;">
             <div class="header-title-row"><span id="room-title">Лайфхаки</span></div>
@@ -124,24 +126,6 @@
         </div>
     </div>
 
-    <div class="menu-grid sub-grid">
-            <div class="category-card sub-card" onclick="openMagic9()">
-                <div class="category-title sub-title">Магия на 9</div>
-                <div class="category-subtitle">Считаем на пальцах</div>
-            </div>
-            
-            <div class="category-card sub-card" onclick="openPoems()">
-                <div class="category-title sub-title">Стихи-ассоциации</div>
-                <div class="category-subtitle">Трудные примеры</div>
-            </div>
-            
-            <div class="category-card sub-card" onclick="alert('Умножение на 5 скоро откроется!')">
-                <div class="category-title sub-title">Магия на 5</div>
-                <div class="category-subtitle">Секрет с половинкой</div>
-            </div>
-        </div>
-
-    <!-- === ЭКРАН: СТИХИ-АССОЦИАЦИИ === -->
     <div id="screen-poems" class="screen" style="overflow-y: auto;">
         <div class="header" style="position: sticky; top: 0; z-index: 10;">
             <div class="header-title-row"><span id="room-title">Стихи-ассоциации</span></div>
@@ -165,7 +149,6 @@
         </div>
     </div>
 
-    <!-- === МЕНЮ СОРОБАНА === -->
     <div id="screen-soroban-menu" class="screen">
         <div class="header" style="position: sticky; top: 0; z-index: 10;">
             <div class="header-title-row"><span id="room-title">Ментальная арифметика</span></div>
@@ -190,7 +173,6 @@
         </div>
     </div>
 
-    <!-- === МЕНЮ СОРОБАН ОБУЧЕНИЕ === -->
     <div id="screen-soroban-learn-menu" class="screen" style="overflow-y: auto;">
         <div class="header" style="position: sticky; top: 0; z-index: 10;">
             <div class="header-title-row"><span id="room-title">Обучение</span></div>
@@ -238,7 +220,6 @@
         </div>
     </div>
 
-    <!-- === МЕНЮ СОРОБАН ТРЕНИРОВКА === -->
     <div id="screen-soroban-play-menu" class="screen" style="overflow-y: auto;">
         <div class="header" style="position: sticky; top: 0; z-index: 10;">
             <div class="header-title-row"><span id="room-title">Тренировка</span></div>
@@ -269,7 +250,6 @@
         </div>
     </div>
 
-    <!-- === ЭКРАН ИГРОВОЙ КОМНАТЫ === -->
     <div id="screen-room" class="screen">
         <div class="header">
             <div class="header-title-row"><span id="game-room-title">Комната</span></div>
@@ -315,7 +295,6 @@
         </div>
     </div>
 
-    <!-- === МОДАЛЬНОЕ ОКНО КОМИКСА === -->
     <div id="comic-slider-modal" class="comic-modal">
         <div class="comic-slider-box">
             <img id="comic-slider-img" src="" alt="Обучающий комикс">
@@ -328,7 +307,6 @@
         </div>
     </div>
 
-    <!-- Обрати внимание: версия скрипта изменена на v=5 для сброса кэша -->
-    <script src="script.js?v=5"></script>
+    <script src="script.js?v=6"></script>
 </body>
 </html>
