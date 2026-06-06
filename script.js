@@ -971,6 +971,36 @@ function changeMagicFinger(direction) {
 // ==========================================
 const poemsData = [
     {
+        math: "2 × 2 = <span style='color:#E91E63'>4</span>",
+        image: "img/poem_4.jpg",
+        text: "Два атлета взяли гири.<br>Это: дважды два — четыре!",
+        audio: "audio/poem_4.wav"
+    },
+    {
+        math: "2 × 4 = <span style='color:#E91E63'>8</span>",
+        image: "img/poem_8.jpg",
+        text: "В пирог вонзилась пара вилок:<br>Два на четыре — восемь дырок!",
+        audio: "audio/poem_8.wav"
+    },
+    {
+        math: "5 × 5 = <span style='color:#E91E63'>25</span>",
+        image: "img/poem_25.jpg",
+        text: "Вышли зайцы погулять:<br>Пятью пять — двадцать пять!",
+        audio: "audio/poem_25.wav"
+    },
+    {
+        math: "5 × 6 = <span style='color:#E91E63'>30</span>",
+        image: "img/poem_30.jpg",
+        text: "Забежала в лес лисица:<br>Пятью шесть — выходит тридцать!",
+        audio: "audio/poem_30.wav"
+    },
+    {
+        math: "6 × 7 = <span style='color:#E91E63'>42</span>",
+        image: "img/poem_42.jpg",
+        text: "Шесть на семь — сорок два,<br>На дворе растёт трава!",
+        audio: "audio/poem_42.wav"
+    },
+    {
         math: "6 × 8 = <span style='color:#E91E63'>48</span>",
         image: "img/poem_48.jpg",
         text: "Шесть на восемь — сорок восемь,<br>Мы бегемота кушать просим!",
@@ -981,12 +1011,6 @@ const poemsData = [
         image: "img/poem_56.jpg",
         text: "Семь на восемь — пятьдесят шесть,<br>У лося рога-то есть!",
         audio: "audio/poem_56.wav"
-    },
-    {
-        math: "6 × 7 = <span style='color:#E91E63'>42</span>",
-        image: "img/poem_42.jpg",
-        text: "Шесть на семь — сорок два,<br>На дворе растёт трава!",
-        audio: "audio/poem_42.wav"
     }
 ];
 
