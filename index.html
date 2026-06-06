@@ -14,6 +14,7 @@
         <div class="lightbox-text">Нажмите, чтобы закрыть</div>
     </div>
 
+    <!-- === ГЛАВНОЕ МЕНЮ === -->
     <div id="screen-menu" class="screen active">
         <div class="header">
             <div class="header-title-row">
@@ -39,6 +40,8 @@
             </div>
         </div>
     </div> 
+
+    <!-- === МЕНЮ МЕМОРИКИ === -->
     <div id="screen-memorika-menu" class="screen" style="overflow-y: auto;">
         <div class="header" style="position: sticky; top: 0; z-index: 10;">
             <div class="header-title-row"><span id="room-title">Меморика</span></div>
@@ -66,6 +69,8 @@
             </div>
         </div>
     </div>
+
+    <!-- === МЕНЮ ЛАЙФХАКОВ УМНОЖЕНИЯ === -->
     <div id="screen-multiplication-menu" class="screen" style="overflow-y: auto;">
         <div class="header" style="position: sticky; top: 0; z-index: 10;">
             <div class="header-title-row"><span id="room-title">Лайфхаки</span></div>
@@ -85,6 +90,7 @@
             </div>
         </div>
     </div>
+
     <!-- === ЭКРАН: МАГИЯ НА 9 === -->
     <div id="screen-magic-9" class="screen" style="overflow-y: auto;">
         <div class="header" style="position: sticky; top: 0; z-index: 10;">
@@ -103,11 +109,9 @@
         </div>
         
         <div class="hands-container" style="position: relative; width: 90%; max-width: 400px; margin: 0 auto; margin-top: 15px;">
-            <!-- Наша картинка -->
             <img id="hands-image" src="img/hands_0.jpg" style="width: 100%; border-radius: 20px; display: block; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
         </div>
 
-        <!-- НОВЫЕ СТРЕЛОЧКИ -->
         <div class="nav-arrows-container" style="margin-top: 20px;">
             <div id="btn-prev-magic" class="nav-arrow-btn" onclick="changeMagicFinger(-1)">◀</div>
             <div id="btn-next-magic" class="nav-arrow-btn" onclick="changeMagicFinger(1)">▶</div>
@@ -118,7 +122,8 @@
         </div>
     </div>
 
-<div id="screen-poems" class="screen" style="overflow-y: auto;">
+    <!-- === ЭКРАН: СТИХИ-АССОЦИАЦИИ === -->
+    <div id="screen-poems" class="screen" style="overflow-y: auto;">
         <div class="header" style="position: sticky; top: 0; z-index: 10;">
             <div class="header-title-row"><span id="room-title">Стихи-ассоциации</span></div>
             <div class="header-top">
@@ -140,78 +145,8 @@
             <div id="btn-next-poem" class="nav-arrow-btn" onclick="changePoem(1)">▶</div>
         </div>
     </div>
-    ```
 
-### Шаг 3: Добавляем логику и базу стихов (`script.js`)
-Открой свой файл `script.js`, спустись в самый-самый низ и просто добавь этот блок кода (он создаст базу наших стихов и заставит стрелочки работать):
-
-```javascript
-// ==========================================
-//        МЕМОРИКА: СТИХИ-АССОЦИАЦИИ
-// ==========================================
-
-const poemsData = [
-    {
-        math: "6 × 8 = <span style='color:#E91E63'>48</span>",
-        image: "img/poem_48.jpg",
-        text: "Шесть на восемь — сорок восемь,<br>Мы бегемота кушать просим!",
-        audio: "audio/poem_48.wav"
-    },
-    {
-        math: "7 × 8 = <span style='color:#E91E63'>56</span>",
-        image: "img/poem_56.jpg",
-        text: "Семь на восемь — пятьдесят шесть,<br>У лося рога-то есть!",
-        audio: "audio/poem_56.wav"
-    },
-    {
-        math: "6 × 7 = <span style='color:#E91E63'>42</span>",
-        image: "img/poem_42.jpg",
-        text: "Шесть на семь — сорок два,<br>На дворе растёт трава!",
-        audio: "audio/poem_42.wav"
-    }
-];
-
-let currentPoemIndex = 0;
-
-function openPoems() {
-    try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(e){}
-    document.getElementById('screen-memorika-menu').classList.remove('active');
-    document.getElementById('screen-poems').classList.add('active');
-    currentPoemIndex = 0;
-    updatePoemCard();
-}
-
-function goBackToMemorikaFromPoems() {
-    try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(e){}
-    document.getElementById('screen-poems').classList.remove('active');
-    document.getElementById('screen-memorika-menu').classList.add('active');
-    if (currentAudio) {
-        currentAudio.pause();
-        currentAudio.currentTime = 0;
-    }
-}
-
-function updatePoemCard() {
-    const poem = poemsData[currentPoemIndex];
-    document.getElementById('poem-math').innerHTML = poem.math;
-    document.getElementById('poem-img').src = poem.image;
-    document.getElementById('poem-text').innerHTML = poem.text;
-    
-    document.getElementById('btn-prev-poem').classList.toggle('disabled', currentPoemIndex === 0);
-    document.getElementById('btn-next-poem').classList.toggle('disabled', currentPoemIndex === poemsData.length - 1);
-    
-    playSound(poem.audio);
-}
-
-function changePoem(direction) {
-    try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(e){}
-    currentPoemIndex += direction;
-    if (currentPoemIndex < 0) currentPoemIndex = 0;
-    if (currentPoemIndex >= poemsData.length) currentPoemIndex = poemsData.length - 1;
-    updatePoemCard();
-}
-    
-    <!-- === КОНЕЦ ЭКРАНА МАГИИ НА 9 === -->
+    <!-- === МЕНЮ СОРОБАНА === -->
     <div id="screen-soroban-menu" class="screen">
         <div class="header" style="position: sticky; top: 0; z-index: 10;">
             <div class="header-title-row"><span id="room-title">Ментальная арифметика</span></div>
@@ -236,6 +171,7 @@ function changePoem(direction) {
         </div>
     </div>
 
+    <!-- === МЕНЮ СОРОБАН ОБУЧЕНИЕ === -->
     <div id="screen-soroban-learn-menu" class="screen" style="overflow-y: auto;">
         <div class="header" style="position: sticky; top: 0; z-index: 10;">
             <div class="header-title-row"><span id="room-title">Обучение</span></div>
@@ -283,6 +219,7 @@ function changePoem(direction) {
         </div>
     </div>
 
+    <!-- === МЕНЮ СОРОБАН ТРЕНИРОВКА === -->
     <div id="screen-soroban-play-menu" class="screen" style="overflow-y: auto;">
         <div class="header" style="position: sticky; top: 0; z-index: 10;">
             <div class="header-title-row"><span id="room-title">Тренировка</span></div>
@@ -295,7 +232,6 @@ function changePoem(direction) {
             <div class="category-card sub-card" onclick="startSoroban('play', 'play_numbers', 'Тренировка: Набери число')">
                 <div class="category-title sub-title">Набери число</div>
             </div>
-
             <div class="category-card sub-card" onclick="startSoroban('play', 'play_simple', 'Тренировка: Прямой счёт')">
                 <div class="category-title sub-title">Прямой счёт (+ и -)</div>
             </div>
@@ -305,7 +241,6 @@ function changePoem(direction) {
             <div class="category-card sub-card" onclick="startSoroban('play', 'play_friends_10', 'Тренировка: Друзья 10')">
                 <div class="category-title sub-title">Академия Десяти</div>
             </div>
-            
             <div class="category-card sub-card" onclick="startSoroban('play', 'play_mult', 'Тренировка: Умножение')">
                 <div class="category-title sub-title">Умножение</div>
             </div>
@@ -315,6 +250,7 @@ function changePoem(direction) {
         </div>
     </div>
 
+    <!-- === ЭКРАН ИГРОВОЙ КОМНАТЫ === -->
     <div id="screen-room" class="screen">
         <div class="header">
             <div class="header-title-row"><span id="game-room-title">Комната</span></div>
@@ -360,6 +296,7 @@ function changePoem(direction) {
         </div>
     </div>
 
+    <!-- === МОДАЛЬНОЕ ОКНО КОМИКСА === -->
     <div id="comic-slider-modal" class="comic-modal">
         <div class="comic-slider-box">
             <img id="comic-slider-img" src="" alt="Обучающий комикс">
@@ -372,6 +309,7 @@ function changePoem(direction) {
         </div>
     </div>
 
-    <script src="script.js?v=3"></script>
+    <!-- Обрати внимание: версия скрипта изменена на v=5 для сброса кэша -->
+    <script src="script.js?v=5"></script>
 </body>
 </html>
