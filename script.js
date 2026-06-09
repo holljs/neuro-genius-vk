@@ -1055,3 +1055,58 @@ function changePoem(direction) {
     if (currentPoemIndex >= poemsData.length) currentPoemIndex = poemsData.length - 1;
     updatePoemCard();
 }
+
+// ==========================================
+//        МЕМОРИКА: МАГИЯ НА 5
+// ==========================================
+const magic5Data = [
+    { math: "2 × 5 = <span style='color:#E91E63'>10</span>", image: "img/magic5_2.jpg", text: "Добавляем нолик: <b>20</b>.<br>Делим пополам — будет <b>10</b>!", audio: "audio/magic5_2.wav" },
+    { math: "3 × 5 = <span style='color:#E91E63'>15</span>", image: "img/magic5_3.jpg", text: "Добавляем нолик: <b>30</b>.<br>Делим пополам — будет <b>15</b>!", audio: "audio/magic5_3.wav" },
+    { math: "4 × 5 = <span style='color:#E91E63'>20</span>", image: "img/magic5_4.jpg", text: "Добавляем нолик: <b>40</b>.<br>Делим пополам — будет <b>20</b>!", audio: "audio/magic5_4.wav" },
+    { math: "5 × 5 = <span style='color:#E91E63'>25</span>", image: "img/magic5_5.jpg", text: "Добавляем нолик: <b>50</b>.<br>Делим пополам — будет <b>25</b>!", audio: "audio/magic5_5.wav" },
+    { math: "6 × 5 = <span style='color:#E91E63'>30</span>", image: "img/magic5_6.jpg", text: "Добавляем нолик: <b>60</b>.<br>Делим пополам — будет <b>30</b>!", audio: "audio/magic5_6.wav" },
+    { math: "7 × 5 = <span style='color:#E91E63'>35</span>", image: "img/magic5_7.jpg", text: "Добавляем нолик: <b>70</b>.<br>Делим пополам — будет <b>35</b>!", audio: "audio/magic5_7.wav" },
+    { math: "8 × 5 = <span style='color:#E91E63'>40</span>", image: "img/magic5_8.jpg", text: "Добавляем нолик: <b>80</b>.<br>Делим пополам — будет <b>40</b>!", audio: "audio/magic5_8.wav" },
+    { math: "9 × 5 = <span style='color:#E91E63'>45</span>", image: "img/magic5_9.jpg", text: "Добавляем нолик: <b>90</b>.<br>Делим пополам — будет <b>45</b>!", audio: "audio/magic5_9.wav" },
+    { math: "10 × 5 = <span style='color:#E91E63'>50</span>", image: "img/magic5_10.jpg", text: "Добавляем нолик: <b>100</b>.<br>Делим пополам — будет <b>50</b>!", audio: "audio/magic5_10.wav" }
+];
+
+let currentMagic5Index = 0;
+
+function openMagic5() {
+    try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(e){}
+    document.getElementById('screen-multiplication-menu').classList.remove('active');
+    document.getElementById('screen-magic-5').classList.add('active');
+    currentMagic5Index = 0;
+    updateMagic5Card();
+}
+
+function goBackToMultFromMagic5() {
+    try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(e){}
+    document.getElementById('screen-magic-5').classList.remove('active');
+    document.getElementById('screen-multiplication-menu').classList.add('active');
+    if (currentAudio) {
+        currentAudio.pause();
+        currentAudio.currentTime = 0;
+    }
+}
+
+function updateMagic5Card() {
+    const card = magic5Data[currentMagic5Index];
+    document.getElementById('magic5-math').innerHTML = card.math;
+    document.getElementById('magic5-img').src = card.image;
+    document.getElementById('magic5-text').innerHTML = card.text;
+    
+    document.getElementById('btn-prev-magic5').classList.toggle('disabled', currentMagic5Index === 0);
+    document.getElementById('btn-next-magic5').classList.toggle('disabled', currentMagic5Index === magic5Data.length - 1);
+    
+    playSound(card.audio);
+}
+
+function changeMagic5(direction) {
+    try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(e){}
+    currentMagic5Index += direction;
+    if (currentMagic5Index < 0) currentMagic5Index = 0;
+    if (currentMagic5Index >= magic5Data.length) currentMagic5Index = magic5Data.length - 1;
+    updateMagic5Card();
+}
