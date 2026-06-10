@@ -1117,50 +1117,54 @@ function changeMagic5(direction) {
 
 // Наша большая "копилка" предметов (сюда будем добавлять новые)
 const chainItemsPool = [
-    { id: 'lisa', name: 'Лиса', image: 'img/3d_lisa.png' },
-    { id: 'ryba', name: 'Рыба', image: 'img/3d_ryba.png' },
-    { id: 'kasha', name: 'Каша', image: 'img/3d_kasha.png' },
-    { id: 'raketa', name: 'Ракета', image: 'img/3d_raketa.png' },
-    { id: 'mashina', name: 'Машина', image: 'img/3d_mashina.png' },
-    { id: 'sobaka', name: 'Собака', image: 'img/3d_sobaka.png' }
-    // Позже просто допишем сюда арбузы, пиццы, бочки и всё остальное!
-    // === ИЗ ПЕРВОЙ ПАПКИ (Предметы, животные, транспорт) ===
-    { id: 'box', name: 'Коробка', image: 'img/box.png' },
-    { id: 'apple', name: 'Яблоко', image: 'img/bs_apple.png' },
-    { id: 'ball', name: 'Мячик', image: 'img/bs_ball_big.png' },
-    { id: 'bear', name: 'Медведь', image: 'img/bs_bear.png' },
-    { id: 'berry', name: 'Малина', image: 'img/bs_berry.png' },
-    { id: 'block', name: 'Кубик', image: 'img/bs_block.png' },
-    { id: 'boat', name: 'Лодочка', image: 'img/bs_boat.png' },
-    { id: 'bunny', name: 'Зайчик', image: 'img/bs_bunny.png' },
-    { id: 'car', name: 'Машина', image: 'img/bs_car_big.png' },
-    { id: 'chair', name: 'Стул', image: 'img/bs_chair_big.png' },
+    // === ЖИВОТНЫЕ И ПТИЦЫ ===
     { id: 'dog', name: 'Собака', image: 'img/bs_dog.png' },
+    { id: 'bear', name: 'Медведь', image: 'img/bs_bear.png' },
+    { id: 'bunny', name: 'Зайчик', image: 'img/bs_bunny.png' },
     { id: 'elephant', name: 'Слон', image: 'img/bs_elephant.png' },
-    { id: 'house', name: 'Домик', image: 'img/bs_house_big.png' },
-    { id: 'leaf', name: 'Листик', image: 'img/bs_leaf.png' },
     { id: 'mouse', name: 'Мышка', image: 'img/bs_mouse.png' },
-    { id: 'plate', name: 'Тарелка', image: 'img/bs_plate.png' },
-    { id: 'ship', name: 'Корабль', image: 'img/bs_ship.png' },
-    { id: 'spoon', name: 'Ложка', image: 'img/bs_spoon.png' },
-    { id: 'tree', name: 'Дерево', image: 'img/bs_tree.png' },
-    { id: 'truck', name: 'Грузовик', image: 'img/bs_truck.png' },
+    
+    // === НОВЫЕ КЛАССНЫЕ ПРЕДМЕТЫ С ГЛАЗКАМИ (p_opt) ===
+    { id: 'banana', name: 'Банан', image: 'img/p_opt_banan.png' },
+    { id: 'tea', name: 'Чай', image: 'img/p_opt_chay.png' },
+    { id: 'house', name: 'Домик', image: 'img/p_opt_domik.png' },
+    { id: 'door', name: 'Дверь', image: 'img/p_opt_dver.png' },
+    { id: 'mushroom', name: 'Гриб', image: 'img/p_opt_grib.png' },
+    { id: 'cabbage', name: 'Капуста', image: 'img/p_opt_kapusta.png' },
+    { id: 'roof', name: 'Крыша', image: 'img/p_opt_krisha.png' },
+    { id: 'lemon', name: 'Лимон', image: 'img/p_opt_limon.png' },
+    { id: 'boat2', name: 'Лодка', image: 'img/p_opt_lodka.png' },
+    { id: 'car2', name: 'Машина', image: 'img/p_opt_mashina.png' },
+    { id: 'honey2', name: 'Мёд', image: 'img/p_opt_med.png' },
+    { id: 'milk', name: 'Молоко', image: 'img/p_opt_moloko.png' },
+    { id: 'carrot', name: 'Морковка', image: 'img/p_opt_morkovka.png' },
+    { id: 'ball2', name: 'Мячик', image: 'img/p_opt_myachik.png' },
+    { id: 'cucumber', name: 'Огурец', image: 'img/p_opt_ogurec.png' },
+    { id: 'window', name: 'Окно', image: 'img/p_opt_okno.png' },
+    { id: 'train', name: 'Поезд', image: 'img/p_opt_poezd.png' },
+    { id: 'cheese', name: 'Сыр', image: 'img/p_opt_sir.png' },
+    { id: 'juice', name: 'Сок', image: 'img/p_opt_sok.png' },
+    { id: 'cake', name: 'Торт', image: 'img/p_opt_tort.png' },
+    { id: 'apple', name: 'Яблоко', image: 'img/p_opt_yabloko.png' },
+    { id: 'berry', name: 'Ягода', image: 'img/p_opt_yagoda.png' },
 
-    // === ИЗ ВТОРОЙ ПАПКИ (Еда и природа) ===
+    // === ДРУГИЕ ПРЕДМЕТЫ (если нужны в рандоме) ===
+    { id: 'box', name: 'Коробка', image: 'img/box.png' },
     { id: 'acorn', name: 'Жёлудь', image: 'img/food_acorn.png' },
     { id: 'bone', name: 'Косточка', image: 'img/food_bone.png' },
-    { id: 'cabbage', name: 'Капуста', image: 'img/food_cabbage.png' },
-    { id: 'carrot', name: 'Морковка', image: 'img/food_carrot.png' },
-    { id: 'cheese', name: 'Сыр', image: 'img/food_cheese.png' },
-    { id: 'chicken', name: 'Курочка', image: 'img/food_chicken.png' },
-    { id: 'fish', name: 'Рыба', image: 'img/food_fish.png' },
-    { id: 'flower', name: 'Ромашка', image: 'img/food_flower.png' },
-    { id: 'fly', name: 'Муха', image: 'img/food_fly.png' },
-    { id: 'grain', name: 'Зёрнышки', image: 'img/food_grain.png' },
-    { id: 'grass', name: 'Трава', image: 'img/food_grass.png' },
-    { id: 'hay', name: 'Сено', image: 'img/food_hay.png' },
-    { id: 'mushroom', name: 'Гриб', image: 'img/food_mushroom.png' },
-    { id: 'steak', name: 'Мясо', image: 'img/food_steak.png' }
+    { id: 'fox', name: 'Лиса', image: 'img/3d_lisa.png' }
+];
+
+// Сценарий для Обучения (исправлены пути к правильным картинкам)
+let currentChainStage = 'observe'; 
+let learningSequence = [
+    { id: 'fox', img: 'img/3d_lisa.png', storyImg: 'img/story_fox_box.jpg', text: 'Жила-была Лиса. Она нашла таинственную КОРОБКУ.' },
+    { id: 'box', img: 'img/box.png', storyImg: 'img/story_box_berry.jpg', text: 'В коробке лежала сочная ЯГОДА.' },
+    { id: 'berry', img: 'img/p_opt_yagoda.png', storyImg: 'img/story_berry_bone.jpg', text: 'Ягода превратилась в сахарную КОСТЬ.' },
+    { id: 'bone', img: 'img/food_bone.png', storyImg: 'img/story_bone_dog.jpg', text: 'Кость учуяла добрая СОБАКА.' },
+    { id: 'dog', img: 'img/bs_dog.png', storyImg: 'img/story_dog_acorn.jpg', text: 'Собака спрятала сокровище в ЖЕЛУДЬ.' },
+    { id: 'acorn', img: 'img/food_acorn.png', storyImg: 'img/story_acorn_honey.jpg', text: 'А в желуде оказался сладкий МЁД!' },
+    { id: 'honey', img: 'img/p_opt_med.png', text: '' } // Теперь тут правильный бочонок!
 ];
 
 let currentChainTargetCount = 0; // Сколько предметов выбрал пользователь
@@ -1206,4 +1210,78 @@ function startChainTraining(count) {
     console.log(currentChainSequence);
     
     alert(`Генерация случайной цепочки из ${count} предметов прошла успешно! Посмотри консоль.`);
+}
+
+// ==========================================
+// ЛОГИКА ОБУЧЕНИЯ (МАГИЯ АНИМЕ-ИСТОРИИ)
+// ==========================================
+
+function startChainLearning() {
+    try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "heavy"}); } catch(e){}
+    document.getElementById('screen-chain-menu').classList.remove('active');
+    document.getElementById('screen-chain-game').classList.add('active');
+    
+    currentChainStage = 'observe';
+    showObserveStage();
+}
+
+// 1. Показываем все картинки "кучей"
+function showObserveStage() {
+    const area = document.getElementById('chain-visual-area');
+    const msg = document.getElementById('chain-message');
+    msg.innerText = "Попробуй запомнить эти предметы за 5 секунд!";
+    area.innerHTML = '';
+    
+    // Прячем кнопку "Дальше", пока идет 5 секунд
+    document.getElementById('btn-chain-next').style.display = 'none';
+    
+    learningSequence.forEach(item => {
+        const img = document.createElement('img');
+        img.src = item.img;
+        img.style.width = "80px";
+        img.style.margin = "5px";
+        area.appendChild(img);
+    });
+
+    // Через 5 секунд всё прячем
+    setTimeout(() => {
+        area.innerHTML = '<div style="font-size: 50px;">🙈</div>';
+        msg.innerText = "Ой! Всё исчезло! Трудно запомнить?";
+        document.getElementById('btn-chain-next').style.display = 'block';
+        document.getElementById('btn-chain-next').innerText = "Показать магию ✨";
+        currentChainStage = 'story-start';
+    }, 5000);
+}
+
+let storyIndex = 0;
+function nextChainStage() {
+    try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(e){}
+    const area = document.getElementById('chain-visual-area');
+    const msg = document.getElementById('chain-message');
+    const btn = document.getElementById('btn-chain-next');
+
+    if (currentChainStage === 'story-start') {
+        currentChainStage = 'story-telling';
+        storyIndex = 0;
+    }
+
+    if (currentChainStage === 'story-telling') {
+        if (storyIndex < learningSequence.length - 1) {
+            const step = learningSequence[storyIndex];
+            area.innerHTML = `<img src="${step.storyImg}" style="width:100%; border-radius:15px; box-shadow: 0 5px 15px rgba(0,0,0,0.2);">`;
+            msg.innerHTML = `<span style="color:#e67e22; font-size:24px;">${step.text}</span>`;
+            btn.innerText = "Дальше ➔";
+            storyIndex++;
+        } else {
+            msg.innerText = "А теперь расставь их по порядку!";
+            area.innerHTML = "<div style='font-size: 18px; color: #777; padding: 20px;'>Место для карточек (скоро добавим!)</div>";
+            btn.style.display = 'none';
+        }
+    }
+}
+
+function goBackToChainMenu() {
+    try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(e){}
+    document.getElementById('screen-chain-game').classList.remove('active');
+    document.getElementById('screen-chain-menu').classList.add('active');
 }
