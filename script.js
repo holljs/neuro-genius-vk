@@ -1110,3 +1110,100 @@ function changeMagic5(direction) {
     if (currentMagic5Index >= magic5Data.length) currentMagic5Index = magic5Data.length - 1;
     updateMagic5Card();
 }
+
+// ==========================================
+//        МЕМОРИКА: ЦЕПОЧКА ПО РАССКАЗУ
+// ==========================================
+
+// Наша большая "копилка" предметов (сюда будем добавлять новые)
+const chainItemsPool = [
+    { id: 'lisa', name: 'Лиса', image: 'img/3d_lisa.png' },
+    { id: 'ryba', name: 'Рыба', image: 'img/3d_ryba.png' },
+    { id: 'kasha', name: 'Каша', image: 'img/3d_kasha.png' },
+    { id: 'raketa', name: 'Ракета', image: 'img/3d_raketa.png' },
+    { id: 'mashina', name: 'Машина', image: 'img/3d_mashina.png' },
+    { id: 'sobaka', name: 'Собака', image: 'img/3d_sobaka.png' }
+    // Позже просто допишем сюда арбузы, пиццы, бочки и всё остальное!
+    // === ИЗ ПЕРВОЙ ПАПКИ (Предметы, животные, транспорт) ===
+    { id: 'box', name: 'Коробка', image: 'img/box.png' },
+    { id: 'apple', name: 'Яблоко', image: 'img/bs_apple.png' },
+    { id: 'ball', name: 'Мячик', image: 'img/bs_ball_big.png' },
+    { id: 'bear', name: 'Медведь', image: 'img/bs_bear.png' },
+    { id: 'berry', name: 'Малина', image: 'img/bs_berry.png' },
+    { id: 'block', name: 'Кубик', image: 'img/bs_block.png' },
+    { id: 'boat', name: 'Лодочка', image: 'img/bs_boat.png' },
+    { id: 'bunny', name: 'Зайчик', image: 'img/bs_bunny.png' },
+    { id: 'car', name: 'Машина', image: 'img/bs_car_big.png' },
+    { id: 'chair', name: 'Стул', image: 'img/bs_chair_big.png' },
+    { id: 'dog', name: 'Собака', image: 'img/bs_dog.png' },
+    { id: 'elephant', name: 'Слон', image: 'img/bs_elephant.png' },
+    { id: 'house', name: 'Домик', image: 'img/bs_house_big.png' },
+    { id: 'leaf', name: 'Листик', image: 'img/bs_leaf.png' },
+    { id: 'mouse', name: 'Мышка', image: 'img/bs_mouse.png' },
+    { id: 'plate', name: 'Тарелка', image: 'img/bs_plate.png' },
+    { id: 'ship', name: 'Корабль', image: 'img/bs_ship.png' },
+    { id: 'spoon', name: 'Ложка', image: 'img/bs_spoon.png' },
+    { id: 'tree', name: 'Дерево', image: 'img/bs_tree.png' },
+    { id: 'truck', name: 'Грузовик', image: 'img/bs_truck.png' },
+
+    // === ИЗ ВТОРОЙ ПАПКИ (Еда и природа) ===
+    { id: 'acorn', name: 'Жёлудь', image: 'img/food_acorn.png' },
+    { id: 'bone', name: 'Косточка', image: 'img/food_bone.png' },
+    { id: 'cabbage', name: 'Капуста', image: 'img/food_cabbage.png' },
+    { id: 'carrot', name: 'Морковка', image: 'img/food_carrot.png' },
+    { id: 'cheese', name: 'Сыр', image: 'img/food_cheese.png' },
+    { id: 'chicken', name: 'Курочка', image: 'img/food_chicken.png' },
+    { id: 'fish', name: 'Рыба', image: 'img/food_fish.png' },
+    { id: 'flower', name: 'Ромашка', image: 'img/food_flower.png' },
+    { id: 'fly', name: 'Муха', image: 'img/food_fly.png' },
+    { id: 'grain', name: 'Зёрнышки', image: 'img/food_grain.png' },
+    { id: 'grass', name: 'Трава', image: 'img/food_grass.png' },
+    { id: 'hay', name: 'Сено', image: 'img/food_hay.png' },
+    { id: 'mushroom', name: 'Гриб', image: 'img/food_mushroom.png' },
+    { id: 'steak', name: 'Мясо', image: 'img/food_steak.png' }
+];
+
+let currentChainTargetCount = 0; // Сколько предметов выбрал пользователь
+let currentChainSequence = [];   // Сгенерированная цепочка на эту игру
+
+function openChainMenu() {
+    try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(e){}
+    document.getElementById('screen-memorika-menu').classList.remove('active');
+    document.getElementById('screen-chain-menu').classList.add('active');
+}
+
+function goBackToMemorikaFromChain() {
+    try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(e){}
+    document.getElementById('screen-chain-menu').classList.remove('active');
+    document.getElementById('screen-memorika-menu').classList.add('active');
+}
+
+function startChainTraining(count) {
+    try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(e){}
+    
+    // Защита: если в базе меньше картинок, чем просит юзер
+    if (count > chainItemsPool.length) {
+        alert(`В копилке пока только ${chainItemsPool.length} предметов! Добавь больше картинок для уровня "${count}".`);
+        return;
+    }
+    
+    currentChainTargetCount = count;
+    
+    // 1. Берем копию всей базы
+    let shuffledPool = [...chainItemsPool];
+    
+    // 2. Перемешиваем копилку случайным образом
+    for (let i = shuffledPool.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [shuffledPool[i], shuffledPool[j]] = [shuffledPool[j], shuffledPool[i]];
+    }
+    
+    // 3. Отрезаем нужное количество предметов (5, 10, 15...)
+    currentChainSequence = shuffledPool.slice(0, count);
+    
+    // Пока просто выводим в консоль для проверки (позже сделаем красивый игровой экран)
+    console.log(`Игра началась! Выбрано предметов: ${count}`);
+    console.log(currentChainSequence);
+    
+    alert(`Генерация случайной цепочки из ${count} предметов прошла успешно! Посмотри консоль.`);
+}
