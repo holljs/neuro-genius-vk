@@ -189,6 +189,28 @@
         </div>
     </div>
 
+    <div id="screen-magic-5" class="screen" style="overflow-y: auto;">
+        <div class="header" style="position: sticky; top: 0; z-index: 10;">
+            <div class="header-title-row"><span>Магия на 5</span></div>
+            <div class="header-top">
+                <div class="back-btn" onclick="goBackToMultFromMagic5()">⬅ Назад</div>
+            </div>
+        </div>
+        
+        <div class="hero-title">Магия умножения на 5</div>
+        
+        <div class="poem-card" style="text-align: center; margin: 15px auto; width: 90%; max-width: 350px; background: #fff; border-radius: 20px; box-shadow: 0 8px 20px rgba(0,0,0,0.08); padding: 20px; box-sizing: border-box; border: 2px solid #e3f2fd;">
+            <div id="magic5-math" style="font-size: 42px; font-weight: 900; color: #333; margin-bottom: 15px;"></div>
+            <img id="magic5-img" src="" style="width: 100%; border-radius: 15px; margin-bottom: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
+            <div id="magic5-text" style="font-size: 18px; color: #444; font-weight: bold; line-height: 1.4; background: #fff9c4; padding: 10px; border-radius: 10px;"></div>
+        </div>
+
+        <div class="nav-arrows-container" style="margin-top: 15px; justify-content: center; gap: 60px; padding-bottom: 30px;">
+            <div id="btn-prev-magic5" class="nav-arrow-btn" onclick="changeMagic5(-1)">◀</div>
+            <div id="btn-next-magic5" class="nav-arrow-btn" onclick="changeMagic5(1)">▶</div>
+        </div>
+    </div>
+
     <div id="screen-soroban-menu" class="screen">
         <div class="header" style="position: sticky; top: 0; z-index: 10;">
             <div class="header-title-row"><span id="room-title">Ментальная арифметика</span></div>
@@ -347,7 +369,7 @@
         </div>
     </div>
 
-<div id="screen-chain-game" class="screen" style="overflow-y: auto;">
+    <div id="screen-chain-game" class="screen" style="overflow-y: auto;">
         <div class="header" style="position: sticky; top: 0; z-index: 10;">
             <div class="header-title-row"><span id="chain-game-title">Магия Истории</span></div>
             <div class="header-top">
@@ -367,6 +389,6 @@
         </div>
     </div>
     
-    <script src="script.js?v=7"></script>
+    <script src="script.js?v=8"></script>
 </body>
 </html>
