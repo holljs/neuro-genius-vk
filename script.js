@@ -1300,10 +1300,18 @@ function showObserveStage() {
 
     // Через 5 секунд всё прячем
     setTimeout(() => {
-        area.innerHTML = '<div style="font-size: 50px;">🙈</div>';
+        // Ставим красивую картинку вместо эмодзи
+        area.innerHTML = '<img src="img/mascot_hide.jpg" style="width: 150px; border-radius: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">';
         msg.innerText = "Ой! Всё исчезло! Трудно запомнить?";
-        document.getElementById('btn-chain-next').style.display = 'block';
-        document.getElementById('btn-chain-next').innerText = "Показать магию ✨";
+        
+        const btn = document.getElementById('btn-chain-next');
+        btn.style.display = 'block';
+        btn.innerText = "Показать магию ✨";
+        
+        // Убираем сплющенный овал и делаем идеальную кнопку
+        btn.className = ''; 
+        btn.style.cssText = "display: block; margin: 0 auto; width: 250px; height: 50px; font-size: 20px; font-weight: bold; background: #FF9800; color: white; border: none; border-radius: 25px; cursor: pointer; box-shadow: 0 4px 15px rgba(255, 152, 0, 0.4); transition: transform 0.2s;";
+        
         currentChainStage = 'story-start';
     }, 5000);
 }
