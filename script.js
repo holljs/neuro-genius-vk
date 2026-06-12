@@ -20,15 +20,54 @@ let currentSlidesAudioArray = [];
 //        БАЗА ДАННЫХ (ROOMS DATA)
 // ==========================================
 const roomsData = {
-    'words': [
+    // === СЛОГИ ПО УРОВНЯМ ===
+    'words_2': [
         { id: 'lisa', text: 'Лиса', image: 'img/3d_lisa.png', sound: 'audio/w_lisa.wav', syllables: ['ли', 'са'], audioSyllables: ['audio/sl_li.wav', 'audio/sl_sa.wav'] },
         { id: 'ryba', text: 'Рыба', image: 'img/3d_ryba.png', sound: 'audio/w_ryba.wav', syllables: ['ры', 'ба'], audioSyllables: ['audio/sl_ry.wav', 'audio/sl_ba.wav'] },
         { id: 'kasha', text: 'Каша', image: 'img/3d_kasha.png', sound: 'audio/w_kasha.wav', syllables: ['ка', 'ша'], audioSyllables: ['audio/sl_ka.wav', 'audio/sl_sha.wav'] },
+        { id: 'medved', text: 'Медведь', image: 'img/bs_bear.png', sound: 'audio/w_medved.wav', syllables: ['мед', 'ведь'], audioSyllables: ['audio/sl_med.wav', 'audio/sl_ved.wav'] },
+        { id: 'zaychik', text: 'Зайчик', image: 'img/bs_bunny.png', sound: 'audio/w_zaychik.wav', syllables: ['зай', 'чик'], audioSyllables: ['audio/sl_zay.wav', 'audio/sl_chik.wav'] },
+        { id: 'myshka', text: 'Мышка', image: 'img/bs_mouse.png', sound: 'audio/w_myshka.wav', syllables: ['мыш', 'ка'], audioSyllables: ['audio/sl_mysh.wav', 'audio/sl_ka.wav'] },
+        { id: 'banan', text: 'Банан', image: 'img/p_opt_banan.png', sound: 'audio/w_banan.wav', syllables: ['ба', 'нан'], audioSyllables: ['audio/sl_ba.wav', 'audio/sl_nan.wav'] },
+        { id: 'domik', text: 'Домик', image: 'img/p_opt_domik.png', sound: 'audio/w_domik.wav', syllables: ['до', 'мик'], audioSyllables: ['audio/sl_do.wav', 'audio/sl_mik.wav'] },
+        { id: 'krysha', text: 'Крыша', image: 'img/p_opt_krisha.png', sound: 'audio/w_krysha.wav', syllables: ['кры', 'ша'], audioSyllables: ['audio/sl_kry.wav', 'audio/sl_sha.wav'] },
+        { id: 'limon', text: 'Лимон', image: 'img/p_opt_limon.png', sound: 'audio/w_limon.wav', syllables: ['ли', 'мон'], audioSyllables: ['audio/sl_li.wav', 'audio/sl_mon.wav'] },
+        { id: 'lodka', text: 'Лодка', image: 'img/p_opt_lodka.png', sound: 'audio/w_lodka.wav', syllables: ['лод', 'ка'], audioSyllables: ['audio/sl_lod.wav', 'audio/sl_ka.wav'] },
+        { id: 'myachik', text: 'Мячик', image: 'img/p_opt_myachik.png', sound: 'audio/w_myachik.wav', syllables: ['мя', 'чик'], audioSyllables: ['audio/sl_mya.wav', 'audio/sl_chik.wav'] },
+        { id: 'okno', text: 'Окно', image: 'img/p_opt_okno.png', sound: 'audio/w_okno.wav', syllables: ['ок', 'но'], audioSyllables: ['audio/sl_ok.wav', 'audio/sl_no.wav'] },
+        { id: 'poezd', text: 'Поезд', image: 'img/p_opt_poezd.png', sound: 'audio/w_poezd.wav', syllables: ['по', 'езд'], audioSyllables: ['audio/sl_po.wav', 'audio/sl_ezd.wav'] },
+        { id: 'zholud', text: 'Жёлудь', image: 'img/food_acorn.png', sound: 'audio/w_zholud.wav', syllables: ['жё', 'лудь'], audioSyllables: ['audio/sl_zho.wav', 'audio/sl_lud.wav'] },
+        { id: 'arbuz', text: 'Арбуз', image: 'img/garden_item_2.png', sound: 'audio/w_arbuz.wav', syllables: ['ар', 'буз'], audioSyllables: ['audio/sl_ar.wav', 'audio/sl_buz.wav'] },
+        { id: 'oreh', text: 'Орех', image: 'img/garden_item_5.png', sound: 'audio/w_oreh.wav', syllables: ['о', 'рех'], audioSyllables: ['audio/sl_o.wav', 'audio/sl_reh.wav'] },
+        { id: 'tykva', text: 'Тыква', image: 'img/garden_item_6.png', sound: 'audio/w_tykva.wav', syllables: ['тык', 'ва'], audioSyllables: ['audio/sl_tyk.wav', 'audio/sl_va.wav'] },
+        { id: 'chashka', text: 'Чашка', image: 'img/p_opt_chay.png', sound: 'audio/w_chashka.wav', syllables: ['чаш', 'ка'], audioSyllables: ['audio/sl_chash.wav', 'audio/sl_ka.wav'] },
+        { id: 'gribok', text: 'Грибок', image: 'img/p_opt_grib.png', sound: 'audio/w_gribok.wav', syllables: ['гри', 'бок'], audioSyllables: ['audio/sl_gri.wav', 'audio/sl_bok.wav'] }
+    ],
+    'words_3': [
+        { id: 'sobaka', text: 'Собака', image: 'img/bs_dog.png', sound: 'audio/w_sobaka.wav', syllables: ['со', 'ба', 'ка'], audioSyllables: ['audio/sl_so.wav', 'audio/sl_ba.wav', 'audio/sl_ka.wav'] },
         { id: 'raketa', text: 'Ракета', image: 'img/3d_raketa.png', sound: 'audio/w_raketa.wav', syllables: ['ра', 'ке', 'та'], audioSyllables: ['audio/sl_ra.wav', 'audio/sl_ke.wav', 'audio/sl_ta.wav'] },
-        { id: 'mashina', text: 'Машина', image: 'img/3d_mashina.png', sound: 'audio/w_mashina.wav', syllables: ['ма', 'ши', 'на'], audioSyllables: ['audio/sl_ma.wav', 'audio/sl_shi.wav', 'audio/sl_na.wav'] },
-        { id: 'sobaka', text: 'Собака', image: 'img/3d_sobaka.png', sound: 'audio/w_sobaka.wav', syllables: ['со', 'ба', 'ка'], audioSyllables: ['audio/sl_so.wav', 'audio/sl_ba.wav', 'audio/sl_ka.wav'] }
+        { id: 'mashina', text: 'Машина', image: 'img/p_opt_mashina.png', sound: 'audio/w_mashina.wav', syllables: ['ма', 'ши', 'на'], audioSyllables: ['audio/sl_ma.wav', 'audio/sl_shi.wav', 'audio/sl_na.wav'] },
+        { id: 'kapusta', text: 'Капуста', image: 'img/p_opt_kapusta.png', sound: 'audio/w_kapusta.wav', syllables: ['ка', 'пус', 'та'], audioSyllables: ['audio/sl_ka.wav', 'audio/sl_pus.wav', 'audio/sl_ta.wav'] },
+        { id: 'moloko', text: 'Молоко', image: 'img/p_opt_moloko.png', sound: 'audio/w_moloko.wav', syllables: ['мо', 'ло', 'ко'], audioSyllables: ['audio/sl_mo.wav', 'audio/sl_lo.wav', 'audio/sl_ko.wav'] },
+        { id: 'morkovka', text: 'Морковка', image: 'img/p_opt_morkovka.png', sound: 'audio/w_morkovka.wav', syllables: ['мор', 'ков', 'ка'], audioSyllables: ['audio/sl_mor.wav', 'audio/sl_kov.wav', 'audio/sl_ka.wav'] },
+        { id: 'ogurets', text: 'Огурец', image: 'img/p_opt_ogurec.png', sound: 'audio/w_ogurets.wav', syllables: ['о', 'гу', 'рец'], audioSyllables: ['audio/sl_o.wav', 'audio/sl_gu.wav', 'audio/sl_rets.wav'] },
+        { id: 'yabloko', text: 'Яблоко', image: 'img/p_opt_yabloko.png', sound: 'audio/w_yabloko.wav', syllables: ['яб', 'ло', 'ко'], audioSyllables: ['audio/sl_yab.wav', 'audio/sl_lo.wav', 'audio/sl_ko.wav'] },
+        { id: 'yagoda', text: 'Ягода', image: 'img/p_opt_yagoda.png', sound: 'audio/w_yagoda.wav', syllables: ['я', 'го', 'да'], audioSyllables: ['audio/sl_ya.wav', 'audio/sl_go.wav', 'audio/sl_da.wav'] },
+        { id: 'korobka', text: 'Коробка', image: 'img/box.png', sound: 'audio/w_korobka.wav', syllables: ['ко', 'роб', 'ка'], audioSyllables: ['audio/sl_ko.wav', 'audio/sl_rob.wav', 'audio/sl_ka.wav'] },
+        { id: 'kostochka', text: 'Косточка', image: 'img/food_bone.png', sound: 'audio/w_kostochka.wav', syllables: ['кос', 'точ', 'ка'], audioSyllables: ['audio/sl_kos.wav', 'audio/sl_toch.wav', 'audio/sl_ka.wav'] },
+        { id: 'rediska', text: 'Редиска', image: 'img/garden_item_7.png', sound: 'audio/w_rediska.wav', syllables: ['ре', 'дис', 'ка'], audioSyllables: ['audio/sl_re.wav', 'audio/sl_dis.wav', 'audio/sl_ka.wav'] },
+        { id: 'klubnika', text: 'Клубника', image: 'img/garden_item_9.png', sound: 'audio/w_klubnika.wav', syllables: ['клуб', 'ни', 'ка'], audioSyllables: ['audio/sl_klub.wav', 'audio/sl_ni.wav', 'audio/sl_ka.wav'] },
+        { id: 'slonenok', text: 'Слонёнок', image: 'img/bs_elephant.png', sound: 'audio/w_slonenok.wav', syllables: ['сло', 'нё', 'нок'], audioSyllables: ['audio/sl_slo.wav', 'audio/sl_nyo.wav', 'audio/sl_nok.wav'] }
+    ],
+    'words_4': [
+        { id: 'kukuruza', text: 'Кукуруза', image: 'img/garden_item_8.png', sound: 'audio/w_kukuruza.wav', syllables: ['ку', 'ку', 'ру', 'за'], audioSyllables: ['audio/sl_ku.wav', 'audio/sl_ku.wav', 'audio/sl_ru.wav', 'audio/sl_za.wav'] },
+        { id: 'avtomobil', text: 'Автомобиль', image: 'img/bs_car_big.png', sound: 'audio/w_avtomobil.wav', syllables: ['ав', 'то', 'мо', 'биль'], audioSyllables: ['audio/sl_av.wav', 'audio/sl_to.wav', 'audio/sl_mo.wav', 'audio/sl_bil.wav'] },
+        { id: 'lokomotiv', text: 'Локомотив', image: 'img/p_opt_poezd.png', sound: 'audio/w_lokomotiv.wav', syllables: ['ло', 'ко', 'мо', 'тив'], audioSyllables: ['audio/sl_lo.wav', 'audio/sl_ko.wav', 'audio/sl_mo.wav', 'audio/sl_tiv.wav'] },
+        { id: 'medvezhonok', text: 'Медвежонок', image: 'img/bs_bear.png', sound: 'audio/w_medvezhonok.wav', syllables: ['мед', 'ве', 'жо', 'нок'], audioSyllables: ['audio/sl_med.wav', 'audio/sl_ve.wav', 'audio/sl_zho.wav', 'audio/sl_nok.wav'] },
+        { id: 'zemlyanika', text: 'Земляника', image: 'img/p_opt_yagoda.png', sound: 'audio/w_zemlyanika.wav', syllables: ['зем', 'ля', 'ни', 'ка'], audioSyllables: ['audio/sl_zem.wav', 'audio/sl_lya.wav', 'audio/sl_ni.wav', 'audio/sl_ka.wav'] }
     ],
 
+    // === СОРОБАН ===
     'learn_units': [
         { taskText: "Знакомься, красные бусинки — это единички. Сдвинь одну бусинку вверх.", target: 1, hint: "img/card_1.png", taskAudio: "audio/learn_units_1.wav" },
         { taskText: "Отлично! Подними вторую бусинку вверх, получим два.", target: 2, hint: "img/card_2.png", taskAudio: "audio/learn_units_2.wav" },
@@ -295,11 +334,24 @@ function goMainFromMemorika() {
     document.getElementById('screen-menu').classList.add('active');
 }
 
+function goMainFromWordsMenu() {
+    try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(e){}
+    document.getElementById('screen-words-menu').classList.remove('active');
+    document.getElementById('screen-menu').classList.add('active');
+}
+
+function openWordsMenu() {
+    try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(e){}
+    document.getElementById('screen-menu').classList.remove('active');
+    document.getElementById('screen-words-menu').classList.add('active');
+}
+
 function openSorobanMenu() {
     try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(e){}
     document.getElementById('screen-menu').classList.remove('active');
     document.getElementById('screen-soroban-menu').classList.add('active');
 }
+
 function openMemorikaMenu() {
     try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(e){}
     document.getElementById('screen-menu').classList.remove('active');
@@ -345,8 +397,8 @@ function goBackFromGame() {
     document.getElementById('screen-room').classList.remove('active');
     document.getElementById('game-area').classList.remove('active');
 
-    if (currentRoom === 'words') {
-        document.getElementById('screen-menu').classList.add('active');
+    if (currentRoom.startsWith('words')) {
+        document.getElementById('screen-words-menu').classList.add('active');
     } else if (currentRoom === 'soroban') {
         if (sorobanMode === 'free') {
             document.getElementById('screen-soroban-menu').classList.add('active');
@@ -362,13 +414,15 @@ function openRoom(roomId, title) {
     try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(e){}
     currentRoom = roomId;
     document.getElementById('game-room-title').innerText = title;
+    
     document.getElementById('screen-menu').classList.remove('active');
+    document.getElementById('screen-words-menu').classList.remove('active');
     document.getElementById('screen-room').classList.add('active');
     document.getElementById('game-area').classList.add('active');
 
     document.getElementById('btn-back-to-menu').onclick = goBackFromGame;
 
-    if (roomId === 'words') {
+    if (roomId.startsWith('words')) {
         currentWordIndex = 0;
         document.getElementById('word-image-container').style.display = 'flex';
         document.getElementById('soroban-controls').style.display = 'none';
@@ -441,12 +495,12 @@ function setupWordsGame() {
     dragZone.innerHTML = ''; targetZone.innerHTML = '';
     matchedCount = 0;
 
-    const wordData = roomsData['words'][currentWordIndex];
+    const wordData = roomsData[currentRoom][currentWordIndex];
     document.getElementById('word-3d-image').src = wordData.image;
     if (currentWordIndex === 0) { playSound('audio/words_intro.wav'); } else { playSound(wordData.sound); }
 
     document.getElementById('btn-prev-word').classList.toggle('disabled', currentWordIndex === 0);
-    document.getElementById('btn-next-word').classList.toggle('disabled', currentWordIndex === roomsData['words'].length - 1);
+    document.getElementById('btn-next-word').classList.toggle('disabled', currentWordIndex === roomsData[currentRoom].length - 1);
 
     wordData.syllables.forEach((syl, index) => {
         const slot = document.createElement('div');
@@ -479,7 +533,7 @@ function changeWord(direction) {
     try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(e){}
     currentWordIndex += direction;
     if (currentWordIndex < 0) currentWordIndex = 0;
-    if (currentWordIndex >= roomsData['words'].length) currentWordIndex = roomsData['words'].length - 1;
+    if (currentWordIndex >= roomsData[currentRoom].length) currentWordIndex = roomsData[currentRoom].length - 1;
     setupWordsGame();
 }
 
@@ -558,10 +612,10 @@ function handlePointerEnd(e) {
         activeItem.style.display = 'none';
         matchedTarget.style.backgroundImage = "url('img/brick_bg.png')";
         matchedCount++;
-        if (matchedCount === roomsData['words'][currentWordIndex].syllables.length) {
+        if (matchedCount === roomsData[currentRoom][currentWordIndex].syllables.length) {
             setTimeout(() => {
                 currentWordIndex++;
-                if (currentWordIndex < roomsData['words'].length) {
+                if (currentWordIndex < roomsData[currentRoom].length) {
                     setupWordsGame();
                 } else {
                     playSound('audio/words_win.wav');
@@ -1115,16 +1169,13 @@ function changeMagic5(direction) {
 //        МЕМОРИКА: ЦЕПОЧКА ПО РАССКАЗУ
 // ==========================================
 
-// Наша большая "копилка" предметов (сюда будем добавлять новые)
 const chainItemsPool = [
-    // === ЖИВОТНЫЕ И ПТИЦЫ ===
     { id: 'dog', name: 'Собака', image: 'img/bs_dog.png' },
     { id: 'bear', name: 'Медведь', image: 'img/bs_bear.png' },
     { id: 'bunny', name: 'Зайчик', image: 'img/bs_bunny.png' },
     { id: 'elephant', name: 'Слон', image: 'img/bs_elephant.png' },
     { id: 'mouse', name: 'Мышка', image: 'img/bs_mouse.png' },
     
-    // === НОВЫЕ КЛАССНЫЕ ПРЕДМЕТЫ С ГЛАЗКАМИ (p_opt) ===
     { id: 'banana', name: 'Банан', image: 'img/p_opt_banan.png' },
     { id: 'tea', name: 'Чай', image: 'img/p_opt_chay.png' },
     { id: 'house', name: 'Домик', image: 'img/p_opt_domik.png' },
@@ -1148,13 +1199,11 @@ const chainItemsPool = [
     { id: 'apple', name: 'Яблоко', image: 'img/p_opt_yabloko.png' },
     { id: 'berry', name: 'Ягода', image: 'img/p_opt_yagoda.png' },
 
-    // === ДРУГИЕ ПРЕДМЕТЫ (если нужны в рандоме) ===
     { id: 'box', name: 'Коробка', image: 'img/box.png' },
     { id: 'acorn', name: 'Жёлудь', image: 'img/food_acorn.png' },
     { id: 'bone', name: 'Косточка', image: 'img/food_bone.png' },
-    { id: 'fox', name: 'Лиса', image: 'img/3d_lisa.png' }
+    { id: 'fox', name: 'Лиса', image: 'img/3d_lisa.png' },
     
-    // === ОГОРОД (garden_item) ===
     { id: 'carrot2', name: 'Морковка', image: 'img/garden_item_1.png' },
     { id: 'watermelon', name: 'Арбуз', image: 'img/garden_item_2.png' },
     { id: 'cabbage2', name: 'Капуста', image: 'img/garden_item_3.png' },
@@ -1166,7 +1215,6 @@ const chainItemsPool = [
     { id: 'strawberry', name: 'Клубника', image: 'img/garden_item_9.png' }
 ];
 
-// Сценарий для Обучения (исправлены пути к правильным картинкам)
 let currentChainStage = 'observe'; 
 let learningSequence = [
     { id: 'fox', img: 'img/3d_lisa.png', storyImg: 'img/story_fox_box.jpg', text: 'Однажды хитрая ЛИСА нашла под деревом красивую КОРОБКУ.', audio: 'audio/chain_story_1.wav' },
@@ -1175,11 +1223,11 @@ let learningSequence = [
     { id: 'bone', img: 'img/food_bone.png', storyImg: 'img/story_bone_dog.jpg', text: 'В этот момент из кустов выбежала голодная СОБАКА.', audio: 'audio/chain_story_4.wav' },
     { id: 'dog', img: 'img/bs_dog.png', storyImg: 'img/story_dog_acorn.jpg', text: 'Лиса отдала кость, а Собака подарила ей большой ЖЁЛУДЬ.', audio: 'audio/chain_story_5.wav' },
     { id: 'acorn', img: 'img/food_acorn.png', storyImg: 'img/story_acorn_honey.jpg', text: 'Лиса расколола жёлудь, а внутри оказался густой сладкий МЁД!', audio: 'audio/chain_story_6.wav' },
-    { id: 'honey', img: 'img/p_opt_med.png', text: '' } // Финальная картинка
+    { id: 'honey', img: 'img/p_opt_med.png', text: '' }
 ];
 
-let currentChainTargetCount = 0; // Сколько предметов выбрал пользователь
-let currentChainSequence = [];   // Сгенерированная цепочка на эту игру
+let currentChainTargetCount = 0; 
+let currentChainSequence = [];   
 
 function openChainMenu() {
     try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(e){}
@@ -1196,36 +1244,24 @@ function goBackToMemorikaFromChain() {
 function startChainTraining(count) {
     try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(e){}
     
-    // Защита: если в базе меньше картинок, чем просит юзер
     if (count > chainItemsPool.length) {
         alert(`В копилке пока только ${chainItemsPool.length} предметов! Добавь больше картинок для уровня "${count}".`);
         return;
     }
     
     currentChainTargetCount = count;
-    
-    // 1. Берем копию всей базы
     let shuffledPool = [...chainItemsPool];
     
-    // 2. Перемешиваем копилку случайным образом
     for (let i = shuffledPool.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
         [shuffledPool[i], shuffledPool[j]] = [shuffledPool[j], shuffledPool[i]];
     }
     
-    // 3. Отрезаем нужное количество предметов (5, 10, 15...)
     currentChainSequence = shuffledPool.slice(0, count);
-    
-    // Пока просто выводим в консоль для проверки (позже сделаем красивый игровой экран)
     console.log(`Игра началась! Выбрано предметов: ${count}`);
     console.log(currentChainSequence);
-    
     alert(`Генерация случайной цепочки из ${count} предметов прошла успешно! Посмотри консоль.`);
 }
-
-// ==========================================
-// ЛОГИКА ОБУЧЕНИЯ (МАГИЯ АНИМЕ-ИСТОРИИ)
-// ==========================================
 
 function startChainLearning() {
     try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "heavy"}); } catch(e){}
@@ -1236,14 +1272,12 @@ function startChainLearning() {
     showObserveStage();
 }
 
-// 1. Показываем все картинки "кучей"
 function showObserveStage() {
     const area = document.getElementById('chain-visual-area');
     const msg = document.getElementById('chain-message');
     msg.innerText = "Попробуй запомнить эти предметы за 5 секунд!";
     area.innerHTML = '';
     
-    // Прячем кнопку "Дальше", пока идет 5 секунд
     document.getElementById('btn-chain-next').style.display = 'none';
     
     learningSequence.forEach(item => {
@@ -1254,7 +1288,6 @@ function showObserveStage() {
         area.appendChild(img);
     });
 
-    // Через 5 секунд всё прячем
     setTimeout(() => {
         area.innerHTML = '<div style="font-size: 50px;">🙈</div>';
         msg.innerText = "Ой! Всё исчезло! Трудно запомнить?";
@@ -1283,7 +1316,6 @@ function nextChainStage() {
             msg.innerHTML = `<span style="color:#e67e22; font-size:24px;">${step.text}</span>`;
             btn.innerText = "Дальше ➔";
             
-            // Запускаем озвучку текущего кадра сказки
             if (step.audio) {
                 playSound(step.audio);
             }
