@@ -1169,13 +1169,13 @@ const chainItemsPool = [
 // Сценарий для Обучения (исправлены пути к правильным картинкам)
 let currentChainStage = 'observe'; 
 let learningSequence = [
-    { id: 'fox', img: 'img/3d_lisa.png', storyImg: 'img/story_fox_box.jpg', text: 'Жила-была Лиса. Она нашла таинственную КОРОБКУ.' },
-    { id: 'box', img: 'img/box.png', storyImg: 'img/story_box_berry.jpg', text: 'В коробке лежала сочная ЯГОДА.' },
-    { id: 'berry', img: 'img/p_opt_yagoda.png', storyImg: 'img/story_berry_bone.jpg', text: 'Ягода превратилась в сахарную КОСТЬ.' },
-    { id: 'bone', img: 'img/food_bone.png', storyImg: 'img/story_bone_dog.jpg', text: 'Кость учуяла добрая СОБАКА.' },
-    { id: 'dog', img: 'img/bs_dog.png', storyImg: 'img/story_dog_acorn.jpg', text: 'Собака спрятала сокровище в ЖЕЛУДЬ.' },
-    { id: 'acorn', img: 'img/food_acorn.png', storyImg: 'img/story_acorn_honey.jpg', text: 'А в желуде оказался сладкий МЁД!' },
-    { id: 'honey', img: 'img/p_opt_med.png', text: '' } // Теперь тут правильный бочонок!
+    { id: 'fox', img: 'img/3d_lisa.png', storyImg: 'img/story_fox_box.jpg', text: 'Однажды хитрая ЛИСА нашла под деревом красивую КОРОБКУ.' },
+    { id: 'box', img: 'img/box.png', storyImg: 'img/story_box_berry.jpg', text: 'Она обрадовалась и подумала, что внутри лежит сладкая ЯГОДА.' },
+    { id: 'berry', img: 'img/p_opt_yagoda.png', storyImg: 'img/story_berry_bone.jpg', text: 'Но когда она открыла коробку, там оказалась только белая КОСТЬ.' },
+    { id: 'bone', img: 'img/food_bone.png', storyImg: 'img/story_bone_dog.jpg', text: 'В этот момент из кустов выбежала голодная СОБАКА.' },
+    { id: 'dog', img: 'img/bs_dog.png', storyImg: 'img/story_dog_acorn.jpg', text: 'Лиса отдала кость, а Собака подарила ей большой ЖЁЛУДЬ.' },
+    { id: 'acorn', img: 'img/food_acorn.png', storyImg: 'img/story_acorn_honey.jpg', text: 'Лиса расколола жёлудь, а внутри оказался густой сладкий МЁД!' },
+    { id: 'honey', img: 'img/p_opt_med.png', text: '' } // Финальная картинка
 ];
 
 let currentChainTargetCount = 0; // Сколько предметов выбрал пользователь
