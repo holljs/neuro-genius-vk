@@ -1153,6 +1153,17 @@ const chainItemsPool = [
     { id: 'acorn', name: 'Жёлудь', image: 'img/food_acorn.png' },
     { id: 'bone', name: 'Косточка', image: 'img/food_bone.png' },
     { id: 'fox', name: 'Лиса', image: 'img/3d_lisa.png' }
+    
+    // === ОГОРОД (garden_item) ===
+    { id: 'carrot2', name: 'Морковка', image: 'img/garden_item_1.png' },
+    { id: 'watermelon', name: 'Арбуз', image: 'img/garden_item_2.png' },
+    { id: 'cabbage2', name: 'Капуста', image: 'img/garden_item_3.png' },
+    { id: 'mushroom2', name: 'Гриб', image: 'img/garden_item_4.png' },
+    { id: 'nut', name: 'Орех', image: 'img/garden_item_5.png' },
+    { id: 'pumpkin', name: 'Тыква', image: 'img/garden_item_6.png' },
+    { id: 'radish', name: 'Редиска', image: 'img/garden_item_7.png' },
+    { id: 'corn', name: 'Кукуруза', image: 'img/garden_item_8.png' },
+    { id: 'strawberry', name: 'Клубника', image: 'img/garden_item_9.png' }
 ];
 
 // Сценарий для Обучения (исправлены пути к правильным картинкам)
