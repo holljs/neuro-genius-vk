@@ -24,7 +24,7 @@
         </div>
         <div class="hero-title">Тренажёры интеллекта:</div>
         <div class="menu-grid">
-            <div class="category-card" onclick="openRoom('words', 'Слоги')">
+            <div class="category-card" onclick="openWordsMenu()">
                 <div class="category-icon-placeholder"><img src="img/icon_words.png" alt=""></div>
                 <div class="category-title">Слоги</div>
                 <div class="category-subtitle">Составь слово</div>
@@ -41,6 +41,30 @@
             </div>
         </div>
     </div> 
+
+    <div id="screen-words-menu" class="screen" style="overflow-y: auto;">
+        <div class="header" style="position: sticky; top: 0; z-index: 10;">
+            <div class="header-title-row"><span id="room-title">Слоги</span></div>
+            <div class="header-top">
+                <div class="back-btn" onclick="goMainFromWordsMenu()">⬅ В главное меню</div>
+            </div>
+        </div>
+        <div class="hero-title">Выбери уровень:</div>
+        <div class="menu-grid sub-grid">
+            <div class="category-card sub-card" onclick="openRoom('words_2', 'Слоги: 2 кусочка')">
+                <div class="category-title sub-title">2 слога</div>
+                <div class="category-subtitle">Простые слова</div>
+            </div>
+            <div class="category-card sub-card" onclick="openRoom('words_3', 'Слоги: 3 кусочка')">
+                <div class="category-title sub-title">3 слога</div>
+                <div class="category-subtitle">Средний уровень</div>
+            </div>
+            <div class="category-card sub-card" onclick="openRoom('words_4', 'Слоги: 4 кусочка')">
+                <div class="category-title sub-title">4 слога</div>
+                <div class="category-subtitle">Сложные слова</div>
+            </div>
+        </div>
+    </div>
 
     <div id="screen-memorika-menu" class="screen" style="overflow-y: auto;">
         <div class="header" style="position: sticky; top: 0; z-index: 10;">
@@ -389,6 +413,6 @@
         </div>
     </div>
     
-    <script src="script.js?v=8"></script>
+    <script src="script.js?v=9"></script>
 </body>
 </html>
