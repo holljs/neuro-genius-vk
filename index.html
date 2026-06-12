@@ -16,6 +16,7 @@
         <div class="lightbox-close-btn" onclick="closeLightbox()">✖ Закрыть</div>
     </div>
 
+    <!-- === ГЛАВНОЕ МЕНЮ === -->
     <div id="screen-menu" class="screen active">
         <div class="header">
             <div class="header-title-row">
@@ -25,23 +26,30 @@
         <div class="hero-title">Тренажёры интеллекта:</div>
         <div class="menu-grid">
             <div class="category-card" onclick="openWordsMenu()">
-                <div class="category-icon-placeholder"><img src="img/icon_words.png" alt=""></div>
+                <div style="margin: 0 auto 10px auto; width: 70px; height: 70px;">
+                    <img src="img/icon_words.png" alt="" style="width: 100%; height: 100%; object-fit: contain;">
+                </div>
                 <div class="category-title">Слоги</div>
                 <div class="category-subtitle">Составь слово</div>
             </div>
             <div class="category-card" onclick="openSorobanMenu()">
-                <div class="category-icon-placeholder"><img src="img/icon_soroban.png" alt=""></div>
+                <div style="margin: 0 auto 10px auto; width: 70px; height: 70px;">
+                    <img src="img/icon_soroban.png" alt="" style="width: 100%; height: 100%; object-fit: contain;">
+                </div>
                 <div class="category-title">Ментальная арифметика</div>
                 <div class="category-subtitle">Счёты Соробан</div>
             </div>
             <div class="category-card" onclick="openMemorikaMenu()">
-                <div class="category-icon-placeholder" style="opacity: 0.5;"><img src="img/icon_memo.png" alt=""></div>
+                <div style="margin: 0 auto 10px auto; width: 70px; height: 70px;">
+                    <img src="img/icon_memo.png" alt="" style="width: 100%; height: 100%; object-fit: contain;">
+                </div>
                 <div class="category-title">Меморика</div>
                 <div class="category-subtitle">Развитие супер-памяти</div>
             </div>
         </div>
     </div> 
 
+    <!-- === МЕНЮ: СЛОГИ === -->
     <div id="screen-words-menu" class="screen" style="overflow-y: auto;">
         <div class="header" style="position: sticky; top: 0; z-index: 10;">
             <div class="header-title-row"><span id="room-title">Слоги</span></div>
@@ -52,20 +60,30 @@
         <div class="hero-title">Выбери уровень:</div>
         <div class="menu-grid sub-grid">
             <div class="category-card sub-card" onclick="openRoom('words_2', 'Слоги: 2 кусочка')">
+                <div style="margin: 0 auto 10px auto; width: 60px; height: 60px;">
+                    <img src="img/icon_syl_2.png" alt="" style="width: 100%; height: 100%; object-fit: contain;">
+                </div>
                 <div class="category-title sub-title">2 слога</div>
                 <div class="category-subtitle">Простые слова</div>
             </div>
             <div class="category-card sub-card" onclick="openRoom('words_3', 'Слоги: 3 кусочка')">
+                <div style="margin: 0 auto 10px auto; width: 60px; height: 60px;">
+                    <img src="img/icon_syl_3.png" alt="" style="width: 100%; height: 100%; object-fit: contain;">
+                </div>
                 <div class="category-title sub-title">3 слога</div>
                 <div class="category-subtitle">Средний уровень</div>
             </div>
             <div class="category-card sub-card" onclick="openRoom('words_4', 'Слоги: 4 кусочка')">
+                <div style="margin: 0 auto 10px auto; width: 60px; height: 60px;">
+                    <img src="img/icon_syl_4.png" alt="" style="width: 100%; height: 100%; object-fit: contain;">
+                </div>
                 <div class="category-title sub-title">4 слога</div>
                 <div class="category-subtitle">Сложные слова</div>
             </div>
         </div>
     </div>
 
+    <!-- === МЕНЮ: МЕМОРИКА === -->
     <div id="screen-memorika-menu" class="screen" style="overflow-y: auto;">
         <div class="header" style="position: sticky; top: 0; z-index: 10;">
             <div class="header-title-row"><span id="room-title">Меморика</span></div>
@@ -76,24 +94,37 @@
         <div class="hero-title">Выберите технику:</div>
         <div class="menu-grid sub-grid">
             <div class="category-card sub-card" onclick="alert('Гардеробная Наполеона скоро откроется!')">
+                <div style="margin: 0 auto 10px auto; width: 60px; height: 60px;">
+                    <img src="img/icon_wardrobe.png" alt="" style="width: 100%; height: 100%; object-fit: contain;">
+                </div>
                 <div class="category-title sub-title">Гардеробная Наполеона</div>
                 <div class="category-subtitle">Метод Локи (Дворец памяти)</div>
             </div>
             <div class="category-card sub-card" onclick="openChainMenu()">
+                <div style="margin: 0 auto 10px auto; width: 60px; height: 60px;">
+                    <img src="img/icon_chain.png" alt="" style="width: 100%; height: 100%; object-fit: contain;">
+                </div>
                 <div class="category-title sub-title">Цепочка по рассказу</div>
                 <div class="category-subtitle">Связывание образов</div>
             </div>
             <div class="category-card sub-card" onclick="alert('Комната Стихов и рисования скоро откроется!')">
+                <div style="margin: 0 auto 10px auto; width: 60px; height: 60px;">
+                    <img src="img/icon_poem.png" alt="" style="width: 100%; height: 100%; object-fit: contain;">
+                </div>
                 <div class="category-title sub-title">Стихи и рисование</div>
                 <div class="category-subtitle">Рисуем и запоминаем</div>
             </div>
             <div class="category-card sub-card" onclick="openMultiplicationMenu()">
+                <div style="margin: 0 auto 10px auto; width: 60px; height: 60px;">
+                    <img src="img/icon_magicwand.png" alt="" style="width: 100%; height: 100%; object-fit: contain;">
+                </div>
                 <div class="category-title sub-title">Лайфхаки умножения</div>
                 <div class="category-subtitle">Учим таблицу весело</div>
             </div>
         </div>
     </div>
 
+    <!-- === МЕНЮ: ЦЕПОЧКА === -->
     <div id="screen-chain-menu" class="screen" style="overflow-y: auto;">
         <div class="header" style="position: sticky; top: 0; z-index: 10;">
             <div class="header-title-row"><span id="room-title">Цепочка</span></div>
@@ -105,6 +136,9 @@
         
         <div class="menu-grid sub-grid">
             <div class="category-card sub-card" style="background: #fff3e0; border-color: #c8e6c9;" onclick="startChainLearning()">
+                <div style="margin: 0 auto 10px auto; width: 50px; height: 50px;">
+                    <img src="img/icon_chain_learn.png" alt="" style="width: 100%; height: 100%; object-fit: contain;">
+                </div>
                 <div class="category-title sub-title">Обучение (10 слов)</div>
                 <div class="category-subtitle">Как придумывать историю</div>
             </div>
@@ -112,28 +146,44 @@
             <div class="sub-title-header" style="grid-column: 1 / -1; margin-top: 15px;">Выбери сложность:</div>
             
             <div class="category-card sub-card" onclick="startChainTraining(5)">
+                <div style="margin: 0 auto 5px auto; width: 45px; height: 45px;">
+                    <img src="img/icon_chain_5.png" alt="" style="width: 100%; height: 100%; object-fit: contain;">
+                </div>
                 <div class="category-title sub-title">Новичок</div>
                 <div class="category-subtitle">5 предметов</div>
             </div>
             <div class="category-card sub-card" onclick="startChainTraining(10)">
+                <div style="margin: 0 auto 5px auto; width: 45px; height: 45px;">
+                    <img src="img/icon_chain_10.png" alt="" style="width: 100%; height: 100%; object-fit: contain;">
+                </div>
                 <div class="category-title sub-title">Ученик</div>
                 <div class="category-subtitle">10 предметов</div>
             </div>
             <div class="category-card sub-card" onclick="startChainTraining(15)">
+                <div style="margin: 0 auto 5px auto; width: 45px; height: 45px;">
+                    <img src="img/icon_chain_15.png" alt="" style="width: 100%; height: 100%; object-fit: contain;">
+                </div>
                 <div class="category-title sub-title">Мастер</div>
                 <div class="category-subtitle">15 предметов</div>
             </div>
             <div class="category-card sub-card" onclick="startChainTraining(20)">
+                <div style="margin: 0 auto 5px auto; width: 45px; height: 45px;">
+                    <img src="img/icon_chain_20.png" alt="" style="width: 100%; height: 100%; object-fit: contain;">
+                </div>
                 <div class="category-title sub-title">Ниндзя</div>
                 <div class="category-subtitle">20 предметов</div>
             </div>
             <div class="category-card sub-card" onclick="startChainTraining(30)">
+                <div style="margin: 0 auto 5px auto; width: 45px; height: 45px;">
+                    <img src="img/icon_chain_30.png" alt="" style="width: 100%; height: 100%; object-fit: contain;">
+                </div>
                 <div class="category-title sub-title">Сэнсэй</div>
                 <div class="category-subtitle">30 предметов</div>
             </div>
         </div>
     </div>
 
+    <!-- === МЕНЮ: ЛАЙФХАКИ === -->
     <div id="screen-multiplication-menu" class="screen" style="overflow-y: auto;">
         <div class="header" style="position: sticky; top: 0; z-index: 10;">
             <div class="header-title-row"><span id="room-title">Лайфхаки</span></div>
@@ -144,22 +194,32 @@
         <div class="hero-title">Выбери фокус:</div>
         <div class="menu-grid sub-grid">
             <div class="category-card sub-card" onclick="openMagic9()">
+                <div style="margin: 0 auto 10px auto; width: 60px; height: 60px;">
+                    <img src="img/icon_hack_9.png" alt="" style="width: 100%; height: 100%; object-fit: contain;">
+                </div>
                 <div class="category-title sub-title">Магия на 9</div>
                 <div class="category-subtitle">Считаем на пальцах</div>
             </div>
             
             <div class="category-card sub-card" onclick="openPoems()">
+                <div style="margin: 0 auto 10px auto; width: 60px; height: 60px;">
+                    <img src="img/icon_hack_poem.png" alt="" style="width: 100%; height: 100%; object-fit: contain;">
+                </div>
                 <div class="category-title sub-title">Стихи-ассоциации</div>
                 <div class="category-subtitle">Трудные примеры</div>
             </div>
             
             <div class="category-card sub-card" onclick="openMagic5()">
+                <div style="margin: 0 auto 10px auto; width: 60px; height: 60px;">
+                    <img src="img/icon_hack_5.png" alt="" style="width: 100%; height: 100%; object-fit: contain;">
+                </div>
                 <div class="category-title sub-title">Магия на 5</div>
                 <div class="category-subtitle">Секрет с половинкой</div>
             </div>
         </div>
     </div>
 
+    <!-- === МАГИЯ НА 9 === -->
     <div id="screen-magic-9" class="screen" style="overflow-y: auto;">
         <div class="header" style="position: sticky; top: 0; z-index: 10;">
             <div class="header-title-row"><span id="room-title">Лайфхаки</span></div>
@@ -190,6 +250,7 @@
         </div>
     </div>
 
+    <!-- === СТИХИ === -->
     <div id="screen-poems" class="screen" style="overflow-y: auto;">
         <div class="header" style="position: sticky; top: 0; z-index: 10;">
             <div class="header-title-row"><span id="room-title">Стихи-ассоциации</span></div>
@@ -213,6 +274,7 @@
         </div>
     </div>
 
+    <!-- === МАГИЯ НА 5 === -->
     <div id="screen-magic-5" class="screen" style="overflow-y: auto;">
         <div class="header" style="position: sticky; top: 0; z-index: 10;">
             <div class="header-title-row"><span>Магия на 5</span></div>
@@ -235,6 +297,7 @@
         </div>
     </div>
 
+    <!-- === МЕНЮ: СОРОБАН === -->
     <div id="screen-soroban-menu" class="screen">
         <div class="header" style="position: sticky; top: 0; z-index: 10;">
             <div class="header-title-row"><span id="room-title">Ментальная арифметика</span></div>
@@ -245,20 +308,30 @@
         <div class="hero-title">Выберите режим:</div>
         <div class="menu-grid">
             <div class="category-card" onclick="startSoroban('free', 'free', 'Свободный режим')">
+                <div style="margin: 0 auto 15px auto; width: 80px; height: 80px;">
+                    <img src="img/icon_soroban_free.png" alt="" style="width: 100%; height: 100%; object-fit: contain;">
+                </div>
                 <div class="category-title">Свободный режим</div>
                 <div class="category-subtitle">Изучайте косточки без заданий</div>
             </div>
             <div class="category-card" onclick="openSorobanLearnMenu()">
+                <div style="margin: 0 auto 15px auto; width: 80px; height: 80px;">
+                    <img src="img/icon_soroban_learn.png" alt="" style="width: 100%; height: 100%; object-fit: contain;">
+                </div>
                 <div class="category-title">Обучение</div>
                 <div class="category-subtitle">Правила и разряды</div>
             </div>
             <div class="category-card" onclick="openSorobanPlayMenu()">
+                <div style="margin: 0 auto 15px auto; width: 80px; height: 80px;">
+                    <img src="img/icon_soroban_play.png" alt="" style="width: 100%; height: 100%; object-fit: contain;">
+                </div>
                 <div class="category-title">Тренировка</div>
                 <div class="category-subtitle">Решение примеров</div>
             </div>
         </div>
     </div>
 
+    <!-- (Меню Соробана: Обучение и Тренировка пока без иконок, оставляем как было) -->
     <div id="screen-soroban-learn-menu" class="screen" style="overflow-y: auto;">
         <div class="header" style="position: sticky; top: 0; z-index: 10;">
             <div class="header-title-row"><span id="room-title">Обучение</span></div>
@@ -336,6 +409,7 @@
         </div>
     </div>
 
+    <!-- === ИГРОВАЯ КОМНАТА (ДЛЯ СЛОГОВ И СОРОБАНА) === -->
     <div id="screen-room" class="screen">
         <div class="header">
             <div class="header-title-row"><span id="game-room-title">Комната</span></div>
@@ -381,6 +455,7 @@
         </div>
     </div>
 
+    <!-- === МОДАЛЬНОЕ ОКНО КОМИКСА === -->
     <div id="comic-slider-modal" class="comic-modal">
         <div class="comic-slider-box">
             <img id="comic-slider-img" src="" alt="Обучающий комикс">
@@ -393,6 +468,7 @@
         </div>
     </div>
 
+    <!-- === ИГРОВАЯ КОМНАТА: ЦЕПОЧКА ПО РАССКАЗУ === -->
     <div id="screen-chain-game" class="screen" style="overflow-y: auto;">
         <div class="header" style="position: sticky; top: 0; z-index: 10;">
             <div class="header-title-row"><span id="chain-game-title">Магия Истории</span></div>
@@ -413,6 +489,7 @@
         </div>
     </div>
     
-    <script src="script.js?v=9"></script>
+    <!-- Не забудь изменить версию скрипта на ?v=10, чтобы сбросить кэш! -->
+    <script src="script.js?v=10"></script>
 </body>
 </html>
