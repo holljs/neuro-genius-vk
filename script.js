@@ -1169,12 +1169,12 @@ const chainItemsPool = [
 // Сценарий для Обучения (исправлены пути к правильным картинкам)
 let currentChainStage = 'observe'; 
 let learningSequence = [
-    { id: 'fox', img: 'img/3d_lisa.png', storyImg: 'img/story_fox_box.jpg', text: 'Однажды хитрая ЛИСА нашла под деревом красивую КОРОБКУ.' },
-    { id: 'box', img: 'img/box.png', storyImg: 'img/story_box_berry.jpg', text: 'Она обрадовалась и подумала, что внутри лежит сладкая ЯГОДА.' },
-    { id: 'berry', img: 'img/p_opt_yagoda.png', storyImg: 'img/story_berry_bone.jpg', text: 'Но когда она открыла коробку, там оказалась только белая КОСТЬ.' },
-    { id: 'bone', img: 'img/food_bone.png', storyImg: 'img/story_bone_dog.jpg', text: 'В этот момент из кустов выбежала голодная СОБАКА.' },
-    { id: 'dog', img: 'img/bs_dog.png', storyImg: 'img/story_dog_acorn.jpg', text: 'Лиса отдала кость, а Собака подарила ей большой ЖЁЛУДЬ.' },
-    { id: 'acorn', img: 'img/food_acorn.png', storyImg: 'img/story_acorn_honey.jpg', text: 'Лиса расколола жёлудь, а внутри оказался густой сладкий МЁД!' },
+    { id: 'fox', img: 'img/3d_lisa.png', storyImg: 'img/story_fox_box.jpg', text: 'Однажды хитрая ЛИСА нашла под деревом красивую КОРОБКУ.', audio: 'audio/chain_story_1.wav' },
+    { id: 'box', img: 'img/box.png', storyImg: 'img/story_box_berry.jpg', text: 'Она обрадовалась и подумала, что внутри лежит сладкая ЯГОДА.', audio: 'audio/chain_story_2.wav' },
+    { id: 'berry', img: 'img/p_opt_yagoda.png', storyImg: 'img/story_berry_bone.jpg', text: 'Но когда она открыла коробку, там оказалась только белая КОСТЬ.', audio: 'audio/chain_story_3.wav' },
+    { id: 'bone', img: 'img/food_bone.png', storyImg: 'img/story_bone_dog.jpg', text: 'В этот момент из кустов выбежала голодная СОБАКА.', audio: 'audio/chain_story_4.wav' },
+    { id: 'dog', img: 'img/bs_dog.png', storyImg: 'img/story_dog_acorn.jpg', text: 'Лиса отдала кость, а Собака подарила ей большой ЖЁЛУДЬ.', audio: 'audio/chain_story_5.wav' },
+    { id: 'acorn', img: 'img/food_acorn.png', storyImg: 'img/story_acorn_honey.jpg', text: 'Лиса расколола жёлудь, а внутри оказался густой сладкий МЁД!', audio: 'audio/chain_story_6.wav' },
     { id: 'honey', img: 'img/p_opt_med.png', text: '' } // Финальная картинка
 ];
 
@@ -1282,6 +1282,12 @@ function nextChainStage() {
             area.innerHTML = `<img src="${step.storyImg}" style="width:100%; border-radius:15px; box-shadow: 0 5px 15px rgba(0,0,0,0.2);">`;
             msg.innerHTML = `<span style="color:#e67e22; font-size:24px;">${step.text}</span>`;
             btn.innerText = "Дальше ➔";
+            
+            // Запускаем озвучку текущего кадра сказки
+            if (step.audio) {
+                playSound(step.audio);
+            }
+            
             storyIndex++;
         } else {
             msg.innerText = "А теперь расставь их по порядку!";
