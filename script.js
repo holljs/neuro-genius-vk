@@ -1272,35 +1272,31 @@ function startChainLearning() {
     showObserveStage();
 }
 
-// 1. Показываем все картинки "кучей"
+// 1. Показываем все картинки "кучей" (исправлены пропорции и центровка)
 function showObserveStage() {
     const area = document.getElementById('chain-visual-area');
     const msg = document.getElementById('chain-message');
     msg.innerText = "Попробуй запомнить эти предметы за 5 секунд!";
     area.innerHTML = '';
     
-    // Выравниваем по центру, чтобы они не растягивались на всю высоту
+    // Выравниваем по центру, чтобы картинки не растягивались
+    area.style.flexDirection = 'row';
     area.style.alignItems = "center"; 
     
-    // Прячем кнопку "Дальше", пока идет 5 секунд
     document.getElementById('btn-chain-next').style.display = 'none';
     
     learningSequence.forEach(item => {
         const img = document.createElement('img');
         img.src = item.img;
-        
-        // Жестко задаем размер и запрещаем искажать пропорции!
         img.style.width = "80px";
         img.style.height = "80px";
         img.style.objectFit = "contain"; 
         img.style.margin = "5px";
-        
         area.appendChild(img);
     });
 
-    // Через 5 секунд всё прячем
+    // Через 5 секунд всё прячем и выводим маскота
     setTimeout(() => {
-        // Ставим красивую картинку вместо эмодзи
         area.innerHTML = '<img src="img/mascot_hide.jpg" style="width: 150px; border-radius: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">';
         msg.innerText = "Ой! Всё исчезло! Трудно запомнить?";
         
@@ -1308,7 +1304,7 @@ function showObserveStage() {
         btn.style.display = 'block';
         btn.innerText = "Показать магию ✨";
         
-        // Убираем сплющенный овал и делаем идеальную кнопку
+        // Красивая кнопка вместо сплющенного овала
         btn.className = ''; 
         btn.style.cssText = "display: block; margin: 0 auto; width: 250px; height: 50px; font-size: 20px; font-weight: bold; background: #FF9800; color: white; border: none; border-radius: 25px; cursor: pointer; box-shadow: 0 4px 15px rgba(255, 152, 0, 0.4); transition: transform 0.2s;";
         
@@ -1338,14 +1334,216 @@ function nextChainStage() {
             if (step.audio) {
                 playSound(step.audio);
             }
-            
             storyIndex++;
         } else {
-            msg.innerText = "А теперь расставь их по порядку!";
-            area.innerHTML = "<div style='font-size: 18px; color: #777; padding: 20px;'>Место для карточек (скоро добавим!)</div>";
-            btn.style.display = 'none';
+            // КОНЕЦ СКАЗКИ - ЗАПУСК ИГРЫ
+            setupChainGame();
         }
     }
+}
+
+// ==========================================
+// ЛОГИКА ИГРЫ ПЕРЕТАСКИВАНИЯ (ЦЕПОЧКА)
+// ==========================================
+let currentChainStep = 0;
+let chainGameTargets = []; // Правильная последовательность
+let activeChainItem = null;
+
+function setupChainGame() {
+    const area = document.getElementById('chain-visual-area');
+    const msg = document.getElementById('chain-message');
+    const btn = document.getElementById('btn-chain-next');
+    
+    btn.style.display = 'none';
+    msg.innerText = "Вспомни сказку! Расставь предметы по порядку.";
+    
+    area.innerHTML = '';
+    area.style.flexDirection = 'column';
+    area.style.alignItems = 'center';
+
+    currentChainStep = 0;
+    chainGameTargets = learningSequence.map(s => s.id);
+
+    // 1. Собираем отвлекающие предметы (фильтруем по картинке, чтобы избежать дубликатов)
+    let distractors = chainItemsPool.filter(poolItem => 
+        !learningSequence.some(seqItem => seqItem.img === poolItem.image)
+    );
+    distractors = shuffleArray(distractors).slice(0, 7);
+
+    // 2. Смешиваем правильные и отвлекающие карточки (всего 14 штук)
+    let gameCards = [];
+    learningSequence.forEach(s => gameCards.push({ id: s.id, img: s.img }));
+    distractors.forEach(d => gameCards.push({ id: d.id, img: d.image }));
+    gameCards = shuffleArray(gameCards);
+
+    // 3. Создаем деревянные слоты-мишени
+    const targetContainer = document.createElement('div');
+    targetContainer.style.display = 'flex';
+    targetContainer.style.flexWrap = 'wrap';
+    targetContainer.style.justifyContent = 'center';
+    targetContainer.style.gap = '8px';
+    targetContainer.style.marginBottom = '25px';
+
+    chainGameTargets.forEach((id, index) => {
+        const slot = document.createElement('div');
+        slot.style.backgroundImage = "url('img/slot_bg.png?v=2')";
+        slot.style.width = '70px';
+        slot.style.height = '70px';
+        slot.style.backgroundSize = '100% 100%';
+        slot.style.display = 'flex';
+        slot.style.alignItems = 'center';
+        slot.style.justifyContent = 'center';
+        slot.style.borderRadius = '10px';
+        slot.id = 'chain-target-' + index;
+        targetContainer.appendChild(slot);
+    });
+
+    // 4. Создаем перетаскиваемые карточки на деревянном фоне
+    const dragContainer = document.createElement('div');
+    dragContainer.style.display = 'flex';
+    dragContainer.style.flexWrap = 'wrap';
+    dragContainer.style.justifyContent = 'center';
+    dragContainer.style.gap = '10px';
+    dragContainer.id = 'chain-drag-zone';
+
+    gameCards.forEach(card => {
+        const item = document.createElement('div');
+        item.style.backgroundImage = "url('img/brick_bg.png')";
+        item.style.width = '70px';
+        item.style.height = '70px';
+        item.style.backgroundSize = '100% 100%';
+        item.style.display = 'flex';
+        item.style.alignItems = 'center';
+        item.style.justifyContent = 'center';
+        item.style.borderRadius = '10px';
+        item.style.cursor = 'grab';
+        item.setAttribute('data-id', card.id);
+        
+        const img = document.createElement('img');
+        img.src = card.img;
+        img.style.width = '55px';
+        img.style.height = '55px';
+        img.style.objectFit = 'contain';
+        img.style.pointerEvents = 'none'; // Запрет выделения
+        
+        item.appendChild(img);
+        item.addEventListener('pointerdown', handleChainPointerStart);
+        dragContainer.appendChild(item);
+    });
+
+    area.appendChild(targetContainer);
+    area.appendChild(dragContainer);
+}
+
+// === Механика Драг-н-Дропа для Цепочки ===
+function handleChainPointerStart(e) {
+    if (activeChainItem) return; 
+    if (e.target.classList.contains('matched')) return;
+    
+    activeChainItem = e.target;
+    activeChainItem.setPointerCapture(e.pointerId);
+
+    const rect = activeChainItem.getBoundingClientRect();
+    const offsetX = e.clientX - rect.left;
+    const offsetY = e.clientY - rect.top;
+
+    activeChainItem._dragOffsetX = offsetX;
+    activeChainItem._dragOffsetY = offsetY;
+
+    try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(err) {}
+
+    activeChainItem.classList.add('dragging');
+    activeChainItem.style.position = 'fixed';
+    activeChainItem.style.margin = '0';
+    activeChainItem.style.zIndex = '100';
+    activeChainItem.style.left = (e.clientX - offsetX) + 'px';
+    activeChainItem.style.top = (e.clientY - offsetY) + 'px';
+
+    activeChainItem.addEventListener('pointermove', handleChainPointerMove);
+    activeChainItem.addEventListener('pointerup', handleChainPointerEnd);
+    activeChainItem.addEventListener('pointercancel', handleChainPointerEnd); 
+}
+
+function handleChainPointerMove(e) {
+    if (!activeChainItem) return;
+    const offsetX = activeChainItem._dragOffsetX;
+    const offsetY = activeChainItem._dragOffsetY;
+    activeChainItem.style.left = (e.clientX - offsetX) + 'px';
+    activeChainItem.style.top = (e.clientY - offsetY) + 'px';
+}
+
+function handleChainPointerEnd(e) {
+    if (!activeChainItem) return;
+    
+    activeChainItem.releasePointerCapture(e.pointerId);
+    activeChainItem.classList.remove('dragging');
+    activeChainItem.removeEventListener('pointermove', handleChainPointerMove);
+    activeChainItem.removeEventListener('pointerup', handleChainPointerEnd);
+    activeChainItem.removeEventListener('pointercancel', handleChainPointerEnd); 
+
+    const itemId = activeChainItem.getAttribute('data-id');
+    const clientX = e.clientX;
+    const clientY = e.clientY;
+
+    activeChainItem.style.display = 'none';
+
+    // Проверяем, брошена ли карточка на нужный по счету слот
+    const currentTargetSlot = document.getElementById('chain-target-' + currentChainStep);
+    let droppedOnTarget = false;
+
+    if (currentTargetSlot) {
+        const rect = currentTargetSlot.getBoundingClientRect();
+        if (clientX >= rect.left && clientX <= rect.right && clientY >= rect.top && clientY <= rect.bottom) {
+            droppedOnTarget = true;
+        }
+    }
+
+    activeChainItem.style.display = 'flex';
+
+    if (droppedOnTarget && itemId === chainGameTargets[currentChainStep]) {
+        // УСПЕХ! Правильная картинка на правильном месте
+        try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "medium"}); } catch(err) {}
+        
+        activeChainItem.classList.add('matched');
+        activeChainItem.style.visibility = 'hidden'; 
+        
+        // Вставляем картинку в слот
+        currentTargetSlot.innerHTML = '';
+        const img = document.createElement('img');
+        img.src = activeChainItem.querySelector('img').src;
+        img.style.width = '55px';
+        img.style.height = '55px';
+        img.style.objectFit = 'contain';
+        currentTargetSlot.appendChild(img);
+        
+        currentChainStep++;
+        
+        // Проверка победы
+        if (currentChainStep === chainGameTargets.length) {
+            setTimeout(() => {
+                document.getElementById('chain-message').innerText = "Супер! Ты настоящий Гений! 🎉";
+                playSound('audio/words_win.wav'); // Звук победы
+                setTimeout(goBackToChainMenu, 3500);
+            }, 500);
+        }
+    } else {
+        // ОШИБКА (не тот слот или лишняя карточка)
+        try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(err) {}
+        playSound('audio/wrong.wav');
+        activeChainItem.style.transition = 'all 0.3s ease';
+        activeChainItem.style.position = 'relative';
+        activeChainItem.style.left = '0px';
+        activeChainItem.style.top = '0px';
+        activeChainItem.style.zIndex = '';
+        
+        setTimeout(() => { 
+            if(activeChainItem) activeChainItem.style.transition = 'none'; 
+        }, 300);
+    }
+    
+    delete activeChainItem._dragOffsetX;
+    delete activeChainItem._dragOffsetY;
+    activeChainItem = null;
 }
 
 function goBackToChainMenu() {
