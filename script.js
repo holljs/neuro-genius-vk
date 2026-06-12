@@ -1272,22 +1272,33 @@ function startChainLearning() {
     showObserveStage();
 }
 
+// 1. Показываем все картинки "кучей"
 function showObserveStage() {
     const area = document.getElementById('chain-visual-area');
     const msg = document.getElementById('chain-message');
     msg.innerText = "Попробуй запомнить эти предметы за 5 секунд!";
     area.innerHTML = '';
     
+    // Выравниваем по центру, чтобы они не растягивались на всю высоту
+    area.style.alignItems = "center"; 
+    
+    // Прячем кнопку "Дальше", пока идет 5 секунд
     document.getElementById('btn-chain-next').style.display = 'none';
     
     learningSequence.forEach(item => {
         const img = document.createElement('img');
         img.src = item.img;
+        
+        // Жестко задаем размер и запрещаем искажать пропорции!
         img.style.width = "80px";
+        img.style.height = "80px";
+        img.style.objectFit = "contain"; 
         img.style.margin = "5px";
+        
         area.appendChild(img);
     });
 
+    // Через 5 секунд всё прячем
     setTimeout(() => {
         area.innerHTML = '<div style="font-size: 50px;">🙈</div>';
         msg.innerText = "Ой! Всё исчезло! Трудно запомнить?";
