@@ -1221,15 +1221,7 @@ const chainItemsPool = [
 ];
 
 let currentChainStage = 'observe'; 
-let learningSequence = [
-    { id: 'fox', img: 'img/3d_lisa.png', storyImg: 'img/story_fox_box.jpg', text: 'Однажды хитрая ЛИСА нашла под деревом красивую КОРОБКУ.', audio: 'audio/chain_story_1.wav' },
-    { id: 'box', img: 'img/box.png', storyImg: 'img/story_box_berry.jpg', text: 'Она обрадовалась и подумала, что внутри лежит сладкая ЯГОДА.', audio: 'audio/chain_story_2.wav' },
-    { id: 'berry', img: 'img/p_opt_yagoda.png', storyImg: 'img/story_berry_bone.jpg', text: 'Но когда она открыла коробку, там оказалась только белая КОСТЬ.', audio: 'audio/chain_story_3.wav' },
-    { id: 'bone', img: 'img/food_bone.png', storyImg: 'img/story_bone_dog.jpg', text: 'В этот момент из кустов выбежала голодная СОБАКА.', audio: 'audio/chain_story_4.wav' },
-    { id: 'dog', img: 'img/bs_dog.png', storyImg: 'img/story_dog_acorn.jpg', text: 'Лиса отдала кость, а Собака подарила ей большой ЖЁЛУДЬ.', audio: 'audio/chain_story_5.wav' },
-    { id: 'acorn', img: 'img/food_acorn.png', storyImg: 'img/story_acorn_honey.jpg', text: 'Лиса расколола жёлудь, а внутри оказался густой сладкий МЁД!', audio: 'audio/chain_story_6.wav' },
-    { id: 'honey', img: 'img/p_opt_med.png', text: '' }
-];
+let learningSequence = [];
 
 let currentChainTargetCount = 0; 
 let currentChainSequence = [];   
@@ -1246,6 +1238,7 @@ function goBackToMemorikaFromChain() {
     document.getElementById('screen-memorika-menu').classList.add('active');
 }
 
+// 🔥 ЗДЕСЬ ТЕПЕРЬ РЕЖИМ СЛУЧАЙНОЙ ТРЕНИРОВКИ 🔥
 function startChainTraining(count) {
     try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(e){}
     
@@ -1254,6 +1247,9 @@ function startChainTraining(count) {
         return;
     }
     
+    document.getElementById('screen-chain-menu').classList.remove('active');
+    document.getElementById('screen-chain-game').classList.add('active');
+
     currentChainTargetCount = count;
     let shuffledPool = [...chainItemsPool];
     
@@ -1262,19 +1258,81 @@ function startChainTraining(count) {
         [shuffledPool[i], shuffledPool[j]] = [shuffledPool[j], shuffledPool[i]];
     }
     
-    currentChainSequence = shuffledPool.slice(0, count);
-    console.log(`Игра началась! Выбрано предметов: ${count}`);
-    console.log(currentChainSequence);
-    alert(`Генерация случайной цепочки из ${count} предметов прошла успешно! Посмотри консоль.`);
+    let randomItems = shuffledPool.slice(0, count);
+    
+    // Перезаписываем эталонную сказку на случайный набор
+    learningSequence = randomItems.map(item => ({
+        id: item.id,
+        img: item.image
+    }));
+
+    currentChainStage = 'training-observe';
+    showTrainingObserveStage(count);
 }
 
+// 🔥 ОТДЕЛЬНЫЙ ЭКРАН ДЛЯ ПРИДУМЫВАНИЯ СКАЗКИ
+function showTrainingObserveStage(count) {
+    const area = document.getElementById('chain-visual-area');
+    const msg = document.getElementById('chain-message');
+    
+    msg.innerHTML = `Свяжи эти <b style="color:#FF9800">${count} предметов</b> в одну смешную сказку!`;
+    
+    area.innerHTML = '';
+    area.style.flexDirection = 'row';
+    area.style.alignItems = "center"; 
+    area.style.flexWrap = 'wrap'; 
+    
+    learningSequence.forEach(item => {
+        const img = document.createElement('img');
+        img.src = item.img;
+        img.style.width = "65px";
+        img.style.height = "65px";
+        img.style.objectFit = "contain"; 
+        img.style.margin = "5px";
+        area.appendChild(img);
+    });
+
+    const btn = document.getElementById('btn-chain-next');
+    btn.style.display = 'block';
+    btn.innerText = "Я придумал! ✨";
+    btn.className = ''; 
+    btn.style.cssText = "display: block; margin: 20px auto 0 auto; width: 250px; height: 50px; font-size: 20px; font-weight: bold; background: #FF9800; color: white; border: none; border-radius: 25px; cursor: pointer; box-shadow: 0 4px 15px rgba(255, 152, 0, 0.4); transition: transform 0.2s;";
+    
+    btn.onclick = () => {
+        setupChainGame(); // Сразу запускаем перетаскивание
+    };
+}
+
+// 🔥 ЗДЕСЬ ОБУЧЕНИЕ СО СКАЗКОЙ ПРО ЛИСУ И КОМИКСОМ
 function startChainLearning() {
     try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "heavy"}); } catch(e){}
     document.getElementById('screen-chain-menu').classList.remove('active');
     document.getElementById('screen-chain-game').classList.add('active');
     
-    currentChainStage = 'observe';
-    showObserveStage();
+    // Запускаем обучающий комикс перед игрой
+    openComicSlider(
+        ['img/chain_intro_1.jpg', 'img/chain_intro_2.jpg'], 
+        ['audio/chain_intro_1.wav', 'audio/chain_intro_2.wav']
+    );
+
+    // Когда комикс закрывается — стартует сказка
+    document.getElementById('btn-comic-start').onclick = () => {
+        closeComicSlider();
+        
+        // Возвращаем эталонную сказку в память
+        learningSequence = [
+            { id: 'fox', img: 'img/3d_lisa.png', storyImg: 'img/story_fox_box.jpg', text: 'Однажды хитрая ЛИСА нашла под деревом красивую КОРОБКУ.', audio: 'audio/chain_story_1.wav' },
+            { id: 'box', img: 'img/box.png', storyImg: 'img/story_box_berry.jpg', text: 'Она обрадовалась и подумала, что внутри лежит сладкая ЯГОДА.', audio: 'audio/chain_story_2.wav' },
+            { id: 'berry', img: 'img/p_opt_yagoda.png', storyImg: 'img/story_berry_bone.jpg', text: 'Но когда она открыла коробку, там оказалась только белая КОСТЬ.', audio: 'audio/chain_story_3.wav' },
+            { id: 'bone', img: 'img/food_bone.png', storyImg: 'img/story_bone_dog.jpg', text: 'В этот момент из кустов выбежала голодная СОБАКА.', audio: 'audio/chain_story_4.wav' },
+            { id: 'dog', img: 'img/bs_dog.png', storyImg: 'img/story_dog_acorn.jpg', text: 'Лиса отдала кость, а Собака подарила ей большой ЖЁЛУДЬ.', audio: 'audio/chain_story_5.wav' },
+            { id: 'acorn', img: 'img/food_acorn.png', storyImg: 'img/story_acorn_honey.jpg', text: 'Лиса расколола жёлудь, а внутри оказался густой сладкий МЁД!', audio: 'audio/chain_story_6.wav' },
+            { id: 'honey', img: 'img/p_opt_med.png', text: '' }
+        ];
+
+        currentChainStage = 'observe';
+        showObserveStage();
+    };
 }
 
 function showObserveStage() {
@@ -1308,6 +1366,9 @@ function showObserveStage() {
         
         btn.className = ''; 
         btn.style.cssText = "display: block; margin: 0 auto; width: 250px; height: 50px; font-size: 20px; font-weight: bold; background: #FF9800; color: white; border: none; border-radius: 25px; cursor: pointer; box-shadow: 0 4px 15px rgba(255, 152, 0, 0.4); transition: transform 0.2s;";
+        
+        // Меняем действие кнопки для показа истории
+        btn.onclick = () => { nextChainStage(); };
         
         currentChainStage = 'story-start';
     }, 5000);
