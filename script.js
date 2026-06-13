@@ -1271,11 +1271,15 @@ function startChainTraining(count) {
 }
 
 // 🔥 ОТДЕЛЬНЫЙ ЭКРАН ДЛЯ ПРИДУМЫВАНИЯ СКАЗКИ
+// 🔥 2. ЭКРАН ТРЕНИРОВКИ (СВОЯ СКАЗКА)
 function showTrainingObserveStage(count) {
     const area = document.getElementById('chain-visual-area');
     const msg = document.getElementById('chain-message');
     
     msg.innerHTML = `Свяжи эти <b style="color:#FF9800">${count} предметов</b> в одну смешную сказку!`;
+    
+    // 🎵 Озвучиваем команду "Свяжи в сказку!"
+    playSound('audio/chain_train.wav');
     
     area.innerHTML = '';
     area.style.flexDirection = 'row';
@@ -1335,10 +1339,15 @@ function startChainLearning() {
     };
 }
 
+// 🔥 1. ЭКРАН ОБУЧЕНИЯ СО СКАЗКОЙ
 function showObserveStage() {
     const area = document.getElementById('chain-visual-area');
     const msg = document.getElementById('chain-message');
     msg.innerText = "Попробуй запомнить эти предметы за 5 секунд!";
+    
+    // 🎵 Озвучиваем команду "Запомни!"
+    playSound('audio/chain_remember.wav');
+    
     area.innerHTML = '';
     
     area.style.flexDirection = 'row';
@@ -1359,6 +1368,9 @@ function showObserveStage() {
     setTimeout(() => {
         area.innerHTML = '<img src="img/mascot_hide.jpg" style="width: 150px; border-radius: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">';
         msg.innerText = "Ой! Всё исчезло! Трудно запомнить?";
+        
+        // 🎵 Озвучиваем "Всё исчезло!"
+        playSound('audio/chain_hide.wav');
         
         const btn = document.getElementById('btn-chain-next');
         btn.style.display = 'block';
