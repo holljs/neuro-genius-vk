@@ -6,6 +6,14 @@
     <title>Нейро-Гений</title>
     <script src="https://unpkg.com/@vkontakte/vk-bridge/dist/browser.min.js"></script>
     <link rel="stylesheet" href="style.css">
+    <style>
+        /* Броня от случайных скроллов при тапе на мобилках */
+        .draggable-item, [id^='chain-drag-zone'] > div {
+            touch-action: none !important;
+            user-select: none !important;
+            -webkit-user-select: none !important;
+        }
+    </style>
 </head>
 <body>
 
@@ -331,7 +339,6 @@
         </div>
     </div>
 
-    <!-- (Меню Соробана: Обучение и Тренировка пока без иконок, оставляем как было) -->
     <div id="screen-soroban-learn-menu" class="screen" style="overflow-y: auto;">
         <div class="header" style="position: sticky; top: 0; z-index: 10;">
             <div class="header-title-row"><span id="room-title">Обучение</span></div>
@@ -343,36 +350,46 @@
         <div class="menu-grid soroban-sub-grid-split">
             <div class="sub-column">
                 <div class="sub-title-header">Разряды</div>
-                <div class="category-card sub-card" onclick="startSoroban('learn', 'learn_units', 'Единицы')">
+                <!-- Единицы: нежно-розовый -->
+                <div class="category-card sub-card" style="background-color: #ffebee; border-color: #ffcdd2;" onclick="startSoroban('learn', 'learn_units', 'Единицы')">
                     <div class="category-title sub-title">Единицы</div>
                 </div>
-                <div class="category-card sub-card" onclick="startSoroban('learn', 'learn_tens', 'Десятки')">
+                <!-- Десятки: нежно-голубой -->
+                <div class="category-card sub-card" style="background-color: #e3f2fd; border-color: #bbdefb;" onclick="startSoroban('learn', 'learn_tens', 'Десятки')">
                     <div class="category-title sub-title">Десятки</div>
                 </div>
-                <div class="category-card sub-card" onclick="startSoroban('learn', 'learn_hundreds', 'Сотни')">
+                <!-- Сотни: нежно-зеленый -->
+                <div class="category-card sub-card" style="background-color: #e8f5e9; border-color: #c8e6c9;" onclick="startSoroban('learn', 'learn_hundreds', 'Сотни')">
                     <div class="category-title sub-title">Сотни</div>
                 </div>
+                
                 <div class="sub-title-header" style="margin-top: 15px;">Друзья</div>
-                <div class="category-card sub-card" onclick="startSoroban('learn', 'learn_friends', 'Друзья 10')">
+                <!-- Друзья 10: лавандовый -->
+                <div class="category-card sub-card" style="background-color: #f3e5f5; border-color: #e1bee7;" onclick="startSoroban('learn', 'learn_friends', 'Друзья 10')">
                     <div class="category-title sub-title">Друзья 10</div>
                 </div>
-                <div class="category-card sub-card" style="margin-top: 10px;" onclick="startSoroban('learn', 'learn_friends_5', 'Братцы Пять')">
+                <!-- Братцы 5: персиковый -->
+                <div class="category-card sub-card" style="background-color: #fff3e0; border-color: #ffe0b2; margin-top: 10px;" onclick="startSoroban('learn', 'learn_friends_5', 'Братцы Пять')">
                     <div class="category-title sub-title">Братцы 5</div>
                 </div>
             </div>
             
             <div class="sub-column">
                 <div class="sub-title-header">Действия</div>
-                <div class="category-card sub-card" onclick="startSoroban('learn', 'learn_add', 'Сложение')">
+                <!-- Сложение: мятный -->
+                <div class="category-card sub-card" style="background-color: #e0f2f1; border-color: #b2dfdb;" onclick="startSoroban('learn', 'learn_add', 'Сложение')">
                     <div class="category-title sub-title">Сложение</div>
                 </div>
-                <div class="category-card sub-card" onclick="startSoroban('learn', 'learn_sub', 'Вычитание')">
+                <!-- Вычитание: светло-бирюзовый -->
+                <div class="category-card sub-card" style="background-color: #e0f7fa; border-color: #b2ebf2;" onclick="startSoroban('learn', 'learn_sub', 'Вычитание')">
                     <div class="category-title sub-title">Вычитание</div>
                 </div>
-                <div class="category-card sub-card" onclick="startSoroban('learn', 'learn_mult', 'Умножение')">
+                <!-- Умножение: светло-желтый -->
+                <div class="category-card sub-card" style="background-color: #fffde7; border-color: #fff59d;" onclick="startSoroban('learn', 'learn_mult', 'Умножение')">
                     <div class="category-title sub-title">Умножение</div>
                 </div>
-                <div class="category-card sub-card" onclick="startSoroban('learn', 'learn_div', 'Деление')">
+                <!-- Деление: нежно-сиреневый -->
+                <div class="category-card sub-card" style="background-color: #ede7f6; border-color: #d1c4e9;" onclick="startSoroban('learn', 'learn_div', 'Деление')">
                     <div class="category-title sub-title">Деление</div>
                 </div>
             </div>
@@ -388,22 +405,22 @@
         </div>
         
         <div class="menu-grid sub-grid" style="margin-top: 15px;">
-            <div class="category-card sub-card" onclick="startSoroban('play', 'play_numbers', 'Тренировка: Набери число')">
+            <div class="category-card sub-card" style="background-color: #e3f2fd; border-color: #bbdefb;" onclick="startSoroban('play', 'play_numbers', 'Тренировка: Набери число')">
                 <div class="category-title sub-title">Набери число</div>
             </div>
-            <div class="category-card sub-card" onclick="startSoroban('play', 'play_simple', 'Тренировка: Прямой счёт')">
+            <div class="category-card sub-card" style="background-color: #e8f5e9; border-color: #c8e6c9;" onclick="startSoroban('play', 'play_simple', 'Тренировка: Прямой счёт')">
                 <div class="category-title sub-title">Прямой счёт (+ и -)</div>
             </div>
-            <div class="category-card sub-card" onclick="startSoroban('play', 'play_friends_5', 'Тренировка: Орден Пяти')">
+            <div class="category-card sub-card" style="background-color: #fff3e0; border-color: #ffe0b2;" onclick="startSoroban('play', 'play_friends_5', 'Тренировка: Орден Пяти')">
                 <div class="category-title sub-title">Орден Пяти</div>
             </div>
-            <div class="category-card sub-card" onclick="startSoroban('play', 'play_friends_10', 'Тренировка: Друзья 10')">
+            <div class="category-card sub-card" style="background-color: #f3e5f5; border-color: #e1bee7;" onclick="startSoroban('play', 'play_friends_10', 'Тренировка: Друзья 10')">
                 <div class="category-title sub-title">Академия Десяти</div>
             </div>
-            <div class="category-card sub-card" onclick="startSoroban('play', 'play_mult', 'Тренировка: Умножение')">
+            <div class="category-card sub-card" style="background-color: #fffde7; border-color: #fff59d;" onclick="startSoroban('play', 'play_mult', 'Тренировка: Умножение')">
                 <div class="category-title sub-title">Умножение</div>
             </div>
-            <div class="category-card sub-card" onclick="startSoroban('play', 'play_div', 'Тренировка: Деление')">
+            <div class="category-card sub-card" style="background-color: #ede7f6; border-color: #d1c4e9;" onclick="startSoroban('play', 'play_div', 'Тренировка: Деление')">
                 <div class="category-title sub-title">Деление</div>
             </div>
         </div>
@@ -489,7 +506,6 @@
         </div>
     </div>
     
-    <!-- Не забудь изменить версию скрипта на ?v=10, чтобы сбросить кэш! -->
-    <script src="script.js?v=10"></script>
+    <script src="script.js?v=11"></script>
 </body>
 </html>
