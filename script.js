@@ -52,7 +52,7 @@ const roomsData = {
         { id: 'morkovka', text: 'Морковка', image: 'img/p_opt_morkovka.png', sound: 'audio/w_morkovka.wav', syllables: ['мор', 'ков', 'ка'], audioSyllables: ['audio/sl_mor.wav', 'audio/sl_kov.wav', 'audio/sl_ka.wav'] },
         { id: 'ogurets', text: 'Огурец', image: 'img/p_opt_ogurec.png', sound: 'audio/w_ogurets.wav', syllables: ['о', 'гу', 'рец'], audioSyllables: ['audio/sl_o.wav', 'audio/sl_gu.wav', 'audio/sl_rets.wav'] },
         { id: 'yabloko', text: 'Яблоко', image: 'img/p_opt_yabloko.png', sound: 'audio/w_yabloko.wav', syllables: ['яб', 'ло', 'ко'], audioSyllables: ['audio/sl_yab.wav', 'audio/sl_lo.wav', 'audio/sl_ko.wav'] },
-        { id: 'yagoda', text: 'Ягода', image: 'img/p_opt_yagoda.png', sound: 'audio/w_yagoda.wav', syllables: ['я', 'го', 'да'], audioSyllables: ['audio/sl_ya.wav', 'audio/sl_go.wav', 'audio/sl_da.wav'] },
+        { id: 'malina', text: 'Малина', image: 'img/p_opt_yagoda.png', sound: 'audio/w_malina.wav', syllables: ['ма', 'ли', 'на'], audioSyllables: ['audio/sl_ma.wav', 'audio/sl_li.wav', 'audio/sl_na.wav'] },
         { id: 'korobka', text: 'Коробка', image: 'img/box.png', sound: 'audio/w_korobka.wav', syllables: ['ко', 'роб', 'ка'], audioSyllables: ['audio/sl_ko.wav', 'audio/sl_rob.wav', 'audio/sl_ka.wav'] },
         { id: 'kostochka', text: 'Косточка', image: 'img/food_bone.png', sound: 'audio/w_kostochka.wav', syllables: ['кос', 'точ', 'ка'], audioSyllables: ['audio/sl_kos.wav', 'audio/sl_toch.wav', 'audio/sl_ka.wav'] },
         { id: 'rediska', text: 'Редиска', image: 'img/garden_item_7.png', sound: 'audio/w_rediska.wav', syllables: ['ре', 'дис', 'ка'], audioSyllables: ['audio/sl_re.wav', 'audio/sl_dis.wav', 'audio/sl_ka.wav'] },
@@ -64,7 +64,7 @@ const roomsData = {
         { id: 'avtomobil', text: 'Автомобиль', image: 'img/bs_car_big.png', sound: 'audio/w_avtomobil.wav', syllables: ['ав', 'то', 'мо', 'биль'], audioSyllables: ['audio/sl_av.wav', 'audio/sl_to.wav', 'audio/sl_mo.wav', 'audio/sl_bil.wav'] },
         { id: 'lokomotiv', text: 'Локомотив', image: 'img/p_opt_poezd.png', sound: 'audio/w_lokomotiv.wav', syllables: ['ло', 'ко', 'мо', 'тив'], audioSyllables: ['audio/sl_lo.wav', 'audio/sl_ko.wav', 'audio/sl_mo.wav', 'audio/sl_tiv.wav'] },
         { id: 'medvezhonok', text: 'Медвежонок', image: 'img/bs_bear.png', sound: 'audio/w_medvezhonok.wav', syllables: ['мед', 'ве', 'жо', 'нок'], audioSyllables: ['audio/sl_med.wav', 'audio/sl_ve.wav', 'audio/sl_zho.wav', 'audio/sl_nok.wav'] },
-        { id: 'zemlyanika', text: 'Земляника', image: 'img/p_opt_yagoda.png', sound: 'audio/w_zemlyanika.wav', syllables: ['зем', 'ля', 'ни', 'ка'], audioSyllables: ['audio/sl_zem.wav', 'audio/sl_lya.wav', 'audio/sl_ni.wav', 'audio/sl_ka.wav'] }
+        { id: 'zemlyanika', text: 'Земляника', image: 'img/zemlyanika.png', sound: 'audio/w_zemlyanika.wav', syllables: ['зем', 'ля', 'ни', 'ка'], audioSyllables: ['audio/sl_zem.wav', 'audio/sl_lya.wav', 'audio/sl_ni.wav', 'audio/sl_ka.wav'] }
     ],
 
     // === СОРОБАН ===
@@ -1271,7 +1271,6 @@ function startChainTraining(count) {
 }
 
 // 🔥 ОТДЕЛЬНЫЙ ЭКРАН ДЛЯ ПРИДУМЫВАНИЯ СКАЗКИ
-// 🔥 2. ЭКРАН ТРЕНИРОВКИ (СВОЯ СКАЗКА)
 function showTrainingObserveStage(count) {
     const area = document.getElementById('chain-visual-area');
     const msg = document.getElementById('chain-message');
@@ -1303,7 +1302,7 @@ function showTrainingObserveStage(count) {
     btn.style.cssText = "display: block; margin: 20px auto 0 auto; width: 250px; height: 50px; font-size: 20px; font-weight: bold; background: #FF9800; color: white; border: none; border-radius: 25px; cursor: pointer; box-shadow: 0 4px 15px rgba(255, 152, 0, 0.4); transition: transform 0.2s;";
     
     btn.onclick = () => {
-        setupChainGame(); // Сразу запускаем перетаскивание
+        setupChainGame(); // Сразу запускаем перетаскивание/тапы
     };
 }
 
@@ -1416,11 +1415,10 @@ function nextChainStage() {
 }
 
 // ==========================================
-// ЛОГИКА ИГРЫ ПЕРЕТАСКИВАНИЯ (ЦЕПОЧКА)
+// ЛОГИКА ИГРЫ (ЦЕПОЧКА) - ТАПЫ ВМЕСТО ПЕРЕТАСКИВАНИЯ
 // ==========================================
 let currentChainStep = 0;
 let chainGameTargets = []; 
-let activeChainItem = null;
 
 function setupChainGame() {
     const area = document.getElementById('chain-visual-area');
@@ -1428,7 +1426,7 @@ function setupChainGame() {
     const btn = document.getElementById('btn-chain-next');
     
     btn.style.display = 'none';
-    msg.innerText = "Вспомни сказку! Расставь предметы по порядку.";
+    msg.innerText = "Вспомни сказку! Нажимай на предметы по порядку.";
     
     area.innerHTML = '';
     area.style.flexDirection = 'column';
@@ -1468,12 +1466,12 @@ function setupChainGame() {
         targetContainer.appendChild(slot);
     });
 
-    const dragContainer = document.createElement('div');
-    dragContainer.style.display = 'flex';
-    dragContainer.style.flexWrap = 'wrap';
-    dragContainer.style.justifyContent = 'center';
-    dragContainer.style.gap = '10px';
-    dragContainer.id = 'chain-drag-zone';
+    const clickContainer = document.createElement('div');
+    clickContainer.style.display = 'flex';
+    clickContainer.style.flexWrap = 'wrap';
+    clickContainer.style.justifyContent = 'center';
+    clickContainer.style.gap = '10px';
+    clickContainer.id = 'chain-drag-zone';
 
     gameCards.forEach(card => {
         const item = document.createElement('div');
@@ -1485,8 +1483,8 @@ function setupChainGame() {
         item.style.alignItems = 'center';
         item.style.justifyContent = 'center';
         item.style.borderRadius = '10px';
-        item.style.cursor = 'grab';
-        item.style.touchAction = 'none'; // ЗАЩИТА ТАЧА НА МОБИЛКАХ
+        item.style.cursor = 'pointer'; // Теперь здесь указатель-палец
+        item.style.transition = 'transform 0.1s ease'; // Для анимации дрожания
         item.setAttribute('data-id', card.id);
         
         const img = document.createElement('img');
@@ -1494,103 +1492,50 @@ function setupChainGame() {
         img.style.width = '55px';
         img.style.height = '55px';
         img.style.objectFit = 'contain';
-        img.style.pointerEvents = 'none'; // Запрет выделения
+        img.style.pointerEvents = 'none'; 
         
         item.appendChild(img);
-        item.addEventListener('pointerdown', handleChainPointerStart);
-        dragContainer.appendChild(item);
+        
+        // 🔥 Вешаем обработчик простого клика/тапа
+        item.addEventListener('pointerdown', handleChainItemClick);
+        clickContainer.appendChild(item);
     });
 
     area.appendChild(targetContainer);
-    area.appendChild(dragContainer);
+    area.appendChild(clickContainer);
 }
 
-function handleChainPointerStart(e) {
-    if (activeChainItem) return; 
-    if (e.target.classList.contains('matched')) return;
-    
-    activeChainItem = e.target;
-    activeChainItem.setPointerCapture(e.pointerId);
+function handleChainItemClick(e) {
+    const item = e.currentTarget;
+    if (item.classList.contains('matched')) return; // Если уже угадана - игнорируем
 
-    const rect = activeChainItem.getBoundingClientRect();
-    const offsetX = e.clientX - rect.left;
-    const offsetY = e.clientY - rect.top;
-
-    activeChainItem._dragOffsetX = offsetX;
-    activeChainItem._dragOffsetY = offsetY;
-
-    try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(err) {}
-
-    // Жестко фиксируем размеры перед переключением в fixed
-    activeChainItem.style.width = rect.width + 'px';
-    activeChainItem.style.height = rect.height + 'px';
-
-    activeChainItem.classList.add('dragging');
-    activeChainItem.style.position = 'fixed';
-    activeChainItem.style.margin = '0';
-    activeChainItem.style.zIndex = '1000';
-    activeChainItem.style.left = (e.clientX - offsetX) + 'px';
-    activeChainItem.style.top = (e.clientY - offsetY) + 'px';
-
-    activeChainItem.addEventListener('pointermove', handleChainPointerMove);
-    activeChainItem.addEventListener('pointerup', handleChainPointerEnd);
-    activeChainItem.addEventListener('pointercancel', handleChainPointerEnd); 
-}
-
-function handleChainPointerMove(e) {
-    if (!activeChainItem) return;
-    const offsetX = activeChainItem._dragOffsetX;
-    const offsetY = activeChainItem._dragOffsetY;
-    activeChainItem.style.left = (e.clientX - offsetX) + 'px';
-    activeChainItem.style.top = (e.clientY - offsetY) + 'px';
-}
-
-function handleChainPointerEnd(e) {
-    if (!activeChainItem) return;
-    
-    activeChainItem.releasePointerCapture(e.pointerId);
-    activeChainItem.classList.remove('dragging');
-    activeChainItem.removeEventListener('pointermove', handleChainPointerMove);
-    activeChainItem.removeEventListener('pointerup', handleChainPointerEnd);
-    activeChainItem.removeEventListener('pointercancel', handleChainPointerEnd); 
-
-    const itemId = activeChainItem.getAttribute('data-id');
-    const clientX = e.clientX;
-    const clientY = e.clientY;
-
-    activeChainItem.style.display = 'none';
-
+    const itemId = item.getAttribute('data-id');
     const currentTargetSlot = document.getElementById('chain-target-' + currentChainStep);
-    let droppedOnTarget = false;
 
-    if (currentTargetSlot) {
-        const rect = currentTargetSlot.getBoundingClientRect();
-        // 🔥 МАГНИТНАЯ ЗОНА: Прощаем промах на 40 пикселей во все стороны!
-        const tolerance = 40; 
-        if (clientX >= (rect.left - tolerance) && clientX <= (rect.right + tolerance) && 
-            clientY >= (rect.top - tolerance) && clientY <= (rect.bottom + tolerance)) {
-            droppedOnTarget = true;
-        }
-    }
-
-    activeChainItem.style.display = 'flex';
-
-    if (droppedOnTarget && itemId === chainGameTargets[currentChainStep]) {
+    if (itemId === chainGameTargets[currentChainStep]) {
+        // УСПЕХ: Карточка верная!
         try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "medium"}); } catch(err) {}
         
-        activeChainItem.classList.add('matched');
-        activeChainItem.style.visibility = 'hidden'; 
+        item.classList.add('matched');
+        item.style.visibility = 'hidden'; // Прячем снизу
         
         currentTargetSlot.innerHTML = '';
         const img = document.createElement('img');
-        img.src = activeChainItem.querySelector('img').src;
+        img.src = item.querySelector('img').src;
         img.style.width = '55px';
         img.style.height = '55px';
         img.style.objectFit = 'contain';
+        
+        // Красивая анимация появления в слоте
+        img.style.transform = 'scale(0.5)';
+        img.style.transition = 'transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
         currentTargetSlot.appendChild(img);
+        
+        setTimeout(() => { img.style.transform = 'scale(1)'; }, 10);
         
         currentChainStep++;
         
+        // Проверка на победу
         if (currentChainStep === chainGameTargets.length) {
             setTimeout(() => {
                 document.getElementById('chain-message').innerText = "Супер! Ты настоящий Гений! 🎉";
@@ -1599,26 +1544,17 @@ function handleChainPointerEnd(e) {
             }, 500);
         }
     } else {
+        // ОШИБКА: Не та карточка!
         try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(err) {}
         playSound('audio/wrong.wav');
-        activeChainItem.style.transition = 'all 0.3s ease';
-        activeChainItem.style.position = 'relative';
-        activeChainItem.style.left = '0px';
-        activeChainItem.style.top = '0px';
-        activeChainItem.style.zIndex = '';
         
-        // 🔥 ИСПРАВЛЕНИЕ СХЛОПЫВАНИЯ: Жестко возвращаем родные 70px!
-        activeChainItem.style.width = '70px';
-        activeChainItem.style.height = '70px';
-        
-        setTimeout(() => { 
-            if(activeChainItem) activeChainItem.style.transition = 'none'; 
-        }, 300);
+        // Анимация: недовольно трясем карточку влево-вправо
+        item.style.transform = 'translateX(-6px)';
+        setTimeout(() => { item.style.transform = 'translateX(6px)'; }, 50);
+        setTimeout(() => { item.style.transform = 'translateX(-6px)'; }, 100);
+        setTimeout(() => { item.style.transform = 'translateX(6px)'; }, 150);
+        setTimeout(() => { item.style.transform = 'translateX(0px)'; }, 200);
     }
-    
-    delete activeChainItem._dragOffsetX;
-    delete activeChainItem._dragOffsetY;
-    activeChainItem = null;
 }
 
 function goBackToChainMenu() {
