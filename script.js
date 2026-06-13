@@ -599,7 +599,10 @@ function handlePointerEnd(e) {
 
     targets.forEach(t => {
         const rect = t.getBoundingClientRect();
-        if (clientX >= rect.left && clientX <= rect.right && clientY >= rect.top && clientY <= rect.bottom) {
+        // 🔥 МАГНИТНАЯ ЗОНА ДЛЯ СЛОГОВ: Прощаем промах на 30 пикселей!
+        const tolerance = 30;
+        if (clientX >= (rect.left - tolerance) && clientX <= (rect.right + tolerance) && 
+            clientY >= (rect.top - tolerance) && clientY <= (rect.bottom + tolerance)) {
             if (t.getAttribute('data-syl') === itemSyl && !t.classList.contains('matched')) {
                 matchedTarget = t;
             }
@@ -1489,7 +1492,10 @@ function handleChainPointerEnd(e) {
 
     if (currentTargetSlot) {
         const rect = currentTargetSlot.getBoundingClientRect();
-        if (clientX >= rect.left && clientX <= rect.right && clientY >= rect.top && clientY <= rect.bottom) {
+        // 🔥 МАГНИТНАЯ ЗОНА: Прощаем промах на 40 пикселей во все стороны!
+        const tolerance = 40; 
+        if (clientX >= (rect.left - tolerance) && clientX <= (rect.right + tolerance) && 
+            clientY >= (rect.top - tolerance) && clientY <= (rect.bottom + tolerance)) {
             droppedOnTarget = true;
         }
     }
@@ -1527,8 +1533,10 @@ function handleChainPointerEnd(e) {
         activeChainItem.style.left = '0px';
         activeChainItem.style.top = '0px';
         activeChainItem.style.zIndex = '';
-        activeChainItem.style.width = '';
-        activeChainItem.style.height = '';
+        
+        // 🔥 ИСПРАВЛЕНИЕ СХЛОПЫВАНИЯ: Жестко возвращаем родные 70px!
+        activeChainItem.style.width = '70px';
+        activeChainItem.style.height = '70px';
         
         setTimeout(() => { 
             if(activeChainItem) activeChainItem.style.transition = 'none'; 
