@@ -565,6 +565,7 @@
             </div>
     </div>
 
+    <!-- === ЭКРАН: ДВОРЕЦ ПАМЯТИ (МОЯ КОМНАТА) === -->
     <div id="screen-wardrobe-game" class="screen" style="overflow-y: auto;">
         <div class="header" style="position: sticky; top: 0; z-index: 10;">
             <div class="header-title-row"><span id="room-title">Дворец Памяти</span></div>
@@ -575,56 +576,34 @@
 
         <div style="padding: 10px; text-align: center;">
             <div id="wardrobe-instruction" style="background: #e3f2fd; border: 2px solid #64b5f6; border-radius: 15px; padding: 10px; margin-bottom: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); font-size: 16px; color: #1565c0; font-weight: bold;">
-                Разложи вещи по полкам и запомни их места!
+                <b>📸 Сфотографируй свою комнату!</b><br>
+                <span style="font-size:14px; font-weight:normal; color:#444;">Потом выбирай вещи внизу и "лепи" их на фото слева направо.</span>
             </div>
 
-            <!-- ШКАФ С ПОЛКАМИ -->
-            <div style="position: relative; width: 100%; max-width: 400px; margin: 0 auto; margin-bottom: 20px;">
-                <img src="img/wardrobe_bg.jpg" style="width: 100%; border-radius: 15px; display: block; box-shadow: 0 8px 20px rgba(0,0,0,0.2);">
-                
-                <!-- Невидимые слоты-полки -->
-                <style>
-                    .wardrobe-shelf {
-                        position: absolute; 
-                        width: 30%; 
-                        height: 16%; 
-                        display: flex; 
-                        align-items: flex-end; 
-                        justify-content: center; 
-                        padding-bottom: 2%; 
-                        box-sizing: border-box; 
-                        cursor: pointer;
-                    }
-                    .wardrobe-item-in-shelf {
-                        width: 55%; 
-                        max-height: 90%; 
-                        object-fit: contain; 
-                        filter: drop-shadow(0px 4px 4px rgba(0,0,0,0.5));
-                    }
-                    .selected-wardrobe-item {
-                        border: 3px solid #FF9800 !important;
-                        transform: scale(1.1);
-                        background: #fff3e0 !important;
-                        box-shadow: 0 0 15px rgba(255, 152, 0, 0.6);
-                    }
-                </style>
-                <!-- Левая колонка (сдвинули ближе к центру) -->
-                <div id="shelf-L1" class="wardrobe-shelf" style="left: 18%; top: 14%;" onclick="handleWardrobeShelfClick('shelf-L1')"></div>
-                <div id="shelf-L2" class="wardrobe-shelf" style="left: 18%; top: 32%;" onclick="handleWardrobeShelfClick('shelf-L2')"></div>
-                <div id="shelf-L3" class="wardrobe-shelf" style="left: 18%; top: 50%;" onclick="handleWardrobeShelfClick('shelf-L3')"></div>
-                <div id="shelf-L4" class="wardrobe-shelf" style="left: 18%; top: 68%;" onclick="handleWardrobeShelfClick('shelf-L4')"></div>
-                
-                <!-- Правая колонка (сдвинули ближе к центру) -->
-                <div id="shelf-R1" class="wardrobe-shelf" style="left: 52%; top: 14%;" onclick="handleWardrobeShelfClick('shelf-R1')"></div>
-                <div id="shelf-R2" class="wardrobe-shelf" style="left: 52%; top: 32%;" onclick="handleWardrobeShelfClick('shelf-R2')"></div>
-                <div id="shelf-R3" class="wardrobe-shelf" style="left: 52%; top: 50%;" onclick="handleWardrobeShelfClick('shelf-R3')"></div>
-                <div id="shelf-R4" class="wardrobe-shelf" style="left: 52%; top: 68%;" onclick="handleWardrobeShelfClick('shelf-R4')"></div>
+            <!-- Кнопка камеры (скрытый инпут и видимая кнопка) -->
+            <input type="file" id="camera-input" accept="image/*" style="display:none;" onchange="loadRoomPhoto(event)">
+            <button id="btn-camera" onclick="document.getElementById('camera-input').click()" style="width: 100%; max-width: 300px; height: 40px; font-size: 16px; font-weight: bold; background: #8e44ad; color: white; border: none; border-radius: 20px; cursor: pointer; box-shadow: 0 4px 10px rgba(142, 68, 173, 0.4); margin-bottom: 15px;">📸 Сделать фото комнаты</button>
+
+            <!-- ЗОНА ФОТОГРАФИИ (Холст для расстановки) -->
+            <div id="room-photo-container" style="position: relative; width: 100%; max-width: 400px; height: 300px; margin: 0 auto 20px auto; background: #eee; border-radius: 15px; overflow: hidden; box-shadow: 0 8px 20px rgba(0,0,0,0.2); border: 3px dashed #ccc; display: flex; align-items: center; justify-content: center; cursor: pointer;" onclick="handleRoomPhotoClick(event)">
+                <span id="room-photo-placeholder" style="color: #999; font-weight: bold;">Нажми кнопку выше, чтобы добавить фото!</span>
+                <img id="room-photo-img" src="" style="position: absolute; top:0; left:0; width: 100%; height: 100%; object-fit: cover; pointer-events: none; display: none;">
             </div>
 
+            <!-- ЗОНА ДЛЯ КАРТИНОК (ФАЗА 1) -->
             <div id="wardrobe-items-pool" style="display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; min-height: 80px;">
-                </div>
+                <!-- Сюда добавятся вещи для расстановки -->
+            </div>
 
             <button id="btn-wardrobe-memorized" style="display: none; width: 100%; max-width: 300px; height: 50px; font-size: 20px; font-weight: bold; background: linear-gradient(135deg, #4CAF50 0%, #2E7D32 100%); color: white; border: none; border-radius: 25px; cursor: pointer; box-shadow: 0 4px 15px rgba(76, 175, 80, 0.4); margin: 20px auto 0 auto;" onclick="startWardrobeRecall()">Я запомнил! ✨</button>
+
+            <!-- ЗОНА ПРОВЕРКИ (ФАЗА 2) -->
+            <div id="wardrobe-recall-area" style="display: none; margin-top: 10px;">
+                <!-- Пустые ячейки -->
+                <div id="wardrobe-targets" style="display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin-bottom: 25px;"></div>
+                <!-- Куча предметов вперемешку -->
+                <div id="wardrobe-distractors" style="display: flex; flex-wrap: wrap; justify-content: center; gap: 10px;"></div>
+            </div>
         </div>
     </div>
 
