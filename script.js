@@ -1586,6 +1586,20 @@ function goBackToMemorikaFromPoemInput() {
     document.getElementById('screen-memorika-menu').classList.add('active');
 }
 
+// 🔥 ФУНКЦИЯ ЗАГРУЗКИ ГОТОВЫХ СТИХОВ 🔥
+function loadPredefinedPoem(poemId) {
+    try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(e){}
+    const textarea = document.getElementById('custom-poem-text');
+    
+    if (poemId === 'barto') {
+        textarea.value = "Идёт бычок, качается,\nВздыхает на ходу:\n— Ох, доска кончается,\nСейчас я упаду!";
+    } else if (poemId === 'pushkin') {
+        textarea.value = "У лукоморья дуб зелёный;\nЗлатая цепь на дубе том:\nИ днём и ночью кот учёный\nВсё ходит по цепи кругом;";
+    } else if (poemId === 'tanya') {
+        textarea.value = "Наша Таня громко плачет:\nУронила в речку мячик.\n— Тише, Танечка, не плачь:\nНе утонет в речке мяч.";
+    }
+}
+
 // Запускаем игру со своим текстом
 function startCustomPoemDrawing() {
     const text = document.getElementById('custom-poem-text').value;
@@ -1688,6 +1702,7 @@ function nextDrawLine() {
 
 let isPoemTextVisible = false;
 
+// 🔥 ОБНОВЛЕННЫЙ ЭКРАН РЕЗУЛЬТАТОВ (КРУПНЫЕ КАРТИНКИ + КЛИК) 🔥
 function showDrawResult() {
     document.getElementById('screen-poem-draw').classList.remove('active');
     document.getElementById('screen-poem-result').classList.add('active');
@@ -1718,11 +1733,18 @@ function showDrawResult() {
 
         const img = document.createElement('img');
         img.src = userDrawings[index];
-        img.style.width = '80px';
-        img.style.height = '80px';
+        // УВЕЛИЧИЛИ РАЗМЕР (было 80, стало 100)
+        img.style.width = '100px';
+        img.style.height = '100px';
         img.style.border = '2px solid #eee';
         img.style.borderRadius = '10px';
         img.style.marginRight = '15px';
+        img.style.cursor = 'pointer'; // Показываем, что можно нажать
+        
+        // 🔥 ПРИВЯЗАЛИ ЛАЙТБОКС (увеличение по клику) 🔥
+        img.onclick = function() {
+            openLightbox(this.src);
+        };
 
         const text = document.createElement('div');
         text.className = 'poem-result-line'; 
