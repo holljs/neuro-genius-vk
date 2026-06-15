@@ -1791,3 +1791,190 @@ function goBackToMemorikaFromDrawResult() {
     document.getElementById('screen-poem-result').classList.remove('active');
     document.getElementById('screen-memorika-menu').classList.add('active');
 }
+
+// ==========================================
+//        МЕМОРИКА: ГАРДЕРОБНАЯ НАПОЛЕОНА
+// ==========================================
+
+let wardrobePhase = 1; // 1 - раскладываем, 2 - вспоминаем
+let wardrobePlaced = {}; // Где что лежит { 'shelf-L1': 'dog' }
+let activeWardrobeItem = null;
+let currentWardrobeSequence = [];
+
+function goBackToMemorikaFromWardrobe() {
+    try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(e){}
+    document.getElementById('screen-wardrobe-game').classList.remove('active');
+    document.getElementById('screen-memorika-menu').classList.add('active');
+}
+
+function startWardrobeGame() {
+    try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "heavy"}); } catch(e){}
+    document.getElementById('screen-memorika-menu').classList.remove('active');
+    document.getElementById('screen-wardrobe-game').classList.add('active');
+
+    wardrobePhase = 1;
+    wardrobePlaced = {};
+    activeWardrobeItem = null;
+    
+    // Очищаем полки
+    const shelves = ['shelf-L1', 'shelf-L2', 'shelf-L3', 'shelf-L4', 'shelf-R1', 'shelf-R2', 'shelf-R3', 'shelf-R4'];
+    shelves.forEach(id => {
+        document.getElementById(id).innerHTML = '';
+    });
+
+    // Настраиваем интерфейс
+    document.getElementById('wardrobe-instruction').innerText = "Разложи вещи по полкам и запомни их места!";
+    document.getElementById('wardrobe-instruction').style.background = "#e3f2fd";
+    document.getElementById('wardrobe-instruction').style.borderColor = "#64b5f6";
+    document.getElementById('wardrobe-instruction').style.color = "#1565c0";
+    document.getElementById('btn-wardrobe-memorized').style.display = 'none';
+
+    // Выбираем 8 случайных предметов из пула (у нас 8 полок)
+    let shuffledPool = [...chainItemsPool];
+    shuffledPool = shuffleArray(shuffledPool).slice(0, 8);
+    currentWardrobeSequence = shuffledPool;
+
+    renderWardrobePool(currentWardrobeSequence);
+}
+
+function renderWardrobePool(items) {
+    const pool = document.getElementById('wardrobe-items-pool');
+    pool.innerHTML = '';
+
+    items.forEach(card => {
+        const item = document.createElement('div');
+        item.style.backgroundImage = "url('img/brick_bg.png')";
+        item.style.width = '70px';
+        item.style.height = '70px';
+        item.style.backgroundSize = '100% 100%';
+        item.style.display = 'flex';
+        item.style.alignItems = 'center';
+        item.style.justifyContent = 'center';
+        item.style.borderRadius = '10px';
+        item.style.cursor = 'pointer';
+        item.style.transition = 'transform 0.1s ease';
+        item.setAttribute('data-id', card.id);
+        
+        const img = document.createElement('img');
+        img.src = card.image || card.img; // Обработка разных ключей базы
+        img.style.width = '55px';
+        img.style.height = '55px';
+        img.style.objectFit = 'contain';
+        img.style.pointerEvents = 'none'; 
+        
+        item.appendChild(img);
+        
+        // Тап по предмету
+        item.onclick = (e) => {
+            try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(err) {}
+            // Если игра в фазе 2 и предмет уже отгадан - игнорим
+            if (item.style.visibility === 'hidden') return;
+
+            if (activeWardrobeItem) {
+                activeWardrobeItem.classList.remove('selected-wardrobe-item');
+            }
+            activeWardrobeItem = e.currentTarget;
+            activeWardrobeItem.classList.add('selected-wardrobe-item');
+            try { new Audio('audio/click.wav').play(); } catch(err) {}
+        };
+        
+        pool.appendChild(item);
+    });
+}
+
+function handleWardrobeShelfClick(shelfId) {
+    if (!activeWardrobeItem) return; // Ничего не выбрано внизу
+    
+    let itemId = activeWardrobeItem.getAttribute('data-id');
+
+    if (wardrobePhase === 1) {
+        // ФАЗА 1: Раскладываем
+        if (wardrobePlaced[shelfId]) return; // Полка занята!
+
+        // Запоминаем в объект
+        wardrobePlaced[shelfId] = itemId;
+        
+        // Отрисовываем картинку на полке
+        let shelfEl = document.getElementById(shelfId);
+        let img = document.createElement('img');
+        img.src = activeWardrobeItem.querySelector('img').src;
+        img.className = 'wardrobe-item-in-shelf';
+        shelfEl.appendChild(img);
+
+        // Убираем из пула внизу
+        activeWardrobeItem.style.display = 'none';
+        activeWardrobeItem.classList.remove('selected-wardrobe-item');
+        activeWardrobeItem = null;
+
+        // Проверяем, все ли 8 разложены
+        if (Object.keys(wardrobePlaced).length === 8) {
+            document.getElementById('btn-wardrobe-memorized').style.display = 'block';
+            playSound('audio/words_win.wav');
+        }
+
+    } else if (wardrobePhase === 2) {
+        // ФАЗА 2: Вспоминаем
+        if (wardrobePlaced[shelfId] === itemId) {
+            // Угадал!
+            try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "medium"}); } catch(err) {}
+            
+            let shelfEl = document.getElementById(shelfId);
+            let img = document.createElement('img');
+            img.src = activeWardrobeItem.querySelector('img').src;
+            img.className = 'wardrobe-item-in-shelf';
+            img.style.transform = 'scale(0.5)';
+            img.style.transition = 'transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
+            shelfEl.appendChild(img);
+            
+            setTimeout(() => { img.style.transform = 'scale(1)'; }, 10);
+
+            activeWardrobeItem.style.visibility = 'hidden';
+            activeWardrobeItem.classList.remove('selected-wardrobe-item');
+            activeWardrobeItem = null;
+
+            // Считаем отгаданные полки
+            let filledCount = document.querySelectorAll('.wardrobe-item-in-shelf').length;
+            if (filledCount === 8) {
+                document.getElementById('wardrobe-instruction').innerHTML = "<b>Фантастика! Ты мастер Дворца Памяти! 🎉</b>";
+                playSound('audio/words_win.wav');
+            }
+
+        } else {
+            // Ошибка!
+            try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(err) {}
+            playSound('audio/wrong.wav');
+            
+            // Дрожание картинки
+            activeWardrobeItem.style.transform = 'translateX(-6px)';
+            setTimeout(() => { activeWardrobeItem.style.transform = 'translateX(6px)'; }, 50);
+            setTimeout(() => { activeWardrobeItem.style.transform = 'translateX(-6px)'; }, 100);
+            setTimeout(() => { activeWardrobeItem.style.transform = 'translateX(6px)'; }, 150);
+            setTimeout(() => { activeWardrobeItem.style.transform = 'translateX(0px)'; }, 200);
+        }
+    }
+}
+
+function startWardrobeRecall() {
+    try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "heavy"}); } catch(e){}
+    wardrobePhase = 2;
+    activeWardrobeItem = null;
+
+    document.getElementById('btn-wardrobe-memorized').style.display = 'none';
+    
+    // Меняем инструкцию
+    const instr = document.getElementById('wardrobe-instruction');
+    instr.innerText = "Магия! Всё исчезло! Расставь вещи по своим местам.";
+    instr.style.background = "#fff9c4";
+    instr.style.borderColor = "#fbc02d";
+    instr.style.color = "#f57f17";
+
+    // Очищаем полки визуально
+    const shelves = ['shelf-L1', 'shelf-L2', 'shelf-L3', 'shelf-L4', 'shelf-R1', 'shelf-R2', 'shelf-R3', 'shelf-R4'];
+    shelves.forEach(id => {
+        document.getElementById(id).innerHTML = '';
+    });
+
+    // Возвращаем предметы вниз и перемешиваем
+    let shuffledToRecall = shuffleArray([...currentWardrobeSequence]);
+    renderWardrobePool(shuffledToRecall);
+}
