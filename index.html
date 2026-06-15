@@ -485,6 +485,7 @@
         </div>
     </div>
 
+    <!-- === ЭКРАН: ВВОД СВОЕГО СТИХА === -->
     <div id="screen-poem-input" class="screen" style="overflow-y: auto;">
         <div class="header" style="position: sticky; top: 0; z-index: 10;">
             <div class="header-title-row"><span id="room-title">Учим любой стих!</span></div>
@@ -495,15 +496,23 @@
         
         <div style="padding: 15px; text-align: center;">
             
-            <div style="background: #fff9c4; border: 2px solid #fbc02d; border-radius: 15px; padding: 15px; margin-bottom: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.05);">
-                <h3 style="margin-top: 0; margin-bottom: 10px; color: #f57f17;">Секрет «Пиктограмм» 💡</h3>
+            <!-- 🔥 ИНСТРУКЦИЯ (МНЕМОТЕХНИКА) С ПРИМЕРОМ 🔥 -->
+            <div style="background: #fff9c4; border: 2px solid #fbc02d; border-radius: 15px; padding: 15px; margin-bottom: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); text-align: left;">
+                <h3 style="margin-top: 0; margin-bottom: 10px; color: #f57f17; text-align: center;">Секрет супер-памяти 💡</h3>
+                <p style="margin: 0 0 10px 0; font-size: 15px; color: #333; line-height: 1.4;">
+                    Чтобы быстро выучить стихотворение, мы превратим его в <b>пиктограммы</b> — твои собственные рисунки-ассоциации!
+                </p>
+                <p style="margin: 0 0 10px 0; font-size: 15px; color: #333; line-height: 1.4;">
+                    Например, для строчки <i>«У лукоморья дуб зелёный»</i> нарисуй просто лук 🧅 и дерево 🌳. Не старайся рисовать красиво, подойдут самые простые каракули!
+                </p>
                 <p style="margin: 0; font-size: 15px; color: #333; line-height: 1.4;">
-                    Не старайся рисовать красиво! Придумай <b>простой значок, символ или каракулю</b> для каждой строчки. Рисуй первую ассоциацию, а мозг сам свяжет этот значок со словами!
+                    В конце игры ты посмотришь на свои рисунки и легко расскажешь весь стих! А если забудешь — всегда можно нажать кнопочку и подсмотреть в текст. 👀
                 </p>
             </div>
 
             <div class="hero-title" style="font-size: 20px; margin-bottom: 15px;">Впиши стих или выбери готовый:</div>
             
+            <!-- 🔥 КНОПКИ ВСТРОЕННЫХ СТИХОВ 🔥 -->
             <div style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-bottom: 15px;">
                 <button onclick="loadPredefinedPoem('barto')" style="padding: 8px 15px; border-radius: 15px; border: 2px solid #a29bfe; background: #fff; color: #a29bfe; font-weight: bold; cursor: pointer; transition: 0.2s;">Бычок 🐂</button>
                 <button onclick="loadPredefinedPoem('tanya')" style="padding: 8px 15px; border-radius: 15px; border: 2px solid #a29bfe; background: #fff; color: #a29bfe; font-weight: bold; cursor: pointer; transition: 0.2s;">Таня 👧</button>
