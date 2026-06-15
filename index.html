@@ -578,32 +578,47 @@
                 Разложи вещи по полкам и запомни их места!
             </div>
 
+            <!-- ШКАФ С ПОЛКАМИ -->
             <div style="position: relative; width: 100%; max-width: 400px; margin: 0 auto; margin-bottom: 20px;">
                 <img src="img/wardrobe_bg.jpg" style="width: 100%; border-radius: 15px; display: block; box-shadow: 0 8px 20px rgba(0,0,0,0.2);">
                 
+                <!-- Невидимые слоты-полки -->
                 <style>
                     .wardrobe-shelf {
-                        position: absolute; width: 28%; height: 15%; 
-                        display: flex; align-items: flex-end; justify-content: center; 
-                        padding-bottom: 5px; box-sizing: border-box; cursor: pointer;
+                        position: absolute; 
+                        width: 30%; 
+                        height: 16%; 
+                        display: flex; 
+                        align-items: flex-end; 
+                        justify-content: center; 
+                        padding-bottom: 2%; /* Адаптивный отступ от деревяшки */
+                        box-sizing: border-box; 
+                        cursor: pointer;
+                        /* border: 2px solid red; /* ЕСЛИ НАДО БУДЕТ ПОДВИНУТЬ ЕЩЕ - УБЕРИ СЛЕШ В НАЧАЛЕ ЭТОЙ СТРОКИ, ЧТОБЫ УВИДЕТЬ ГРАНИЦЫ */
                     }
                     .wardrobe-item-in-shelf {
-                        width: 60%; height: 80%; object-fit: contain; filter: drop-shadow(0px 5px 5px rgba(0,0,0,0.4));
+                        width: 55%; /* Чуть меньше, чтобы красиво стояли */
+                        max-height: 90%; 
+                        object-fit: contain; 
+                        filter: drop-shadow(0px 4px 4px rgba(0,0,0,0.5));
                     }
                     .selected-wardrobe-item {
                         border: 3px solid #FF9800 !important;
                         transform: scale(1.1);
                         background: #fff3e0 !important;
+                        box-shadow: 0 0 15px rgba(255, 152, 0, 0.6);
                     }
                 </style>
-                <div id="shelf-L1" class="wardrobe-shelf" style="left: 17%; top: 22%;" onclick="handleWardrobeShelfClick('shelf-L1')"></div>
-                <div id="shelf-L2" class="wardrobe-shelf" style="left: 17%; top: 39.5%;" onclick="handleWardrobeShelfClick('shelf-L2')"></div>
-                <div id="shelf-L3" class="wardrobe-shelf" style="left: 17%; top: 57%;" onclick="handleWardrobeShelfClick('shelf-L3')"></div>
-                <div id="shelf-L4" class="wardrobe-shelf" style="left: 17%; top: 75%;" onclick="handleWardrobeShelfClick('shelf-L4')"></div>
-                <div id="shelf-R1" class="wardrobe-shelf" style="left: 55%; top: 22%;" onclick="handleWardrobeShelfClick('shelf-R1')"></div>
-                <div id="shelf-R2" class="wardrobe-shelf" style="left: 55%; top: 39.5%;" onclick="handleWardrobeShelfClick('shelf-R2')"></div>
-                <div id="shelf-R3" class="wardrobe-shelf" style="left: 55%; top: 57%;" onclick="handleWardrobeShelfClick('shelf-R3')"></div>
-                <div id="shelf-R4" class="wardrobe-shelf" style="left: 55%; top: 75%;" onclick="handleWardrobeShelfClick('shelf-R4')"></div>
+                <!-- Левая колонка -->
+                <div id="shelf-L1" class="wardrobe-shelf" style="left: 15%; top: 14%;" onclick="handleWardrobeShelfClick('shelf-L1')"></div>
+                <div id="shelf-L2" class="wardrobe-shelf" style="left: 15%; top: 32%;" onclick="handleWardrobeShelfClick('shelf-L2')"></div>
+                <div id="shelf-L3" class="wardrobe-shelf" style="left: 15%; top: 50%;" onclick="handleWardrobeShelfClick('shelf-L3')"></div>
+                <div id="shelf-L4" class="wardrobe-shelf" style="left: 15%; top: 68%;" onclick="handleWardrobeShelfClick('shelf-L4')"></div>
+                <!-- Правая колонка -->
+                <div id="shelf-R1" class="wardrobe-shelf" style="left: 55%; top: 14%;" onclick="handleWardrobeShelfClick('shelf-R1')"></div>
+                <div id="shelf-R2" class="wardrobe-shelf" style="left: 55%; top: 32%;" onclick="handleWardrobeShelfClick('shelf-R2')"></div>
+                <div id="shelf-R3" class="wardrobe-shelf" style="left: 55%; top: 50%;" onclick="handleWardrobeShelfClick('shelf-R3')"></div>
+                <div id="shelf-R4" class="wardrobe-shelf" style="left: 55%; top: 68%;" onclick="handleWardrobeShelfClick('shelf-R4')"></div>
             </div>
 
             <div id="wardrobe-items-pool" style="display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; min-height: 80px;">
