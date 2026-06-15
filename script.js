@@ -1562,3 +1562,210 @@ function goBackToChainMenu() {
     document.getElementById('screen-chain-game').classList.remove('active');
     document.getElementById('screen-chain-menu').classList.add('active');
 }
+
+// ==========================================
+//        МЕМОРИКА: СТИХИ И РИСОВАНИЕ (ПИКТОГРАММЫ)
+// ==========================================
+
+let drawingPoem = []; // Теперь массив стиха создается на лету!
+let currentDrawIndex = 0;
+let userDrawings = [];
+let canvas, ctx;
+let isDrawing = false;
+
+// Открываем экран ввода текста
+function openPoemInput() {
+    try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(e){}
+    document.getElementById('screen-memorika-menu').classList.remove('active');
+    document.getElementById('screen-poem-input').classList.add('active');
+}
+
+function goBackToMemorikaFromPoemInput() {
+    try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(e){}
+    document.getElementById('screen-poem-input').classList.remove('active');
+    document.getElementById('screen-memorika-menu').classList.add('active');
+}
+
+// Запускаем игру со своим текстом
+function startCustomPoemDrawing() {
+    const text = document.getElementById('custom-poem-text').value;
+    
+    // Если пусто — ругаемся
+    if (!text.trim()) {
+        alert('Пожалуйста, напиши или вставь хотя бы пару строчек!');
+        return;
+    }
+
+    // Разбиваем текст на строчки (enter) и убираем пустые
+    const lines = text.split('\n').map(line => line.trim()).filter(line => line.length > 0);
+    
+    if (lines.length === 0) return;
+
+    // Формируем массив для игры
+    drawingPoem = lines.map(line => ({ text: line }));
+
+    try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "heavy"}); } catch(e){}
+    
+    document.getElementById('screen-poem-input').classList.remove('active');
+    document.getElementById('screen-poem-draw').classList.add('active');
+
+    currentDrawIndex = 0;
+    userDrawings = [];
+    
+    initCanvas();
+    updateDrawScreen();
+}
+
+function initCanvas() {
+    canvas = document.getElementById('drawing-canvas');
+    ctx = canvas.getContext('2d');
+    
+    ctx.lineWidth = 5;
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+    ctx.strokeStyle = '#2c3e50'; 
+
+    clearCanvas();
+
+    canvas.onpointerdown = null;
+    canvas.onpointermove = null;
+    canvas.onpointerup = null;
+    canvas.onpointercancel = null;
+
+    canvas.addEventListener('pointerdown', startDrawing);
+    canvas.addEventListener('pointermove', draw);
+    canvas.addEventListener('pointerup', stopDrawing);
+    canvas.addEventListener('pointercancel', stopDrawing);
+}
+
+function clearCanvas() {
+    try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(e){}
+    ctx.fillStyle = "#ffffff";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+}
+
+function startDrawing(e) {
+    isDrawing = true;
+    ctx.beginPath();
+    const rect = canvas.getBoundingClientRect();
+    ctx.moveTo(e.clientX - rect.left, e.clientY - rect.top);
+}
+
+function draw(e) {
+    if (!isDrawing) return;
+    const rect = canvas.getBoundingClientRect();
+    ctx.lineTo(e.clientX - rect.left, e.clientY - rect.top);
+    ctx.stroke();
+}
+
+function stopDrawing() {
+    isDrawing = false;
+    ctx.closePath();
+}
+
+function updateDrawScreen() {
+    const step = drawingPoem[currentDrawIndex];
+    document.getElementById('draw-poem-text').innerHTML = step.text;
+    clearCanvas();
+    // Так как стих свой, аудиофайлов нет. Просто пикаем.
+    try { new Audio('audio/click.wav').play(); } catch(e) {}
+}
+
+function nextDrawLine() {
+    try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "medium"}); } catch(e){}
+    
+    const dataURL = canvas.toDataURL("image/png");
+    userDrawings.push(dataURL);
+
+    currentDrawIndex++;
+
+    if (currentDrawIndex < drawingPoem.length) {
+        updateDrawScreen();
+    } else {
+        showDrawResult();
+    }
+}
+
+let isPoemTextVisible = false;
+
+function showDrawResult() {
+    document.getElementById('screen-poem-draw').classList.remove('active');
+    document.getElementById('screen-poem-result').classList.add('active');
+    
+    playSound('audio/words_win.wav'); 
+
+    const list = document.getElementById('draw-result-list');
+    list.innerHTML = '';
+    
+    isPoemTextVisible = false;
+    const btnToggle = document.getElementById('btn-toggle-poem');
+    if (btnToggle) {
+        btnToggle.innerHTML = "👀 Подсмотреть текст";
+        btnToggle.style.background = "#fff";
+    }
+
+    drawingPoem.forEach((step, index) => {
+        const row = document.createElement('div');
+        row.style.display = 'flex';
+        row.style.alignItems = 'center';
+        row.style.width = '100%';
+        row.style.maxWidth = '350px';
+        row.style.background = '#fff';
+        row.style.borderRadius = '15px';
+        row.style.padding = '10px';
+        row.style.marginBottom = '15px';
+        row.style.boxShadow = '0 4px 10px rgba(0,0,0,0.05)';
+
+        const img = document.createElement('img');
+        img.src = userDrawings[index];
+        img.style.width = '80px';
+        img.style.height = '80px';
+        img.style.border = '2px solid #eee';
+        img.style.borderRadius = '10px';
+        img.style.marginRight = '15px';
+
+        const text = document.createElement('div');
+        text.className = 'poem-result-line'; 
+        text.innerHTML = step.text;
+        text.style.fontSize = '18px';
+        text.style.fontWeight = 'bold';
+        text.style.color = '#333';
+        text.style.display = 'none'; // Скрыто по умолчанию!
+
+        row.appendChild(img);
+        row.appendChild(text);
+        list.appendChild(row);
+    });
+}
+
+function togglePoemText() {
+    try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(e){}
+    isPoemTextVisible = !isPoemTextVisible;
+    
+    const lines = document.querySelectorAll('.poem-result-line');
+    lines.forEach(line => {
+        line.style.display = isPoemTextVisible ? 'block' : 'none';
+    });
+
+    const btn = document.getElementById('btn-toggle-poem');
+    if (isPoemTextVisible) {
+        btn.innerHTML = "🙈 Спрятать текст";
+        btn.style.background = "#f3e5f5";
+    } else {
+        btn.innerHTML = "👀 Подсмотреть текст";
+        btn.style.background = "#fff";
+    }
+}
+
+function goBackToMemorikaFromDraw() {
+    try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(e){}
+    // Возвращаем на экран ввода стиха, вдруг он захочет исправить опечатку
+    document.getElementById('screen-poem-draw').classList.remove('active');
+    document.getElementById('screen-poem-input').classList.add('active');
+}
+
+function goBackToMemorikaFromDrawResult() {
+    try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(e){}
+    document.getElementById('screen-poem-result').classList.remove('active');
+    document.getElementById('screen-memorika-menu').classList.add('active');
+}
