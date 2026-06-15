@@ -591,13 +591,12 @@
                         display: flex; 
                         align-items: flex-end; 
                         justify-content: center; 
-                        padding-bottom: 2%; /* Адаптивный отступ от деревяшки */
+                        padding-bottom: 2%; 
                         box-sizing: border-box; 
                         cursor: pointer;
-                        /* border: 2px solid red; /* ЕСЛИ НАДО БУДЕТ ПОДВИНУТЬ ЕЩЕ - УБЕРИ СЛЕШ В НАЧАЛЕ ЭТОЙ СТРОКИ, ЧТОБЫ УВИДЕТЬ ГРАНИЦЫ */
                     }
                     .wardrobe-item-in-shelf {
-                        width: 55%; /* Чуть меньше, чтобы красиво стояли */
+                        width: 55%; 
                         max-height: 90%; 
                         object-fit: contain; 
                         filter: drop-shadow(0px 4px 4px rgba(0,0,0,0.5));
@@ -609,16 +608,17 @@
                         box-shadow: 0 0 15px rgba(255, 152, 0, 0.6);
                     }
                 </style>
-                <!-- Левая колонка -->
-                <div id="shelf-L1" class="wardrobe-shelf" style="left: 15%; top: 14%;" onclick="handleWardrobeShelfClick('shelf-L1')"></div>
-                <div id="shelf-L2" class="wardrobe-shelf" style="left: 15%; top: 32%;" onclick="handleWardrobeShelfClick('shelf-L2')"></div>
-                <div id="shelf-L3" class="wardrobe-shelf" style="left: 15%; top: 50%;" onclick="handleWardrobeShelfClick('shelf-L3')"></div>
-                <div id="shelf-L4" class="wardrobe-shelf" style="left: 15%; top: 68%;" onclick="handleWardrobeShelfClick('shelf-L4')"></div>
-                <!-- Правая колонка -->
-                <div id="shelf-R1" class="wardrobe-shelf" style="left: 55%; top: 14%;" onclick="handleWardrobeShelfClick('shelf-R1')"></div>
-                <div id="shelf-R2" class="wardrobe-shelf" style="left: 55%; top: 32%;" onclick="handleWardrobeShelfClick('shelf-R2')"></div>
-                <div id="shelf-R3" class="wardrobe-shelf" style="left: 55%; top: 50%;" onclick="handleWardrobeShelfClick('shelf-R3')"></div>
-                <div id="shelf-R4" class="wardrobe-shelf" style="left: 55%; top: 68%;" onclick="handleWardrobeShelfClick('shelf-R4')"></div>
+                <!-- Левая колонка (сдвинули ближе к центру) -->
+                <div id="shelf-L1" class="wardrobe-shelf" style="left: 18%; top: 14%;" onclick="handleWardrobeShelfClick('shelf-L1')"></div>
+                <div id="shelf-L2" class="wardrobe-shelf" style="left: 18%; top: 32%;" onclick="handleWardrobeShelfClick('shelf-L2')"></div>
+                <div id="shelf-L3" class="wardrobe-shelf" style="left: 18%; top: 50%;" onclick="handleWardrobeShelfClick('shelf-L3')"></div>
+                <div id="shelf-L4" class="wardrobe-shelf" style="left: 18%; top: 68%;" onclick="handleWardrobeShelfClick('shelf-L4')"></div>
+                
+                <!-- Правая колонка (сдвинули ближе к центру) -->
+                <div id="shelf-R1" class="wardrobe-shelf" style="left: 52%; top: 14%;" onclick="handleWardrobeShelfClick('shelf-R1')"></div>
+                <div id="shelf-R2" class="wardrobe-shelf" style="left: 52%; top: 32%;" onclick="handleWardrobeShelfClick('shelf-R2')"></div>
+                <div id="shelf-R3" class="wardrobe-shelf" style="left: 52%; top: 50%;" onclick="handleWardrobeShelfClick('shelf-R3')"></div>
+                <div id="shelf-R4" class="wardrobe-shelf" style="left: 52%; top: 68%;" onclick="handleWardrobeShelfClick('shelf-R4')"></div>
             </div>
 
             <div id="wardrobe-items-pool" style="display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; min-height: 80px;">
