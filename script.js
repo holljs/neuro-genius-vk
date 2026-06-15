@@ -1793,13 +1793,14 @@ function goBackToMemorikaFromDrawResult() {
 }
 
 // ==========================================
-//        МЕМОРИКА: ГАРДЕРОБНАЯ НАПОЛЕОНА
+//        МЕМОРИКА: ДВОРЕЦ ПАМЯТИ (МОЯ КОМНАТА)
 // ==========================================
 
-let wardrobePhase = 1; // 1 - раскладываем, 2 - вспоминаем
-let wardrobePlaced = {}; // Где что лежит
+let wardrobePhase = 1; 
 let activeWardrobeItem = null;
-let currentWardrobeSequence = [];
+let currentWardrobeSequence = []; // Предметы, которые надо запомнить
+let wardrobePlacedCount = 0;
+let wardrobeRecallStep = 0; // Текущий шаг при проверке
 
 function goBackToMemorikaFromWardrobe() {
     try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(e){}
@@ -1814,33 +1815,53 @@ function startWardrobeGame() {
     document.getElementById('screen-wardrobe-game').classList.add('active');
 
     wardrobePhase = 1;
-    wardrobePlaced = {};
     activeWardrobeItem = null;
+    wardrobePlacedCount = 0;
     
-    // Очищаем полки
-    const shelves = ['shelf-L1', 'shelf-L2', 'shelf-L3', 'shelf-L4', 'shelf-R1', 'shelf-R2', 'shelf-R3', 'shelf-R4'];
-    shelves.forEach(id => {
-        document.getElementById(id).innerHTML = '';
-    });
-
-    // Настраиваем интерфейс с понятным примером
-    document.getElementById('wardrobe-instruction').innerHTML = "<b>👇 Сначала нажми на вещь внизу, а затем на полку!</b><br><span style='font-size:14px; font-weight:normal; color:#444;'>Придумай историю. Например: Собака на верхней полке, потому что охраняет шкаф!</span>";
+    // Настраиваем интерфейс
+    document.getElementById('wardrobe-instruction').innerHTML = "<b>📸 Сфотографируй свою комнату!</b><br><span style='font-size:14px; font-weight:normal; color:#444;'>Потом выбирай вещи внизу и «лепи» их на фото слева направо. Придумывай смешные истории!</span>";
     document.getElementById('wardrobe-instruction').style.background = "#e3f2fd";
     document.getElementById('wardrobe-instruction').style.borderColor = "#64b5f6";
     document.getElementById('wardrobe-instruction').style.color = "#1565c0";
+    
+    document.getElementById('btn-camera').style.display = 'inline-block';
+    document.getElementById('room-photo-container').style.display = 'flex';
+    document.getElementById('wardrobe-items-pool').style.display = 'flex';
+    document.getElementById('wardrobe-recall-area').style.display = 'none';
     document.getElementById('btn-wardrobe-memorized').style.display = 'none';
 
-    // 🔥 ДОБАВЛЯЕМ ОЗВУЧКУ СТАРТА 🔥
+    // Очищаем фото от старых стикеров
+    const photoContainer = document.getElementById('room-photo-container');
+    const stickers = photoContainer.querySelectorAll('.room-sticker');
+    stickers.forEach(s => s.remove());
+
     playSound('audio/wardrobe_start.wav');
 
-    // Выбираем 8 случайных предметов из пула
+    // Для этой игры возьмем 5 предметов (идеально для старта)
     let shuffledPool = [...chainItemsPool];
-    shuffledPool = shuffleArray(shuffledPool).slice(0, 8);
+    shuffledPool = shuffleArray(shuffledPool).slice(0, 5);
     currentWardrobeSequence = shuffledPool;
 
     renderWardrobePool(currentWardrobeSequence);
 }
 
+// Загрузка фото с камеры/галереи
+function loadRoomPhoto(event) {
+    const file = event.target.files[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const imgEl = document.getElementById('room-photo-img');
+            imgEl.src = e.target.result;
+            imgEl.style.display = 'block';
+            document.getElementById('room-photo-placeholder').style.display = 'none';
+            document.getElementById('room-photo-container').style.border = 'none';
+        };
+        reader.readAsDataURL(file);
+    }
+}
+
+// Отрисовка предметов внизу (Фаза 1)
 function renderWardrobePool(items) {
     const pool = document.getElementById('wardrobe-items-pool');
     pool.innerHTML = '';
@@ -1856,7 +1877,6 @@ function renderWardrobePool(items) {
         item.style.justifyContent = 'center';
         item.style.borderRadius = '10px';
         item.style.cursor = 'pointer';
-        item.style.transition = 'transform 0.1s ease';
         item.setAttribute('data-id', card.id);
         
         const img = document.createElement('img');
@@ -1868,12 +1888,8 @@ function renderWardrobePool(items) {
         
         item.appendChild(img);
         
-        // Тап по предмету
         item.onclick = (e) => {
             try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(err) {}
-            // Если игра в фазе 2 и предмет уже отгадан - игнорим
-            if (item.style.visibility === 'hidden') return;
-
             if (activeWardrobeItem) {
                 activeWardrobeItem.classList.remove('selected-wardrobe-item');
             }
@@ -1886,67 +1902,178 @@ function renderWardrobePool(items) {
     });
 }
 
-function handleWardrobeShelfClick(shelfId) {
-    if (!activeWardrobeItem) return; 
+// Клик по фотографии комнаты (Лепим стикер)
+function handleRoomPhotoClick(e) {
+    if (!activeWardrobeItem) return;
     
-    let itemId = activeWardrobeItem.getAttribute('data-id');
+    // Проверка, загружено ли фото (необязательно, можно лепить и на серый фон)
+    const container = e.currentTarget;
+    const rect = container.getBoundingClientRect();
+    
+    // Вычисляем координаты клика внутри контейнера
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
 
-    if (wardrobePhase === 1) {
-        // ФАЗА 1: Раскладываем
-        if (wardrobePlaced[shelfId]) return; // Полка занята!
+    // Создаем стикер
+    const sticker = document.createElement('img');
+    sticker.src = activeWardrobeItem.querySelector('img').src;
+    sticker.className = 'room-sticker';
+    sticker.style.position = 'absolute';
+    // Центрируем стикер по точке клика
+    sticker.style.left = (x - 30) + 'px'; 
+    sticker.style.top = (y - 30) + 'px';
+    sticker.style.width = '60px';
+    sticker.style.height = '60px';
+    sticker.style.objectFit = 'contain';
+    sticker.style.filter = 'drop-shadow(0px 4px 4px rgba(0,0,0,0.5))';
+    sticker.style.transform = 'scale(0.5)';
+    sticker.style.transition = 'transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
 
-        wardrobePlaced[shelfId] = itemId;
+    container.appendChild(sticker);
+    setTimeout(() => { sticker.style.transform = 'scale(1)'; }, 10);
+
+    // Прячем предмет из пула
+    activeWardrobeItem.style.display = 'none';
+    activeWardrobeItem.classList.remove('selected-wardrobe-item');
+    activeWardrobeItem = null;
+    wardrobePlacedCount++;
+
+    if (wardrobePlacedCount === currentWardrobeSequence.length) {
+        document.getElementById('btn-wardrobe-memorized').style.display = 'block';
+        playSound('audio/words_win.wav');
+    }
+}
+
+// ФАЗА 2: Вспоминаем цепочку!
+function startWardrobeRecall() {
+    try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "heavy"}); } catch(e){}
+    wardrobePhase = 2;
+    wardrobeRecallStep = 0;
+
+    // Скрываем фото и первый пул
+    document.getElementById('room-photo-container').style.display = 'none';
+    document.getElementById('wardrobe-items-pool').style.display = 'none';
+    document.getElementById('btn-camera').style.display = 'none';
+    document.getElementById('btn-wardrobe-memorized').style.display = 'none';
+    
+    // Меняем инструкцию
+    const instr = document.getElementById('wardrobe-instruction');
+    instr.innerHTML = "<b>Магия! Комната исчезла! 🙈</b><br><span style='font-size:14px; font-weight:normal; color:#444;'>Вспомни, как ты расставлял предметы слева направо, и выбери их по порядку!</span>";
+    instr.style.background = "#fff9c4";
+    instr.style.borderColor = "#fbc02d";
+    instr.style.color = "#f57f17";
+
+    playSound('audio/wardrobe_hide.wav');
+
+    // Готовим зону проверки
+    document.getElementById('wardrobe-recall-area').style.display = 'block';
+    
+    const targetsContainer = document.getElementById('wardrobe-targets');
+    targetsContainer.innerHTML = '';
+    
+    // Рисуем пустые ячейки (5 штук)
+    currentWardrobeSequence.forEach((item, index) => {
+        const slot = document.createElement('div');
+        slot.style.backgroundImage = "url('img/slot_bg.png?v=2')";
+        slot.style.width = '60px';
+        slot.style.height = '60px';
+        slot.style.backgroundSize = '100% 100%';
+        slot.style.display = 'flex';
+        slot.style.alignItems = 'center';
+        slot.style.justifyContent = 'center';
+        slot.style.borderRadius = '10px';
+        slot.id = 'wardrobe-target-' + index;
+        targetsContainer.appendChild(slot);
+    });
+
+    // Готовим обманки (5 правильных + 5 случайных = 10 предметов)
+    let distractors = chainItemsPool.filter(poolItem => 
+        !currentWardrobeSequence.some(seqItem => seqItem.id === poolItem.id)
+    );
+    distractors = shuffleArray(distractors).slice(0, 5);
+
+    let gameCards = [...currentWardrobeSequence, ...distractors];
+    gameCards = shuffleArray(gameCards);
+
+    const distractorsContainer = document.getElementById('wardrobe-distractors');
+    distractorsContainer.innerHTML = '';
+
+    gameCards.forEach(card => {
+        const item = document.createElement('div');
+        item.style.backgroundImage = "url('img/brick_bg.png')";
+        item.style.width = '60px';
+        item.style.height = '60px';
+        item.style.backgroundSize = '100% 100%';
+        item.style.display = 'flex';
+        item.style.alignItems = 'center';
+        item.style.justifyContent = 'center';
+        item.style.borderRadius = '10px';
+        item.style.cursor = 'pointer';
+        item.style.transition = 'transform 0.1s ease'; 
+        item.setAttribute('data-id', card.id);
         
-        let shelfEl = document.getElementById(shelfId);
-        let img = document.createElement('img');
-        img.src = activeWardrobeItem.querySelector('img').src;
-        img.className = 'wardrobe-item-in-shelf';
-        shelfEl.appendChild(img);
+        const img = document.createElement('img');
+        img.src = card.image || card.img;
+        img.style.width = '45px';
+        img.style.height = '45px';
+        img.style.objectFit = 'contain';
+        img.style.pointerEvents = 'none'; 
+        
+        item.appendChild(img);
+        
+        // Клик по карточке для проверки
+        item.addEventListener('pointerdown', handleWardrobeRecallClick);
+        distractorsContainer.appendChild(item);
+    });
+}
 
-        activeWardrobeItem.style.display = 'none';
-        activeWardrobeItem.classList.remove('selected-wardrobe-item');
-        activeWardrobeItem = null;
+function handleWardrobeRecallClick(e) {
+    const item = e.currentTarget;
+    if (item.classList.contains('matched')) return;
 
-        if (Object.keys(wardrobePlaced).length === 8) {
-            document.getElementById('btn-wardrobe-memorized').style.display = 'block';
-            playSound('audio/words_win.wav');
-        }
+    const itemId = item.getAttribute('data-id');
+    const currentTargetId = currentWardrobeSequence[wardrobeRecallStep].id;
+    const currentTargetSlot = document.getElementById('wardrobe-target-' + wardrobeRecallStep);
 
-    } else if (wardrobePhase === 2) {
-        // ФАЗА 2: Вспоминаем
-        if (wardrobePlaced[shelfId] === itemId) {
-            try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "medium"}); } catch(err) {}
-            
-            let shelfEl = document.getElementById(shelfId);
-            let img = document.createElement('img');
-            img.src = activeWardrobeItem.querySelector('img').src;
-            img.className = 'wardrobe-item-in-shelf';
-            img.style.transform = 'scale(0.5)';
-            img.style.transition = 'transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
-            shelfEl.appendChild(img);
-            
-            setTimeout(() => { img.style.transform = 'scale(1)'; }, 10);
-
-            activeWardrobeItem.style.visibility = 'hidden';
-            activeWardrobeItem.classList.remove('selected-wardrobe-item');
-            activeWardrobeItem = null;
-
-            let filledCount = document.querySelectorAll('.wardrobe-item-in-shelf').length;
-            if (filledCount === 8) {
-                document.getElementById('wardrobe-instruction').innerHTML = "<b>Фантастика! Ты мастер Дворца Памяти! 🎉</b>";
+    if (itemId === currentTargetId) {
+        // Угадал!
+        try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "medium"}); } catch(err) {}
+        
+        item.classList.add('matched');
+        item.style.visibility = 'hidden'; 
+        
+        currentTargetSlot.innerHTML = '';
+        const img = document.createElement('img');
+        img.src = item.querySelector('img').src;
+        img.style.width = '45px';
+        img.style.height = '45px';
+        img.style.objectFit = 'contain';
+        img.style.transform = 'scale(0.5)';
+        img.style.transition = 'transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
+        currentTargetSlot.appendChild(img);
+        
+        setTimeout(() => { img.style.transform = 'scale(1)'; }, 10);
+        
+        wardrobeRecallStep++;
+        
+        // Проверка на победу
+        if (wardrobeRecallStep === currentWardrobeSequence.length) {
+            setTimeout(() => {
+                document.getElementById('wardrobe-instruction').innerHTML = "<b>Фантастика! Ты настоящий Гений Памяти! 🎉</b>";
                 playSound('audio/words_win.wav');
-            }
-
-        } else {
-            try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(err) {}
-            playSound('audio/wrong.wav');
-            
-            activeWardrobeItem.style.transform = 'translateX(-6px)';
-            setTimeout(() => { activeWardrobeItem.style.transform = 'translateX(6px)'; }, 50);
-            setTimeout(() => { activeWardrobeItem.style.transform = 'translateX(-6px)'; }, 100);
-            setTimeout(() => { activeWardrobeItem.style.transform = 'translateX(6px)'; }, 150);
-            setTimeout(() => { activeWardrobeItem.style.transform = 'translateX(0px)'; }, 200);
+                setTimeout(goBackToMemorikaFromWardrobe, 3500);
+            }, 500);
         }
+    } else {
+        // Ошибка!
+        try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(err) {}
+        playSound('audio/wrong.wav');
+        
+        item.style.transform = 'translateX(-6px)';
+        setTimeout(() => { item.style.transform = 'translateX(6px)'; }, 50);
+        setTimeout(() => { item.style.transform = 'translateX(-6px)'; }, 100);
+        setTimeout(() => { item.style.transform = 'translateX(6px)'; }, 150);
+        setTimeout(() => { item.style.transform = 'translateX(0px)'; }, 200);
     }
 }
 
