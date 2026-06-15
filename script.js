@@ -1824,7 +1824,7 @@ function startWardrobeGame() {
     });
 
     // Настраиваем интерфейс с понятным примером
-    document.getElementById('wardrobe-instruction').innerHTML = "Разложи вещи по полкам и придумай историю!<br><span style='font-size:14px; font-weight:normal; color:#444;'>Например: Собака на верхней полке, потому что охраняет шкаф!</span>";
+    document.getElementById('wardrobe-instruction').innerHTML = "<b>👇 Сначала нажми на вещь внизу, а затем на полку!</b><br><span style='font-size:14px; font-weight:normal; color:#444;'>Придумай историю. Например: Собака на верхней полке, потому что охраняет шкаф!</span>";
     document.getElementById('wardrobe-instruction').style.background = "#e3f2fd";
     document.getElementById('wardrobe-instruction').style.borderColor = "#64b5f6";
     document.getElementById('wardrobe-instruction').style.color = "#1565c0";
