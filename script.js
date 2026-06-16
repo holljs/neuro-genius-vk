@@ -1789,7 +1789,7 @@ function startWardrobeGame(count) {
     activeWardrobeItem = null;
     wardrobePlacedCount = 0;
     
-    document.getElementById('wardrobe-instruction').innerHTML = "<b>📸 Сфотографируй свою комнату!</b><br><span style='font-size:14px; font-weight:normal; color:#444;'>Потом выбирай вещи внизу и "лепи" их на фото слева направо. Придумывай смешные истории!</span>";
+    document.getElementById('wardrobe-instruction').innerHTML = "<b>📸 Сфотографируй свою комнату!</b><br><span style='font-size:14px; font-weight:normal; color:#444;'>Потом выбирай вещи внизу и \"лепи\" их на фото слева направо. Придумывай смешные истории!</span>";
     document.getElementById('wardrobe-instruction').style.background = "#e3f2fd";
     document.getElementById('wardrobe-instruction').style.borderColor = "#64b5f6";
     document.getElementById('wardrobe-instruction').style.color = "#1565c0";
@@ -2046,12 +2046,15 @@ function goMainFromBrainFitness() {
     document.getElementById('screen-menu').classList.add('active');
 }
 
+// 🔥 ЧИСТАЯ И БЕЗОПАСНАЯ ФУНКЦИЯ ВЫХОДА 🔥
 function goBackToBrainFitnessFromConfusion() {
     try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(e){}
     document.getElementById('screen-brain-confusion').classList.remove('active');
     document.getElementById('screen-brain-fitness-menu').classList.add('active');
+    
     if (currentAudio) currentAudio.pause();
     if (confusionQuestionAudio) confusionQuestionAudio.pause();
+    clearInterval(confusionTimerInterval); // Убиваем таймер, чтобы не тикал в меню
 }
 
 // База данных животных для Путаницы
@@ -2071,6 +2074,9 @@ for (let i = 1; i <= 24; i++) {
 
 let confusionTargetId = null;
 let confusionQuestionAudio = null;
+let confusionTimerInterval = null;
+let confusionTimeLeft = 100; 
+let isConfusionAnswering = false;
 
 function startBrainConfusion() {
     try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "heavy"}); } catch(e){}
@@ -2081,7 +2087,15 @@ function startBrainConfusion() {
 }
 
 function nextBrainConfusionTask() {
-    // 1. Выбираем 3 случайных РАЗНЫХ животных
+    isConfusionAnswering = false;
+    clearInterval(confusionTimerInterval); 
+    
+    const bar = document.getElementById('confusion-timer-bar');
+    if (bar) {
+        bar.style.width = '100%';
+        bar.style.background = '#4CAF50';
+    }
+
     let shuffled = shuffleArray([...animalsData]);
     const visualAnimal = shuffled[0];  
     const audioAnimal = shuffled[1];   
@@ -2089,16 +2103,15 @@ function nextBrainConfusionTask() {
 
     confusionTargetId = targetAnimal.id;
 
-    // 2. Обновляем интерфейс
     document.getElementById('confusion-main-img').src = visualAnimal.img;
     document.getElementById('confusion-question-text').innerText = "Слушай внимательно...";
+    document.getElementById('confusion-question-text').style.color = "#e91e63";
     
     const optionsContainer = document.getElementById('confusion-options');
     optionsContainer.innerHTML = '';
 
-    // Варианты ответа: Картинка, Звук, Правильный ответ
     let options = [visualAnimal, audioAnimal, targetAnimal];
-    options = shuffleArray(options); // Перемешиваем кнопки
+    options = shuffleArray(options); 
 
     options.forEach(animal => {
         const btn = document.createElement('div');
@@ -2126,25 +2139,76 @@ function nextBrainConfusionTask() {
         optionsContainer.appendChild(btn);
     });
 
-    // 3. Воспроизводим звук обманки
     playSound(audioAnimal.sound);
     
     if (confusionQuestionAudio) confusionQuestionAudio.pause();
     confusionQuestionAudio = new Audio(targetAnimal.question);
     
-    // Ждем секунду и задаем вопрос Уточкой
     setTimeout(() => {
-        confusionQuestionAudio.play();
-        document.getElementById('confusion-question-text').innerText = "Кого нужно найти?";
-    }, 1200);
+        if (document.getElementById('screen-brain-confusion').classList.contains('active')) {
+            confusionQuestionAudio.play();
+            document.getElementById('confusion-question-text').innerText = "Кого нужно найти? Время пошло!";
+            startConfusionTimer();
+        }
+    }, 1500);
+}
+
+function startConfusionTimer() {
+    confusionTimeLeft = 100;
+    const bar = document.getElementById('confusion-timer-bar');
+    if (!bar) return; // Защита от ошибок
+    
+    confusionTimerInterval = setInterval(() => {
+        if (isConfusionAnswering) return; 
+        
+        confusionTimeLeft -= 0.8; 
+        bar.style.width = confusionTimeLeft + '%';
+
+        if (confusionTimeLeft < 50 && confusionTimeLeft >= 20) {
+            bar.style.background = '#FFC107'; 
+        } else if (confusionTimeLeft < 20) {
+            bar.style.background = '#F44336'; 
+        }
+
+        if (confusionTimeLeft <= 0) {
+            clearInterval(confusionTimerInterval);
+            handleConfusionTimeout();
+        }
+    }, 50);
+}
+
+function handleConfusionTimeout() {
+    isConfusionAnswering = true;
+    try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "heavy"}); } catch(e){}
+    playSound('audio/wrong.wav'); 
+    
+    document.getElementById('confusion-question-text').innerText = "Время вышло! ⏱️";
+    document.getElementById('confusion-question-text').style.color = "#F44336";
+    
+    const img = document.getElementById('confusion-main-img');
+    img.style.transform = 'translateX(-10px)';
+    setTimeout(() => { img.style.transform = 'translateX(10px)'; }, 50);
+    setTimeout(() => { img.style.transform = 'translateX(-10px)'; }, 100);
+    setTimeout(() => { img.style.transform = 'translateX(10px)'; }, 150);
+    setTimeout(() => { img.style.transform = 'translateX(0px)'; }, 200);
+
+    setTimeout(() => {
+        nextBrainConfusionTask();
+    }, 1500);
 }
 
 function checkBrainConfusionAnswer(btnElement, clickedId) {
+    if (isConfusionAnswering) return; 
+    isConfusionAnswering = true;
+    clearInterval(confusionTimerInterval); 
+
     if (clickedId === confusionTargetId) {
         try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "medium"}); } catch(e){}
         playSound('audio/words_win.wav');
         btnElement.style.border = '4px solid #4CAF50';
         btnElement.style.background = '#e8f5e9';
+        document.getElementById('confusion-question-text').innerText = "Верно! ⚡";
+        document.getElementById('confusion-question-text').style.color = "#4CAF50";
         
         setTimeout(() => {
             nextBrainConfusionTask();
@@ -2158,5 +2222,10 @@ function checkBrainConfusionAnswer(btnElement, clickedId) {
         setTimeout(() => { btnElement.style.transform = 'translateX(-6px)'; }, 100);
         setTimeout(() => { btnElement.style.transform = 'translateX(6px)'; }, 150);
         setTimeout(() => { btnElement.style.transform = 'translateX(0px)'; }, 200);
+        
+        setTimeout(() => {
+            isConfusionAnswering = false;
+            startConfusionTimer(); 
+        }, 500);
     }
 }
