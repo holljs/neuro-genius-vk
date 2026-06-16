@@ -13,6 +13,12 @@
             user-select: none !important;
             -webkit-user-select: none !important;
         }
+        .selected-wardrobe-item {
+            border: 3px solid #FF9800 !important;
+            transform: scale(1.1);
+            background: #fff3e0 !important;
+            box-shadow: 0 0 15px rgba(255, 152, 0, 0.6);
+        }
     </style>
 </head>
 <body>
@@ -24,6 +30,7 @@
         <div class="lightbox-close-btn" onclick="closeLightbox()">✖ Закрыть</div>
     </div>
 
+    <!-- === ГЛАВНОЕ МЕНЮ === -->
     <div id="screen-menu" class="screen active">
         <div class="header">
             <div class="header-title-row">
@@ -56,6 +63,7 @@
         </div>
     </div> 
 
+    <!-- === МЕНЮ: СЛОГИ === -->
     <div id="screen-words-menu" class="screen" style="overflow-y: auto;">
         <div class="header" style="position: sticky; top: 0; z-index: 10;">
             <div class="header-title-row"><span id="room-title">Слоги</span></div>
@@ -89,6 +97,7 @@
         </div>
     </div>
 
+    <!-- === МЕНЮ: МЕМОРИКА === -->
     <div id="screen-memorika-menu" class="screen" style="overflow-y: auto;">
         <div class="header" style="position: sticky; top: 0; z-index: 10;">
             <div class="header-title-row"><span id="room-title">Меморика</span></div>
@@ -98,12 +107,12 @@
         </div>
         <div class="hero-title">Выберите технику:</div>
         <div class="menu-grid sub-grid">
-            <div class="category-card sub-card" onclick="startWardrobeGame()">
+            <div class="category-card sub-card" onclick="openWardrobeMenu()">
                 <div style="margin: 0 auto 10px auto; width: 60px; height: 60px;">
                     <img src="img/icon_wardrobe.png" alt="" style="width: 100%; height: 100%; object-fit: contain;">
                 </div>
-                <div class="category-title sub-title">Гардеробная Наполеона</div>
-                <div class="category-subtitle">Метод Локи (Дворец памяти)</div>
+                <div class="category-title sub-title">Дворец Памяти</div>
+                <div class="category-subtitle">Метод Локи</div>
             </div>
             <div class="category-card sub-card" onclick="openChainMenu()">
                 <div style="margin: 0 auto 10px auto; width: 60px; height: 60px;">
@@ -129,6 +138,7 @@
         </div>
     </div>
 
+    <!-- === МЕНЮ: ЦЕПОЧКА === -->
     <div id="screen-chain-menu" class="screen" style="overflow-y: auto;">
         <div class="header" style="position: sticky; top: 0; z-index: 10;">
             <div class="header-title-row"><span id="room-title">Цепочка</span></div>
@@ -187,6 +197,7 @@
         </div>
     </div>
 
+    <!-- === МЕНЮ: ЛАЙФХАКИ === -->
     <div id="screen-multiplication-menu" class="screen" style="overflow-y: auto;">
         <div class="header" style="position: sticky; top: 0; z-index: 10;">
             <div class="header-title-row"><span id="room-title">Лайфхаки</span></div>
@@ -222,6 +233,7 @@
         </div>
     </div>
 
+    <!-- === МАГИЯ НА 9 === -->
     <div id="screen-magic-9" class="screen" style="overflow-y: auto;">
         <div class="header" style="position: sticky; top: 0; z-index: 10;">
             <div class="header-title-row"><span id="room-title">Лайфхаки</span></div>
@@ -252,6 +264,7 @@
         </div>
     </div>
 
+    <!-- === СТИХИ === -->
     <div id="screen-poems" class="screen" style="overflow-y: auto;">
         <div class="header" style="position: sticky; top: 0; z-index: 10;">
             <div class="header-title-row"><span id="room-title">Стихи-ассоциации</span></div>
@@ -275,6 +288,7 @@
         </div>
     </div>
 
+    <!-- === МАГИЯ НА 5 === -->
     <div id="screen-magic-5" class="screen" style="overflow-y: auto;">
         <div class="header" style="position: sticky; top: 0; z-index: 10;">
             <div class="header-title-row"><span>Магия на 5</span></div>
@@ -297,6 +311,7 @@
         </div>
     </div>
 
+    <!-- === МЕНЮ: СОРОБАН === -->
     <div id="screen-soroban-menu" class="screen">
         <div class="header" style="position: sticky; top: 0; z-index: 10;">
             <div class="header-title-row"><span id="room-title">Ментальная арифметика</span></div>
@@ -408,6 +423,7 @@
         </div>
     </div>
 
+    <!-- === ИГРОВАЯ КОМНАТА (ДЛЯ СЛОГОВ И СОРОБАНА) === -->
     <div id="screen-room" class="screen">
         <div class="header">
             <div class="header-title-row"><span id="game-room-title">Комната</span></div>
@@ -453,6 +469,7 @@
         </div>
     </div>
 
+    <!-- === МОДАЛЬНОЕ ОКНО КОМИКСА === -->
     <div id="comic-slider-modal" class="comic-modal">
         <div class="comic-slider-box">
             <img id="comic-slider-img" src="" alt="Обучающий комикс">
@@ -465,6 +482,7 @@
         </div>
     </div>
 
+    <!-- === ИГРОВАЯ КОМНАТА: ЦЕПОЧКА ПО РАССКАЗУ === -->
     <div id="screen-chain-game" class="screen" style="overflow-y: auto;">
         <div class="header" style="position: sticky; top: 0; z-index: 10;">
             <div class="header-title-row"><span id="chain-game-title">Магия Истории</span></div>
@@ -485,6 +503,7 @@
         </div>
     </div>
 
+    <!-- === ЭКРАН: ВВОД СВОЕГО СТИХА === -->
     <div id="screen-poem-input" class="screen" style="overflow-y: auto;">
         <div class="header" style="position: sticky; top: 0; z-index: 10;">
             <div class="header-title-row"><span id="room-title">Учим любой стих!</span></div>
@@ -494,7 +513,6 @@
         </div>
         
         <div style="padding: 15px; text-align: center;">
-            
             <div style="background: #fff9c4; border: 2px solid #fbc02d; border-radius: 15px; padding: 15px; margin-bottom: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); text-align: left;">
                 <h3 style="margin-top: 0; margin-bottom: 10px; color: #f57f17; text-align: center;">Секрет супер-памяти 💡</h3>
                 <p style="margin: 0 0 10px 0; font-size: 15px; color: #333; line-height: 1.4;">
@@ -522,6 +540,7 @@
         </div>
     </div>
 
+    <!-- === ЭКРАН: РИСУЕМ СТИХ === -->
     <div id="screen-poem-draw" class="screen" style="overflow-y: auto;">
         <div class="header" style="position: sticky; top: 0; z-index: 10;">
             <div class="header-title-row"><span id="room-title">Мольберт Гения</span></div>
@@ -546,6 +565,7 @@
         </div>
     </div>
 
+    <!-- === ЭКРАН: ИТОГОВЫЙ СТИХ С РИСУНКАМИ === -->
     <div id="screen-poem-result" class="screen" style="overflow-y: auto;">
         <div class="header" style="position: sticky; top: 0; z-index: 10;">
             <div class="header-title-row"><span id="room-title">Твоя шпаргалка!</span></div>
@@ -561,8 +581,41 @@
             <button id="btn-toggle-poem" onclick="togglePoemText()" style="padding: 10px 20px; font-size: 16px; font-weight: bold; border-radius: 20px; border: 2px solid #9b59b6; background: #fff; color: #9b59b6; cursor: pointer; transition: 0.2s; box-shadow: 0 4px 10px rgba(155,89,182,0.1);">👀 Подсмотреть текст</button>
         </div>
 
-        <div id="draw-result-list" style="padding: 10px 20px; padding-bottom: 40px; display: flex; flex-direction: column; align-items: center;">
+        <div id="draw-result-list" style="padding: 10px 20px; padding-bottom: 40px; display: flex; flex-direction: column; align-items: center;"></div>
+    </div>
+
+    <!-- === МЕНЮ: ДВОРЕЦ ПАМЯТИ === -->
+    <div id="screen-wardrobe-menu" class="screen" style="overflow-y: auto;">
+        <div class="header" style="position: sticky; top: 0; z-index: 10;">
+            <div class="header-title-row"><span id="room-title">Дворец Памяти</span></div>
+            <div class="header-top">
+                <div class="back-btn" onclick="goBackToMemorikaFromWardrobeMenu()">⬅ Назад</div>
             </div>
+        </div>
+        <div class="hero-title">Выбери количество предметов:</div>
+        <div class="menu-grid sub-grid">
+            <div class="category-card sub-card" onclick="startWardrobeGame(5)">
+                <div style="margin: 0 auto 5px auto; width: 45px; height: 45px;">
+                    <img src="img/icon_chain_5.png" alt="" style="width: 100%; height: 100%; object-fit: contain;">
+                </div>
+                <div class="category-title sub-title">Малыш</div>
+                <div class="category-subtitle">5 предметов</div>
+            </div>
+            <div class="category-card sub-card" onclick="startWardrobeGame(7)">
+                <div style="margin: 0 auto 5px auto; width: 45px; height: 45px;">
+                    <img src="img/icon_chain_7.png" onerror="this.src='img/icon_chain.png'" alt="" style="width: 100%; height: 100%; object-fit: contain;">
+                </div>
+                <div class="category-title sub-title">Исследователь</div>
+                <div class="category-subtitle">7 предметов</div>
+            </div>
+            <div class="category-card sub-card" onclick="startWardrobeGame(10)">
+                <div style="margin: 0 auto 5px auto; width: 45px; height: 45px;">
+                    <img src="img/icon_chain_10.png" alt="" style="width: 100%; height: 100%; object-fit: contain;">
+                </div>
+                <div class="category-title sub-title">Гений</div>
+                <div class="category-subtitle">10 предметов</div>
+            </div>
+        </div>
     </div>
 
     <!-- === ЭКРАН: ДВОРЕЦ ПАМЯТИ (МОЯ КОМНАТА) === -->
@@ -570,7 +623,7 @@
         <div class="header" style="position: sticky; top: 0; z-index: 10;">
             <div class="header-title-row"><span id="room-title">Дворец Памяти</span></div>
             <div class="header-top">
-                <div class="back-btn" onclick="goBackToMemorikaFromWardrobe()">⬅ Назад</div>
+                <div class="back-btn" onclick="goBackToWardrobeMenuFromGame()">⬅ Назад</div>
             </div>
         </div>
 
@@ -607,6 +660,6 @@
         </div>
     </div>
 
-    <script src="script.js?v=25"></script>
+    <script src="script.js?v=28"></script>
 </body>
 </html>
