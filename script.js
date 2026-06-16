@@ -1483,8 +1483,8 @@ function setupChainGame() {
         item.style.alignItems = 'center';
         item.style.justifyContent = 'center';
         item.style.borderRadius = '10px';
-        item.style.cursor = 'pointer'; // Теперь здесь указатель-палец
-        item.style.transition = 'transform 0.1s ease'; // Для анимации дрожания
+        item.style.cursor = 'pointer'; 
+        item.style.transition = 'transform 0.1s ease'; 
         item.setAttribute('data-id', card.id);
         
         const img = document.createElement('img');
@@ -1496,7 +1496,6 @@ function setupChainGame() {
         
         item.appendChild(img);
         
-        // 🔥 Вешаем обработчик простого клика/тапа
         item.addEventListener('pointerdown', handleChainItemClick);
         clickContainer.appendChild(item);
     });
@@ -1507,17 +1506,16 @@ function setupChainGame() {
 
 function handleChainItemClick(e) {
     const item = e.currentTarget;
-    if (item.classList.contains('matched')) return; // Если уже угадана - игнорируем
+    if (item.classList.contains('matched')) return; 
 
     const itemId = item.getAttribute('data-id');
     const currentTargetSlot = document.getElementById('chain-target-' + currentChainStep);
 
     if (itemId === chainGameTargets[currentChainStep]) {
-        // УСПЕХ: Карточка верная!
         try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "medium"}); } catch(err) {}
         
         item.classList.add('matched');
-        item.style.visibility = 'hidden'; // Прячем снизу
+        item.style.visibility = 'hidden'; 
         
         currentTargetSlot.innerHTML = '';
         const img = document.createElement('img');
@@ -1526,7 +1524,6 @@ function handleChainItemClick(e) {
         img.style.height = '55px';
         img.style.objectFit = 'contain';
         
-        // Красивая анимация появления в слоте
         img.style.transform = 'scale(0.5)';
         img.style.transition = 'transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
         currentTargetSlot.appendChild(img);
@@ -1535,7 +1532,6 @@ function handleChainItemClick(e) {
         
         currentChainStep++;
         
-        // Проверка на победу
         if (currentChainStep === chainGameTargets.length) {
             setTimeout(() => {
                 document.getElementById('chain-message').innerText = "Супер! Ты настоящий Гений! 🎉";
@@ -1544,11 +1540,9 @@ function handleChainItemClick(e) {
             }, 500);
         }
     } else {
-        // ОШИБКА: Не та карточка!
         try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(err) {}
         playSound('audio/wrong.wav');
         
-        // Анимация: недовольно трясем карточку влево-вправо
         item.style.transform = 'translateX(-6px)';
         setTimeout(() => { item.style.transform = 'translateX(6px)'; }, 50);
         setTimeout(() => { item.style.transform = 'translateX(-6px)'; }, 100);
@@ -1564,16 +1558,15 @@ function goBackToChainMenu() {
 }
 
 // ==========================================
-//        МЕМОРИКА: СТИХИ И РИСОВАНИЕ (ПИКТОГРАММЫ)
+//        МЕМОРИКА: СТИХИ И РИСОВАНИЕ
 // ==========================================
 
-let drawingPoem = []; // Теперь массив стиха создается на лету!
+let drawingPoem = []; 
 let currentDrawIndex = 0;
 let userDrawings = [];
 let canvas, ctx;
 let isDrawing = false;
 
-// Открываем экран ввода текста
 function openPoemInput() {
     try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(e){}
     document.getElementById('screen-memorika-menu').classList.remove('active');
@@ -1586,7 +1579,6 @@ function goBackToMemorikaFromPoemInput() {
     document.getElementById('screen-memorika-menu').classList.add('active');
 }
 
-// 🔥 ФУНКЦИЯ ЗАГРУЗКИ ГОТОВЫХ СТИХОВ 🔥
 function loadPredefinedPoem(poemId) {
     try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(e){}
     const textarea = document.getElementById('custom-poem-text');
@@ -1600,22 +1592,17 @@ function loadPredefinedPoem(poemId) {
     }
 }
 
-// Запускаем игру со своим текстом
 function startCustomPoemDrawing() {
     const text = document.getElementById('custom-poem-text').value;
     
-    // Если пусто — ругаемся
     if (!text.trim()) {
         alert('Пожалуйста, напиши или вставь хотя бы пару строчек!');
         return;
     }
 
-    // Разбиваем текст на строчки (enter) и убираем пустые
     const lines = text.split('\n').map(line => line.trim()).filter(line => line.length > 0);
-    
     if (lines.length === 0) return;
 
-    // Формируем массив для игры
     drawingPoem = lines.map(line => ({ text: line }));
 
     try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "heavy"}); } catch(e){}
@@ -1681,7 +1668,6 @@ function updateDrawScreen() {
     const step = drawingPoem[currentDrawIndex];
     document.getElementById('draw-poem-text').innerHTML = step.text;
     clearCanvas();
-    // Так как стих свой, аудиофайлов нет. Просто пикаем.
     try { new Audio('audio/click.wav').play(); } catch(e) {}
 }
 
@@ -1702,7 +1688,6 @@ function nextDrawLine() {
 
 let isPoemTextVisible = false;
 
-// 🔥 ОБНОВЛЕННЫЙ ЭКРАН РЕЗУЛЬТАТОВ (КРУПНЫЕ КАРТИНКИ + КЛИК) 🔥
 function showDrawResult() {
     document.getElementById('screen-poem-draw').classList.remove('active');
     document.getElementById('screen-poem-result').classList.add('active');
@@ -1733,15 +1718,13 @@ function showDrawResult() {
 
         const img = document.createElement('img');
         img.src = userDrawings[index];
-        // УВЕЛИЧИЛИ РАЗМЕР (было 80, стало 100)
         img.style.width = '100px';
         img.style.height = '100px';
         img.style.border = '2px solid #eee';
         img.style.borderRadius = '10px';
         img.style.marginRight = '15px';
-        img.style.cursor = 'pointer'; // Показываем, что можно нажать
+        img.style.cursor = 'pointer'; 
         
-        // 🔥 ПРИВЯЗАЛИ ЛАЙТБОКС (увеличение по клику) 🔥
         img.onclick = function() {
             openLightbox(this.src);
         };
@@ -1752,7 +1735,7 @@ function showDrawResult() {
         text.style.fontSize = '18px';
         text.style.fontWeight = 'bold';
         text.style.color = '#333';
-        text.style.display = 'none'; // Скрыто по умолчанию!
+        text.style.display = 'none'; 
 
         row.appendChild(img);
         row.appendChild(text);
@@ -1781,7 +1764,6 @@ function togglePoemText() {
 
 function goBackToMemorikaFromDraw() {
     try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(e){}
-    // Возвращаем на экран ввода стиха, вдруг он захочет исправить опечатку
     document.getElementById('screen-poem-draw').classList.remove('active');
     document.getElementById('screen-poem-input').classList.add('active');
 }
@@ -1802,16 +1784,28 @@ let currentWardrobeSequence = []; // Предметы, которые надо �
 let wardrobePlacedCount = 0;
 let wardrobeRecallStep = 0; // Текущий шаг при проверке
 
-function goBackToMemorikaFromWardrobe() {
+function openWardrobeMenu() {
+    try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(e){}
+    document.getElementById('screen-memorika-menu').classList.remove('active');
+    document.getElementById('screen-wardrobe-menu').classList.add('active');
+}
+
+function goBackToMemorikaFromWardrobeMenu() {
+    try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(e){}
+    document.getElementById('screen-wardrobe-menu').classList.remove('active');
+    document.getElementById('screen-memorika-menu').classList.add('active');
+}
+
+function goBackToWardrobeMenuFromGame() {
     try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(e){}
     document.getElementById('screen-wardrobe-game').classList.remove('active');
-    document.getElementById('screen-memorika-menu').classList.add('active');
+    document.getElementById('screen-wardrobe-menu').classList.add('active');
     if (currentAudio) { currentAudio.pause(); }
 }
 
-function startWardrobeGame() {
+function startWardrobeGame(count) {
     try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "heavy"}); } catch(e){}
-    document.getElementById('screen-memorika-menu').classList.remove('active');
+    document.getElementById('screen-wardrobe-menu').classList.remove('active');
     document.getElementById('screen-wardrobe-game').classList.add('active');
 
     wardrobePhase = 1;
@@ -1837,9 +1831,9 @@ function startWardrobeGame() {
 
     playSound('audio/wardrobe_start.wav');
 
-    // Для этой игры возьмем 5 предметов (идеально для старта)
+    // Берем ровно столько случайных предметов, сколько выбрал игрок (count)
     let shuffledPool = [...chainItemsPool];
-    shuffledPool = shuffleArray(shuffledPool).slice(0, 5);
+    shuffledPool = shuffleArray(shuffledPool).slice(0, count);
     currentWardrobeSequence = shuffledPool;
 
     renderWardrobePool(currentWardrobeSequence);
@@ -1906,7 +1900,6 @@ function renderWardrobePool(items) {
 function handleRoomPhotoClick(e) {
     if (!activeWardrobeItem) return;
     
-    // Проверка, загружено ли фото (необязательно, можно лепить и на серый фон)
     const container = e.currentTarget;
     const rect = container.getBoundingClientRect();
     
@@ -1919,7 +1912,6 @@ function handleRoomPhotoClick(e) {
     sticker.src = activeWardrobeItem.querySelector('img').src;
     sticker.className = 'room-sticker';
     sticker.style.position = 'absolute';
-    // Центрируем стикер по точке клика
     sticker.style.left = (x - 30) + 'px'; 
     sticker.style.top = (y - 30) + 'px';
     sticker.style.width = '60px';
@@ -1928,6 +1920,9 @@ function handleRoomPhotoClick(e) {
     sticker.style.filter = 'drop-shadow(0px 4px 4px rgba(0,0,0,0.5))';
     sticker.style.transform = 'scale(0.5)';
     sticker.style.transition = 'transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
+    
+    // 🔥 ЗАЩИТА: чтобы клик сквозь стикер проходил к фону
+    sticker.style.pointerEvents = 'none';
 
     container.appendChild(sticker);
     setTimeout(() => { sticker.style.transform = 'scale(1)'; }, 10);
@@ -1971,7 +1966,7 @@ function startWardrobeRecall() {
     const targetsContainer = document.getElementById('wardrobe-targets');
     targetsContainer.innerHTML = '';
     
-    // Рисуем пустые ячейки (5 штук)
+    // Рисуем пустые ячейки
     currentWardrobeSequence.forEach((item, index) => {
         const slot = document.createElement('div');
         slot.style.backgroundImage = "url('img/slot_bg.png?v=2')";
@@ -1986,11 +1981,12 @@ function startWardrobeRecall() {
         targetsContainer.appendChild(slot);
     });
 
-    // Готовим обманки (5 правильных + 5 случайных = 10 предметов)
+    // Готовим обманки: берем ровно столько же лишних картинок, сколько правильных
     let distractors = chainItemsPool.filter(poolItem => 
         !currentWardrobeSequence.some(seqItem => seqItem.id === poolItem.id)
     );
-    distractors = shuffleArray(distractors).slice(0, 5);
+    let distractorCount = currentWardrobeSequence.length;
+    distractors = shuffleArray(distractors).slice(0, distractorCount);
 
     let gameCards = [...currentWardrobeSequence, ...distractors];
     gameCards = shuffleArray(gameCards);
@@ -2061,7 +2057,8 @@ function handleWardrobeRecallClick(e) {
             setTimeout(() => {
                 document.getElementById('wardrobe-instruction').innerHTML = "<b>Фантастика! Ты настоящий Гений Памяти! 🎉</b>";
                 playSound('audio/words_win.wav');
-                setTimeout(goBackToMemorikaFromWardrobe, 3500);
+                // 🔥 Возврат в меню Дворца Памяти после победы 🔥
+                setTimeout(goBackToWardrobeMenuFromGame, 3500);
             }, 500);
         }
     } else {
@@ -2075,32 +2072,4 @@ function handleWardrobeRecallClick(e) {
         setTimeout(() => { item.style.transform = 'translateX(6px)'; }, 150);
         setTimeout(() => { item.style.transform = 'translateX(0px)'; }, 200);
     }
-}
-
-function startWardrobeRecall() {
-    try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "heavy"}); } catch(e){}
-    wardrobePhase = 2;
-    activeWardrobeItem = null;
-
-    document.getElementById('btn-wardrobe-memorized').style.display = 'none';
-    
-    // Меняем инструкцию
-    const instr = document.getElementById('wardrobe-instruction');
-    instr.innerHTML = "Магия! Всё исчезло! Расставь вещи по своим местам.";
-    instr.style.background = "#fff9c4";
-    instr.style.borderColor = "#fbc02d";
-    instr.style.color = "#f57f17";
-
-    // 🔥 ДОБАВЛЯЕМ ОЗВУЧКУ ИСЧЕЗНОВЕНИЯ 🔥
-    playSound('audio/wardrobe_hide.wav');
-
-    // Очищаем полки визуально
-    const shelves = ['shelf-L1', 'shelf-L2', 'shelf-L3', 'shelf-L4', 'shelf-R1', 'shelf-R2', 'shelf-R3', 'shelf-R4'];
-    shelves.forEach(id => {
-        document.getElementById(id).innerHTML = '';
-    });
-
-    // Возвращаем предметы вниз и перемешиваем
-    let shuffledToRecall = shuffleArray([...currentWardrobeSequence]);
-    renderWardrobePool(shuffledToRecall);
 }
