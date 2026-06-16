@@ -1038,7 +1038,7 @@ const poemsData = [
     {
         math: "2 × 4 = <span style='color:#E91E63'>8</span>",
         image: "img/poem_8.jpg",
-        text: "В пирог вонзилась пара вилок:<br>Два на четыре — восемь дырок!",
+        text: "В пирог вонзилась пара вилок:<br>Два на اربعه — восемь дырок!",
         audio: "audio/poem_8.wav"
     },
     {
@@ -1789,7 +1789,7 @@ function startWardrobeGame(count) {
     activeWardrobeItem = null;
     wardrobePlacedCount = 0;
     
-    document.getElementById('wardrobe-instruction').innerHTML = "<b>📸 Сфотографируй свою комнату!</b><br><span style='font-size:14px; font-weight:normal; color:#444;'>Потом выбирай вещи внизу и \"лепи\" их на фото слева направо. Придумывай смешные истории!</span>";
+    document.getElementById('wardrobe-instruction').innerHTML = "<b>📸 Сфотографируй свою комнату!</b><br><span style='font-size:14px; font-weight:normal; color:#444;'>Потом выбирай вещи внизу и «лепи» их на фото слева направо. Придумывай смешные истории!</span>";
     document.getElementById('wardrobe-instruction').style.background = "#e3f2fd";
     document.getElementById('wardrobe-instruction').style.borderColor = "#64b5f6";
     document.getElementById('wardrobe-instruction').style.color = "#1565c0";
@@ -2046,17 +2046,6 @@ function goMainFromBrainFitness() {
     document.getElementById('screen-menu').classList.add('active');
 }
 
-// 🔥 ЧИСТАЯ И БЕЗОПАСНАЯ ФУНКЦИЯ ВЫХОДА 🔥
-function goBackToBrainFitnessFromConfusion() {
-    try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(e){}
-    document.getElementById('screen-brain-confusion').classList.remove('active');
-    document.getElementById('screen-brain-fitness-menu').classList.add('active');
-    
-    if (currentAudio) currentAudio.pause();
-    if (confusionQuestionAudio) confusionQuestionAudio.pause();
-    clearInterval(confusionTimerInterval); // Убиваем таймер, чтобы не тикал в меню
-}
-
 // База данных животных для Путаницы
 const animalsData = [];
 for (let i = 1; i <= 24; i++) {
@@ -2077,6 +2066,17 @@ let confusionQuestionAudio = null;
 let confusionTimerInterval = null;
 let confusionTimeLeft = 100; 
 let isConfusionAnswering = false;
+
+// 🔥 Чистая и безопасная функция выхода 🔥
+function goBackToBrainFitnessFromConfusion() {
+    try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(e){}
+    document.getElementById('screen-brain-confusion').classList.remove('active');
+    document.getElementById('screen-brain-fitness-menu').classList.add('active');
+    
+    if (currentAudio) currentAudio.pause();
+    if (confusionQuestionAudio) confusionQuestionAudio.pause();
+    clearInterval(confusionTimerInterval); // Убиваем таймер, чтобы не тикал в меню
+}
 
 function startBrainConfusion() {
     try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "heavy"}); } catch(e){}
@@ -2156,7 +2156,7 @@ function nextBrainConfusionTask() {
 function startConfusionTimer() {
     confusionTimeLeft = 100;
     const bar = document.getElementById('confusion-timer-bar');
-    if (!bar) return; // Защита от ошибок
+    if (!bar) return;
     
     confusionTimerInterval = setInterval(() => {
         if (isConfusionAnswering) return; 
