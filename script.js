@@ -20,7 +20,7 @@ let currentSlidesAudioArray = [];
 //        БАЗА ДАННЫХ (ROOMS DATA)
 // ==========================================
 const roomsData = {
-    // === СЛОГИ ПО УРОВНЯМ ===
+    // === СЛОГИ ===
     'words_2': [
         { id: 'lisa', text: 'Лиса', image: 'img/3d_lisa.png', sound: 'audio/w_lisa.wav', syllables: ['ли', 'са'], audioSyllables: ['audio/sl_li.wav', 'audio/sl_sa.wav'] },
         { id: 'ryba', text: 'Рыба', image: 'img/3d_ryba.png', sound: 'audio/w_ryba.wav', syllables: ['ры', 'ба'], audioSyllables: ['audio/sl_ry.wav', 'audio/sl_ba.wav'] },
@@ -516,7 +516,7 @@ function setupWordsGame() {
         const brick = document.createElement('div');
         brick.className = 'draggable-item';
         brick.style.backgroundImage = "url('img/brick_bg.png')";
-        brick.style.touchAction = 'none'; // ЗАЩИТА ТАЧА НА МОБИЛКАХ
+        brick.style.touchAction = 'none'; 
         brick.innerText = syl;
         brick.setAttribute('data-syl', syl);
         brick.setAttribute('data-audio', wordData.audioSyllables[i]);
@@ -552,7 +552,6 @@ function handlePointerStart(e) {
     activeItem._dragOffsetX = offsetX;
     activeItem._dragOffsetY = offsetY;
 
-    // Жестко фиксируем размеры перед переключением в fixed
     activeItem.style.width = rect.width + 'px';
     activeItem.style.height = rect.height + 'px';
     activeItem.style.transform = 'none';
@@ -599,7 +598,6 @@ function handlePointerEnd(e) {
 
     targets.forEach(t => {
         const rect = t.getBoundingClientRect();
-        // 🔥 МАГНИТНАЯ ЗОНА ДЛЯ СЛОГОВ: Прощаем промах на 30 пикселей!
         const tolerance = 30;
         if (clientX >= (rect.left - tolerance) && clientX <= (rect.right + tolerance) && 
             clientY >= (rect.top - tolerance) && clientY <= (rect.bottom + tolerance)) {
@@ -1238,7 +1236,6 @@ function goBackToMemorikaFromChain() {
     document.getElementById('screen-memorika-menu').classList.add('active');
 }
 
-// 🔥 ЗДЕСЬ ТЕПЕРЬ РЕЖИМ СЛУЧАЙНОЙ ТРЕНИРОВКИ 🔥
 function startChainTraining(count) {
     try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(e){}
     
@@ -1260,7 +1257,6 @@ function startChainTraining(count) {
     
     let randomItems = shuffledPool.slice(0, count);
     
-    // Перезаписываем эталонную сказку на случайный набор
     learningSequence = randomItems.map(item => ({
         id: item.id,
         img: item.image
@@ -1270,14 +1266,11 @@ function startChainTraining(count) {
     showTrainingObserveStage(count);
 }
 
-// 🔥 ОТДЕЛЬНЫЙ ЭКРАН ДЛЯ ПРИДУМЫВАНИЯ СКАЗКИ
 function showTrainingObserveStage(count) {
     const area = document.getElementById('chain-visual-area');
     const msg = document.getElementById('chain-message');
     
     msg.innerHTML = `Свяжи эти <b style="color:#FF9800">${count} предметов</b> в одну смешную сказку!`;
-    
-    // 🎵 Озвучиваем команду "Свяжи в сказку!"
     playSound('audio/chain_train.wav');
     
     area.innerHTML = '';
@@ -1302,27 +1295,23 @@ function showTrainingObserveStage(count) {
     btn.style.cssText = "display: block; margin: 20px auto 0 auto; width: 250px; height: 50px; font-size: 20px; font-weight: bold; background: #FF9800; color: white; border: none; border-radius: 25px; cursor: pointer; box-shadow: 0 4px 15px rgba(255, 152, 0, 0.4); transition: transform 0.2s;";
     
     btn.onclick = () => {
-        setupChainGame(); // Сразу запускаем перетаскивание/тапы
+        setupChainGame();
     };
 }
 
-// 🔥 ЗДЕСЬ ОБУЧЕНИЕ СО СКАЗКОЙ ПРО ЛИСУ И КОМИКСОМ
 function startChainLearning() {
     try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "heavy"}); } catch(e){}
     document.getElementById('screen-chain-menu').classList.remove('active');
     document.getElementById('screen-chain-game').classList.add('active');
     
-    // Запускаем обучающий комикс перед игрой
     openComicSlider(
         ['img/chain_intro_1.jpg', 'img/chain_intro_2.jpg'], 
         ['audio/chain_intro_1.wav', 'audio/chain_intro_2.wav']
     );
 
-    // Когда комикс закрывается — стартует сказка
     document.getElementById('btn-comic-start').onclick = () => {
         closeComicSlider();
         
-        // Возвращаем эталонную сказку в память
         learningSequence = [
             { id: 'fox', img: 'img/3d_lisa.png', storyImg: 'img/story_fox_box.jpg', text: 'Однажды хитрая ЛИСА нашла под деревом красивую КОРОБКУ.', audio: 'audio/chain_story_1.wav' },
             { id: 'box', img: 'img/box.png', storyImg: 'img/story_box_berry.jpg', text: 'Она обрадовалась и подумала, что внутри лежит сладкая ЯГОДА.', audio: 'audio/chain_story_2.wav' },
@@ -1338,17 +1327,13 @@ function startChainLearning() {
     };
 }
 
-// 🔥 1. ЭКРАН ОБУЧЕНИЯ СО СКАЗКОЙ
 function showObserveStage() {
     const area = document.getElementById('chain-visual-area');
     const msg = document.getElementById('chain-message');
     msg.innerText = "Попробуй запомнить эти предметы за 5 секунд!";
-    
-    // 🎵 Озвучиваем команду "Запомни!"
     playSound('audio/chain_remember.wav');
     
     area.innerHTML = '';
-    
     area.style.flexDirection = 'row';
     area.style.alignItems = "center"; 
     
@@ -1367,20 +1352,15 @@ function showObserveStage() {
     setTimeout(() => {
         area.innerHTML = '<img src="img/mascot_hide.jpg" style="width: 150px; border-radius: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">';
         msg.innerText = "Ой! Всё исчезло! Трудно запомнить?";
-        
-        // 🎵 Озвучиваем "Всё исчезло!"
         playSound('audio/chain_hide.wav');
         
         const btn = document.getElementById('btn-chain-next');
         btn.style.display = 'block';
         btn.innerText = "Показать магию ✨";
-        
         btn.className = ''; 
         btn.style.cssText = "display: block; margin: 0 auto; width: 250px; height: 50px; font-size: 20px; font-weight: bold; background: #FF9800; color: white; border: none; border-radius: 25px; cursor: pointer; box-shadow: 0 4px 15px rgba(255, 152, 0, 0.4); transition: transform 0.2s;";
         
-        // Меняем действие кнопки для показа истории
         btn.onclick = () => { nextChainStage(); };
-        
         currentChainStage = 'story-start';
     }, 5000);
 }
@@ -1414,9 +1394,6 @@ function nextChainStage() {
     }
 }
 
-// ==========================================
-// ЛОГИКА ИГРЫ (ЦЕПОЧКА) - ТАПЫ ВМЕСТО ПЕРЕТАСКИВАНИЯ
-// ==========================================
 let currentChainStep = 0;
 let chainGameTargets = []; 
 
@@ -1780,9 +1757,9 @@ function goBackToMemorikaFromDrawResult() {
 
 let wardrobePhase = 1; 
 let activeWardrobeItem = null;
-let currentWardrobeSequence = []; // Предметы, которые надо запомнить
+let currentWardrobeSequence = []; 
 let wardrobePlacedCount = 0;
-let wardrobeRecallStep = 0; // Текущий шаг при проверке
+let wardrobeRecallStep = 0; 
 
 function openWardrobeMenu() {
     try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(e){}
@@ -1812,8 +1789,7 @@ function startWardrobeGame(count) {
     activeWardrobeItem = null;
     wardrobePlacedCount = 0;
     
-    // Настраиваем интерфейс
-    document.getElementById('wardrobe-instruction').innerHTML = "<b>📸 Сфотографируй свою комнату!</b><br><span style='font-size:14px; font-weight:normal; color:#444;'>Потом выбирай вещи внизу и «лепи» их на фото слева направо. Придумывай смешные истории!</span>";
+    document.getElementById('wardrobe-instruction').innerHTML = "<b>📸 Сфотографируй свою комнату!</b><br><span style='font-size:14px; font-weight:normal; color:#444;'>Потом выбирай вещи внизу и "лепи" их на фото слева направо. Придумывай смешные истории!</span>";
     document.getElementById('wardrobe-instruction').style.background = "#e3f2fd";
     document.getElementById('wardrobe-instruction').style.borderColor = "#64b5f6";
     document.getElementById('wardrobe-instruction').style.color = "#1565c0";
@@ -1824,14 +1800,12 @@ function startWardrobeGame(count) {
     document.getElementById('wardrobe-recall-area').style.display = 'none';
     document.getElementById('btn-wardrobe-memorized').style.display = 'none';
 
-    // Очищаем фото от старых стикеров
     const photoContainer = document.getElementById('room-photo-container');
     const stickers = photoContainer.querySelectorAll('.room-sticker');
     stickers.forEach(s => s.remove());
 
     playSound('audio/wardrobe_start.wav');
 
-    // Берем ровно столько случайных предметов, сколько выбрал игрок (count)
     let shuffledPool = [...chainItemsPool];
     shuffledPool = shuffleArray(shuffledPool).slice(0, count);
     currentWardrobeSequence = shuffledPool;
@@ -1839,7 +1813,6 @@ function startWardrobeGame(count) {
     renderWardrobePool(currentWardrobeSequence);
 }
 
-// Загрузка фото с камеры/галереи
 function loadRoomPhoto(event) {
     const file = event.target.files[0];
     if (file) {
@@ -1855,7 +1828,6 @@ function loadRoomPhoto(event) {
     }
 }
 
-// Отрисовка предметов внизу (Фаза 1)
 function renderWardrobePool(items) {
     const pool = document.getElementById('wardrobe-items-pool');
     pool.innerHTML = '';
@@ -1896,18 +1868,15 @@ function renderWardrobePool(items) {
     });
 }
 
-// Клик по фотографии комнаты (Лепим стикер)
 function handleRoomPhotoClick(e) {
     if (!activeWardrobeItem) return;
     
     const container = e.currentTarget;
     const rect = container.getBoundingClientRect();
     
-    // Вычисляем координаты клика внутри контейнера
     const x = e.clientX - rect.left;
     const y = e.clientY - rect.top;
 
-    // Создаем стикер
     const sticker = document.createElement('img');
     sticker.src = activeWardrobeItem.querySelector('img').src;
     sticker.className = 'room-sticker';
@@ -1921,13 +1890,11 @@ function handleRoomPhotoClick(e) {
     sticker.style.transform = 'scale(0.5)';
     sticker.style.transition = 'transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
     
-    // 🔥 ЗАЩИТА: чтобы клик сквозь стикер проходил к фону
     sticker.style.pointerEvents = 'none';
 
     container.appendChild(sticker);
     setTimeout(() => { sticker.style.transform = 'scale(1)'; }, 10);
 
-    // Прячем предмет из пула
     activeWardrobeItem.style.display = 'none';
     activeWardrobeItem.classList.remove('selected-wardrobe-item');
     activeWardrobeItem = null;
@@ -1935,23 +1902,20 @@ function handleRoomPhotoClick(e) {
 
     if (wardrobePlacedCount === currentWardrobeSequence.length) {
         document.getElementById('btn-wardrobe-memorized').style.display = 'block';
-        playSound('audio/wardrobe_placed.wav'); // 🔥 Исправленный звук!
+        playSound('audio/wardrobe_placed.wav');
     }
 }
 
-// ФАЗА 2: Вспоминаем цепочку!
 function startWardrobeRecall() {
     try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "heavy"}); } catch(e){}
     wardrobePhase = 2;
     wardrobeRecallStep = 0;
 
-    // Скрываем фото и первый пул
     document.getElementById('room-photo-container').style.display = 'none';
     document.getElementById('wardrobe-items-pool').style.display = 'none';
     document.getElementById('btn-camera').style.display = 'none';
     document.getElementById('btn-wardrobe-memorized').style.display = 'none';
     
-    // Меняем инструкцию
     const instr = document.getElementById('wardrobe-instruction');
     instr.innerHTML = "<b>Магия! Комната исчезла! 🙈</b><br><span style='font-size:14px; font-weight:normal; color:#444;'>Вспомни, как ты расставлял предметы слева направо, и выбери их по порядку!</span>";
     instr.style.background = "#fff9c4";
@@ -1960,13 +1924,11 @@ function startWardrobeRecall() {
 
     playSound('audio/wardrobe_hide.wav');
 
-    // Готовим зону проверки
     document.getElementById('wardrobe-recall-area').style.display = 'block';
     
     const targetsContainer = document.getElementById('wardrobe-targets');
     targetsContainer.innerHTML = '';
     
-    // Рисуем пустые ячейки
     currentWardrobeSequence.forEach((item, index) => {
         const slot = document.createElement('div');
         slot.style.backgroundImage = "url('img/slot_bg.png?v=2')";
@@ -1981,7 +1943,6 @@ function startWardrobeRecall() {
         targetsContainer.appendChild(slot);
     });
 
-    // Готовим обманки: берем ровно столько же лишних картинок, сколько правильных
     let distractors = chainItemsPool.filter(poolItem => 
         !currentWardrobeSequence.some(seqItem => seqItem.id === poolItem.id)
     );
@@ -2017,7 +1978,6 @@ function startWardrobeRecall() {
         
         item.appendChild(img);
         
-        // Клик по карточке для проверки
         item.addEventListener('pointerdown', handleWardrobeRecallClick);
         distractorsContainer.appendChild(item);
     });
@@ -2032,7 +1992,6 @@ function handleWardrobeRecallClick(e) {
     const currentTargetSlot = document.getElementById('wardrobe-target-' + wardrobeRecallStep);
 
     if (itemId === currentTargetId) {
-        // Угадал!
         try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "medium"}); } catch(err) {}
         
         item.classList.add('matched');
@@ -2052,17 +2011,14 @@ function handleWardrobeRecallClick(e) {
         
         wardrobeRecallStep++;
         
-        // Проверка на победу
         if (wardrobeRecallStep === currentWardrobeSequence.length) {
             setTimeout(() => {
                 document.getElementById('wardrobe-instruction').innerHTML = "<b>Фантастика! Ты настоящий Гений Памяти! 🎉</b>";
                 playSound('audio/words_win.wav');
-                // 🔥 Возврат в меню Дворца Памяти после победы 🔥
                 setTimeout(goBackToWardrobeMenuFromGame, 3500);
             }, 500);
         }
     } else {
-        // Ошибка!
         try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(err) {}
         playSound('audio/wrong.wav');
         
@@ -2071,5 +2027,136 @@ function handleWardrobeRecallClick(e) {
         setTimeout(() => { item.style.transform = 'translateX(-6px)'; }, 100);
         setTimeout(() => { item.style.transform = 'translateX(6px)'; }, 150);
         setTimeout(() => { item.style.transform = 'translateX(0px)'; }, 200);
+    }
+}
+
+// ==========================================
+//        БРЕЙН-ФИТНЕС: НАВИГАЦИЯ И БАЗА
+// ==========================================
+
+function openBrainFitnessMenu() {
+    try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(e){}
+    document.getElementById('screen-menu').classList.remove('active');
+    document.getElementById('screen-brain-fitness-menu').classList.add('active');
+}
+
+function goMainFromBrainFitness() {
+    try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(e){}
+    document.getElementById('screen-brain-fitness-menu').classList.remove('active');
+    document.getElementById('screen-menu').classList.add('active');
+}
+
+function goBackToBrainFitnessFromConfusion() {
+    try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(e){}
+    document.getElementById('screen-brain-confusion').classList.remove('active');
+    document.getElementById('screen-brain-fitness-menu').classList.add('active');
+    if (currentAudio) currentAudio.pause();
+    if (confusionQuestionAudio) confusionQuestionAudio.pause();
+}
+
+// База данных животных для Путаницы
+const animalsData = [];
+for (let i = 1; i <= 24; i++) {
+    animalsData.push({
+        id: i,
+        img: `img/a${i}.jpg`,
+        sound: `audio/a${i}.wav`,
+        question: `audio/qa${i}.wav`
+    });
+}
+
+// ==========================================
+//        БРЕЙН-ФИТНЕС: ИГРА "ПУТАНИЦА"
+// ==========================================
+
+let confusionTargetId = null;
+let confusionQuestionAudio = null;
+
+function startBrainConfusion() {
+    try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "heavy"}); } catch(e){}
+    document.getElementById('screen-brain-fitness-menu').classList.remove('active');
+    document.getElementById('screen-brain-confusion').classList.add('active');
+
+    nextBrainConfusionTask();
+}
+
+function nextBrainConfusionTask() {
+    // 1. Выбираем 3 случайных РАЗНЫХ животных
+    let shuffled = shuffleArray([...animalsData]);
+    const visualAnimal = shuffled[0];  
+    const audioAnimal = shuffled[1];   
+    const targetAnimal = shuffled[2];  
+
+    confusionTargetId = targetAnimal.id;
+
+    // 2. Обновляем интерфейс
+    document.getElementById('confusion-main-img').src = visualAnimal.img;
+    document.getElementById('confusion-question-text').innerText = "Слушай внимательно...";
+    
+    const optionsContainer = document.getElementById('confusion-options');
+    optionsContainer.innerHTML = '';
+
+    // Варианты ответа: Картинка, Звук, Правильный ответ
+    let options = [visualAnimal, audioAnimal, targetAnimal];
+    options = shuffleArray(options); // Перемешиваем кнопки
+
+    options.forEach(animal => {
+        const btn = document.createElement('div');
+        btn.style.width = '80px';
+        btn.style.height = '80px';
+        btn.style.background = '#fff';
+        btn.style.borderRadius = '15px';
+        btn.style.boxShadow = '0 4px 10px rgba(0,0,0,0.1)';
+        btn.style.display = 'flex';
+        btn.style.alignItems = 'center';
+        btn.style.justifyContent = 'center';
+        btn.style.cursor = 'pointer';
+        btn.style.transition = 'transform 0.1s ease';
+        
+        const img = document.createElement('img');
+        img.src = animal.img;
+        img.style.width = '60px';
+        img.style.height = '60px';
+        img.style.objectFit = 'contain';
+        img.style.pointerEvents = 'none';
+
+        btn.appendChild(img);
+        
+        btn.onclick = () => checkBrainConfusionAnswer(btn, animal.id);
+        optionsContainer.appendChild(btn);
+    });
+
+    // 3. Воспроизводим звук обманки
+    playSound(audioAnimal.sound);
+    
+    if (confusionQuestionAudio) confusionQuestionAudio.pause();
+    confusionQuestionAudio = new Audio(targetAnimal.question);
+    
+    // Ждем секунду и задаем вопрос Уточкой
+    setTimeout(() => {
+        confusionQuestionAudio.play();
+        document.getElementById('confusion-question-text').innerText = "Кого нужно найти?";
+    }, 1200);
+}
+
+function checkBrainConfusionAnswer(btnElement, clickedId) {
+    if (clickedId === confusionTargetId) {
+        try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "medium"}); } catch(e){}
+        playSound('audio/words_win.wav');
+        btnElement.style.border = '4px solid #4CAF50';
+        btnElement.style.background = '#e8f5e9';
+        
+        setTimeout(() => {
+            nextBrainConfusionTask();
+        }, 1500);
+    } else {
+        try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(e){}
+        playSound('audio/wrong.wav');
+        
+        btnElement.style.transform = 'translateX(-6px)';
+        setTimeout(() => { btnElement.style.transform = 'translateX(6px)'; }, 50);
+        setTimeout(() => { btnElement.style.transform = 'translateX(-6px)'; }, 100);
+        setTimeout(() => { btnElement.style.transform = 'translateX(6px)'; }, 150);
+        setTimeout(() => { btnElement.style.transform = 'translateX(0px)'; }, 200);
     }
 }
