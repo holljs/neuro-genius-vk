@@ -60,6 +60,13 @@
                 <div class="category-title">Меморика</div>
                 <div class="category-subtitle">Развитие супер-памяти</div>
             </div>
+            <div class="category-card" onclick="openBrainFitnessMenu()">
+                <div style="margin: 0 auto 10px auto; width: 70px; height: 70px;">
+                    <img src="img/icon_brain.png" onerror="this.src='img/icon_memo.png'" alt="" style="width: 100%; height: 100%; object-fit: contain;">
+                </div>
+                <div class="category-title">Брейн-фитнес</div>
+                <div class="category-subtitle">Нейрогимнастика</div>
+            </div>
         </div>
     </div> 
 
@@ -633,33 +640,77 @@
                 <span style="font-size:14px; font-weight:normal; color:#444;">Потом выбирай вещи внизу и "лепи" их на фото слева направо.</span>
             </div>
 
-            <!-- Кнопка камеры (скрытый инпут и видимая кнопка) -->
             <input type="file" id="camera-input" accept="image/*" style="display:none;" onchange="loadRoomPhoto(event)">
             <button id="btn-camera" onclick="document.getElementById('camera-input').click()" style="width: 100%; max-width: 300px; height: 40px; font-size: 16px; font-weight: bold; background: #8e44ad; color: white; border: none; border-radius: 20px; cursor: pointer; box-shadow: 0 4px 10px rgba(142, 68, 173, 0.4); margin-bottom: 15px;">📸 Сделать фото комнаты</button>
 
-            <!-- ЗОНА ФОТОГРАФИИ (Холст для расстановки) -->
+            <!-- ЗОНА ФОТОГРАФИИ -->
             <div id="room-photo-container" style="position: relative; width: 100%; max-width: 400px; height: 300px; margin: 0 auto 20px auto; background: #eee; border-radius: 15px; overflow: hidden; box-shadow: 0 8px 20px rgba(0,0,0,0.2); border: 3px dashed #ccc; display: flex; align-items: center; justify-content: center; cursor: pointer;" onclick="handleRoomPhotoClick(event)">
                 <span id="room-photo-placeholder" style="color: #999; font-weight: bold;">Нажми кнопку выше, чтобы добавить фото!</span>
                 <img id="room-photo-img" src="" style="position: absolute; top:0; left:0; width: 100%; height: 100%; object-fit: cover; pointer-events: none; display: none;">
             </div>
 
-            <!-- ЗОНА ДЛЯ КАРТИНОК (ФАЗА 1) -->
+            <!-- ЗОНА ДЛЯ КАРТИНОК -->
             <div id="wardrobe-items-pool" style="display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; min-height: 80px;">
-                <!-- Сюда добавятся вещи для расстановки -->
             </div>
 
             <button id="btn-wardrobe-memorized" style="display: none; width: 100%; max-width: 300px; height: 50px; font-size: 20px; font-weight: bold; background: linear-gradient(135deg, #4CAF50 0%, #2E7D32 100%); color: white; border: none; border-radius: 25px; cursor: pointer; box-shadow: 0 4px 15px rgba(76, 175, 80, 0.4); margin: 20px auto 0 auto;" onclick="startWardrobeRecall()">Я запомнил! ✨</button>
 
-            <!-- ЗОНА ПРОВЕРКИ (ФАЗА 2) -->
+            <!-- ЗОНА ПРОВЕРКИ -->
             <div id="wardrobe-recall-area" style="display: none; margin-top: 10px;">
-                <!-- Пустые ячейки -->
                 <div id="wardrobe-targets" style="display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin-bottom: 25px;"></div>
-                <!-- Куча предметов вперемешку -->
                 <div id="wardrobe-distractors" style="display: flex; flex-wrap: wrap; justify-content: center; gap: 10px;"></div>
             </div>
         </div>
     </div>
 
-    <script src="script.js?v=28"></script>
+    <!-- === МЕНЮ: БРЕЙН-ФИТНЕС === -->
+    <div id="screen-brain-fitness-menu" class="screen" style="overflow-y: auto;">
+        <div class="header" style="position: sticky; top: 0; z-index: 10;">
+            <div class="header-title-row"><span id="room-title">Брейн-фитнес</span></div>
+            <div class="header-top">
+                <div class="back-btn" onclick="goMainFromBrainFitness()">⬅ В главное меню</div>
+            </div>
+        </div>
+        <div class="hero-title">Выбери тренажёр:</div>
+        <div class="menu-grid sub-grid">
+            <div class="category-card sub-card" onclick="startBrainConfusion()">
+                <div style="margin: 0 auto 10px auto; width: 60px; height: 60px;">
+                    <img src="img/icon_confusion.png" onerror="this.src='img/icon_memo.png'" alt="" style="width: 100%; height: 100%; object-fit: contain;">
+                </div>
+                <div class="category-title sub-title">Путаница</div>
+                <div class="category-subtitle">Слушай и смотри</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- === ЭКРАН ИГРЫ: ПУТАНИЦА === -->
+    <div id="screen-brain-confusion" class="screen" style="overflow-y: auto;">
+        <div class="header" style="position: sticky; top: 0; z-index: 10;">
+            <div class="header-title-row"><span id="room-title">Путаница</span></div>
+            <div class="header-top">
+                <div class="back-btn" onclick="goBackToBrainFitnessFromConfusion()">⬅ Назад</div>
+            </div>
+        </div>
+
+        <div style="padding: 10px; text-align: center;">
+            <div style="background: #e8f5e9; border: 2px solid #81c784; border-radius: 15px; padding: 10px; margin-bottom: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); font-size: 16px; color: #2e7d32; font-weight: bold;">
+                Смотри на экран, слушай звуки и отвечай на вопрос Уточки! Не дай себя запутать! 🦆
+            </div>
+
+            <!-- Зона большой картинки (Сбой матрицы) -->
+            <div style="display: flex; justify-content: center; margin-bottom: 20px;">
+                <img id="confusion-main-img" src="" style="width: 150px; height: 150px; object-fit: contain; background: #fff; border-radius: 20px; box-shadow: 0 8px 20px rgba(0,0,0,0.1); border: 3px solid #eee;">
+            </div>
+            
+            <div id="confusion-question-text" style="font-size: 20px; font-weight: bold; margin-bottom: 20px; color: #e91e63;">Слушай внимательно...</div>
+
+            <!-- Зона выбора ответа -->
+            <div id="confusion-options" style="display: flex; justify-content: center; gap: 15px; flex-wrap: wrap;">
+                <!-- Карточки генерируются скриптом -->
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js?v=29"></script>
 </body>
 </html>
