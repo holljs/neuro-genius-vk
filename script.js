@@ -1935,7 +1935,7 @@ function handleRoomPhotoClick(e) {
 
     if (wardrobePlacedCount === currentWardrobeSequence.length) {
         document.getElementById('btn-wardrobe-memorized').style.display = 'block';
-        playSound('audio/words_win.wav');
+        playSound('audio/wardrobe_placed.wav'); // 🔥 Исправленный звук!
     }
 }
 
