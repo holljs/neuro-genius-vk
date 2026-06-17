@@ -2319,7 +2319,14 @@ function startRacingGame() {
 
 function toggleCarLane(side) {
     if (!isRacingActive) return;
-    try { new Audio('audio/click.wav').play(); } catch(e) {}
+    
+    // 🔥 МАГИЯ: Визг тормозов вместо щелчков! 🔥
+    // Создаем отдельный звук для дрифта, чтобы он мог звучать одновременно с другими
+    try { 
+        let skidSound = new Audio('audio/skid.wav');
+        skidSound.volume = 0.6; // Чуть тише, чтобы не оглушить
+        skidSound.play(); 
+    } catch(e) {}
     
     if (side === 'left') {
         carLanes.left = (carLanes.left === 0) ? 1 : 0;
