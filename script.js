@@ -2449,3 +2449,194 @@ function crashGame(hitType) {
     setTimeout(() => { area.style.transform = 'translateX(-10px)'; }, 100);
     setTimeout(() => { area.style.transform = 'translateX(0px)'; }, 150);
 }
+
+// ==========================================
+//        БРЕЙН-ФИТНЕС: ЗЕРКАЛЬНОЕ РИСОВАНИЕ
+// ==========================================
+
+let mirrorCurrentLevel = 0;
+let mirrorLeftCanvas, mirrorRightCanvas;
+let mirrorLeftCtx, mirrorRightCtx;
+let mirrorIsDrawingLeft = false;
+let mirrorIsDrawingRight = false;
+
+// База данных контуров (левая и правая руки РАЗНЫЕ)
+const mirrorTemplates = [
+    {
+        title: "Уровень 1: Линии ➖ |",
+        leftPaths: [ [{x:0.5, y:0.2}, {x:0.5, y:0.8}] ], // Вертикальная
+        rightPaths: [ [{x:0.2, y:0.5}, {x:0.8, y:0.5}] ] // Горизонтальная
+    },
+    {
+        title: "Уровень 2: Круг и Квадрат 🔴 ⏹",
+        leftPaths: [
+            // Рисуем круг с помощью математики (многоугольник из 16 точек)
+            [...Array(17)].map((_, i) => ({
+                x: 0.5 + 0.35 * Math.cos(i * 2 * Math.PI / 16),
+                y: 0.5 + 0.35 * Math.sin(i * 2 * Math.PI / 16)
+            }))
+        ],
+        rightPaths: [
+            // Квадрат
+            [{x:0.15, y:0.15}, {x:0.85, y:0.15}, {x:0.85, y:0.85}, {x:0.15, y:0.85}, {x:0.15, y:0.15}]
+        ]
+    },
+    {
+        title: "Уровень 3: Треугольник и Круг 🔺 🔴",
+        leftPaths: [
+            // Треугольник
+            [{x:0.5, y:0.15}, {x:0.85, y:0.85}, {x:0.15, y:0.85}, {x:0.5, y:0.15}]
+        ],
+        rightPaths: [
+            // Круг
+            [...Array(17)].map((_, i) => ({
+                x: 0.5 + 0.35 * Math.cos(i * 2 * Math.PI / 16),
+                y: 0.5 + 0.35 * Math.sin(i * 2 * Math.PI / 16)
+            }))
+        ]
+    },
+    {
+        title: "Уровень 4: Плюс и Зигзаг ➕ ⚡",
+        leftPaths: [
+            // Плюс
+            [{x:0.5, y:0.2}, {x:0.5, y:0.8}],
+            [{x:0.2, y:0.5}, {x:0.8, y:0.5}]
+        ],
+        rightPaths: [
+            // Зигзаг
+            [{x:0.2, y:0.15}, {x:0.8, y:0.3}, {x:0.2, y:0.5}, {x:0.8, y:0.7}, {x:0.2, y:0.85}]
+        ]
+    }
+];
+
+function openBrainMirrorDraw() {
+    try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(e){}
+    document.getElementById('screen-brain-fitness-menu').classList.remove('active');
+    document.getElementById('screen-brain-mirror-draw').classList.add('active');
+    
+    // Инициализация холстов
+    if (!mirrorLeftCanvas) {
+        mirrorLeftCanvas = document.getElementById('mirror-canvas-left');
+        mirrorRightCanvas = document.getElementById('mirror-canvas-right');
+        mirrorLeftCtx = mirrorLeftCanvas.getContext('2d');
+        mirrorRightCtx = mirrorRightCanvas.getContext('2d');
+        
+        setupMirrorTouchEvents();
+    }
+    
+    mirrorCurrentLevel = 0;
+    initMirrorLevel();
+}
+
+function goBackToBrainFitnessFromMirror() {
+    try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(e){}
+    document.getElementById('screen-brain-mirror-draw').classList.remove('active');
+    document.getElementById('screen-brain-fitness-menu').classList.add('active');
+}
+
+function initMirrorLevel() {
+    const template = mirrorTemplates[mirrorCurrentLevel];
+    document.getElementById('mirror-level-title').innerText = template.title;
+    
+    // Полностью очищаем холсты
+    mirrorLeftCtx.clearRect(0, 0, mirrorLeftCanvas.width, mirrorLeftCanvas.height);
+    mirrorRightCtx.clearRect(0, 0, mirrorRightCanvas.width, mirrorRightCanvas.height);
+    
+    // Рисуем РАЗНЫЕ контуры для левой и правой руки
+    drawTemplateGuide(mirrorLeftCtx, template.leftPaths, mirrorLeftCanvas.width, mirrorLeftCanvas.height);
+    drawTemplateGuide(mirrorRightCtx, template.rightPaths, mirrorRightCanvas.width, mirrorRightCanvas.height);
+}
+
+function drawTemplateGuide(ctx, paths, w, h) {
+    ctx.save();
+    ctx.strokeStyle = 'rgba(160, 170, 180, 0.4)'; 
+    ctx.lineWidth = 6;
+    ctx.setLineDash([6, 6]); 
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+    
+    paths.forEach(path => {
+        ctx.beginPath();
+        path.forEach((pt, idx) => {
+            // Теперь просто умножаем проценты на размер холста
+            let realX = pt.x * w;
+            let realY = pt.y * h;
+            
+            if (idx === 0) ctx.moveTo(realX, realY);
+            else ctx.lineTo(realX, realY);
+        });
+        ctx.stroke();
+    });
+    ctx.restore();
+}
+
+function setupMirrorTouchEvents() {
+    // Настройка независимого рисования для ЛЕВОЙ руки
+    mirrorLeftCanvas.addEventListener('pointerdown', (e) => {
+        e.preventDefault();
+        mirrorLeftCanvas.setPointerCapture(e.pointerId);
+        mirrorIsDrawingLeft = true;
+        const rect = mirrorLeftCanvas.getBoundingClientRect();
+        mirrorLeftCtx.beginPath();
+        mirrorLeftCtx.moveTo(e.clientX - rect.left, e.clientY - rect.top);
+    });
+    
+    mirrorLeftCanvas.addEventListener('pointermove', (e) => {
+        if (!mirrorIsDrawingLeft) return;
+        const rect = mirrorLeftCanvas.getBoundingClientRect();
+        mirrorLeftCtx.lineTo(e.clientX - rect.left, e.clientY - rect.top);
+        mirrorLeftCtx.strokeStyle = '#2196F3'; // Синий
+        mirrorLeftCtx.lineWidth = 5;
+        mirrorLeftCtx.lineCap = 'round';
+        mirrorLeftCtx.lineJoin = 'round';
+        mirrorLeftCtx.stroke();
+    });
+    
+    mirrorLeftCanvas.addEventListener('pointerup', (e) => {
+        mirrorIsDrawingLeft = false;
+        mirrorLeftCanvas.releasePointerCapture(e.pointerId);
+    });
+
+    // Настройка независимого рисования для ПРАВОЙ руки
+    mirrorRightCanvas.addEventListener('pointerdown', (e) => {
+        e.preventDefault();
+        mirrorRightCanvas.setPointerCapture(e.pointerId);
+        mirrorIsDrawingRight = true;
+        const rect = mirrorRightCanvas.getBoundingClientRect();
+        mirrorRightCtx.beginPath();
+        mirrorRightCtx.moveTo(e.clientX - rect.left, e.clientY - rect.top);
+    });
+    
+    mirrorRightCanvas.addEventListener('pointermove', (e) => {
+        if (!mirrorIsDrawingRight) return;
+        const rect = mirrorRightCanvas.getBoundingClientRect();
+        mirrorRightCtx.lineTo(e.clientX - rect.left, e.clientY - rect.top);
+        mirrorRightCtx.strokeStyle = '#E91E63'; // Розовый
+        mirrorRightCtx.lineWidth = 5;
+        mirrorRightCtx.lineCap = 'round';
+        mirrorRightCtx.lineJoin = 'round';
+        mirrorRightCtx.stroke();
+    });
+    
+    mirrorRightCanvas.addEventListener('pointerup', (e) => {
+        mirrorIsDrawingRight = false;
+        mirrorRightCanvas.releasePointerCapture(e.pointerId);
+    });
+}
+
+function changeMirrorLevel(direction) {
+    try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(e){}
+    try { new Audio('audio/click.wav').play(); } catch(e) {}
+    
+    mirrorCurrentLevel += direction;
+    if (mirrorCurrentLevel < 0) mirrorCurrentLevel = mirrorTemplates.length - 1;
+    if (mirrorCurrentLevel >= mirrorTemplates.length) mirrorCurrentLevel = 0;
+    
+    initMirrorLevel();
+}
+
+function clearMirrorCanvas() {
+    try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "medium"}); } catch(e){}
+    try { new Audio('audio/click.wav').play(); } catch(e) {}
+    initMirrorLevel(); 
+}
