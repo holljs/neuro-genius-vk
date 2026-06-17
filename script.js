@@ -2229,3 +2229,186 @@ function checkBrainConfusionAnswer(btnElement, clickedId) {
         }, 500);
     }
 }
+
+// ==========================================
+//        БРЕЙН-ФИТНЕС: НЕЙРО-ГОНКИ
+// ==========================================
+
+let racingLoopInterval = null;
+let racingSpawnInterval = null;
+let racingScore = 0;
+let racingSpeed = 5; // Стартовая скорость
+let obstaclesArray = [];
+let isRacingActive = false;
+
+// Дороги: 0 и 1 - левая сторона, 2 и 3 - правая сторона
+// Значения в процентах для позиционирования
+const racingLanes = [12.5, 37.5, 62.5, 87.5]; 
+let carLanes = { left: 0, right: 2 }; // Текущие полосы машин
+
+function openBrainRacing() {
+    try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(e){}
+    document.getElementById('screen-brain-fitness-menu').classList.remove('active');
+    document.getElementById('screen-brain-racing').classList.add('active');
+    
+    document.getElementById('racing-game-over').style.display = 'none';
+    document.getElementById('racing-hint').style.display = 'block';
+    
+    // Сброс позиций
+    carLanes = { left: 0, right: 2 };
+    document.getElementById('car-left').style.left = racingLanes[carLanes.left] + '%';
+    document.getElementById('car-right').style.left = racingLanes[carLanes.right] + '%';
+    document.getElementById('racing-obstacles').innerHTML = '';
+    document.getElementById('racing-score-display').innerText = '0';
+    
+    // Даем секунду осмотреться и погнали!
+    setTimeout(() => {
+        if (document.getElementById('screen-brain-racing').classList.contains('active')) {
+            startRacingGame();
+        }
+    }, 1000);
+}
+
+function goBackToBrainFitnessFromRacing() {
+    try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(e){}
+    isRacingActive = false;
+    clearInterval(racingLoopInterval);
+    clearInterval(racingSpawnInterval);
+    
+    document.getElementById('screen-brain-racing').classList.remove('active');
+    document.getElementById('screen-brain-fitness-menu').classList.add('active');
+}
+
+function startRacingGame() {
+    try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "heavy"}); } catch(e){}
+    
+    isRacingActive = true;
+    racingScore = 0;
+    racingSpeed = 6; // Начальная скорость падения
+    obstaclesArray = [];
+    
+    document.getElementById('racing-game-over').style.display = 'none';
+    document.getElementById('racing-hint').style.display = 'none';
+    document.getElementById('racing-obstacles').innerHTML = '';
+    document.getElementById('racing-score-display').innerText = racingScore;
+
+    clearInterval(racingLoopInterval);
+    clearInterval(racingSpawnInterval);
+
+    // Главный игровой цикл (60 кадров в секунду)
+    racingLoopInterval = setInterval(updateRacingFrame, 20);
+
+    // Спавнер препятствий
+    racingSpawnInterval = setInterval(spawnObstacles, 1200);
+}
+
+// Управление тапами
+function toggleCarLane(side) {
+    if (!isRacingActive) return;
+    try { new Audio('audio/click.wav').play(); } catch(e) {}
+    
+    if (side === 'left') {
+        carLanes.left = (carLanes.left === 0) ? 1 : 0;
+        document.getElementById('car-left').style.left = racingLanes[carLanes.left] + '%';
+    } else {
+        carLanes.right = (carLanes.right === 2) ? 3 : 2;
+        document.getElementById('car-right').style.left = racingLanes[carLanes.right] + '%';
+    }
+}
+
+function spawnObstacles() {
+    if (!isRacingActive) return;
+
+    // Выбираем полосу случайным образом
+    let spawnLeft = Math.random() > 0.5 ? 0 : 1;
+    let spawnRight = Math.random() > 0.5 ? 2 : 3;
+
+    // Спавним либо слева, либо справа, либо с обеих сторон
+    let spawnType = Math.floor(Math.random() * 3); 
+    
+    if (spawnType === 0 || spawnType === 2) createObstacleDom(spawnLeft);
+    if (spawnType === 1 || spawnType === 2) createObstacleDom(spawnRight);
+}
+
+function createObstacleDom(laneIndex) {
+    const container = document.getElementById('racing-obstacles');
+    const obs = document.createElement('img');
+    
+    // Если картинки камня пока нет, используем наш орех из базы
+    obs.src = 'img/rock.png';
+    obs.onerror = function() { this.src = 'img/garden_item_5.png'; }; 
+
+    obs.style.position = 'absolute';
+    obs.style.width = '45px';
+    obs.style.height = '45px';
+    obs.style.left = racingLanes[laneIndex] + '%';
+    obs.style.transform = 'translateX(-50%)';
+    obs.style.top = '-50px';
+    
+    container.appendChild(obs);
+    
+    obstaclesArray.push({
+        el: obs,
+        lane: laneIndex,
+        y: -50
+    });
+}
+
+function updateRacingFrame() {
+    if (!isRacingActive) return;
+
+    // Вычисляем "зону столкновения" (размеры экрана и машинки)
+    const screenHeight = window.innerHeight;
+    const carBottomPx = screenHeight * 0.10; // 10vh от низа
+    const carTopPx = carBottomPx + 90; // Высота машинки
+    
+    const hitZoneTop = screenHeight - carTopPx - 20; 
+    const hitZoneBottom = screenHeight - carBottomPx;
+
+    // Идем с конца массива, чтобы безопасно удалять элементы
+    for (let i = obstaclesArray.length - 1; i >= 0; i--) {
+        let obs = obstaclesArray[i];
+        obs.y += racingSpeed;
+        obs.el.style.top = obs.y + 'px';
+
+        // 1. Проверка столкновения
+        if (obs.y + 40 > hitZoneTop && obs.y < hitZoneBottom) {
+            if (obs.lane === carLanes.left || obs.lane === carLanes.right) {
+                crashGame();
+                return;
+            }
+        }
+
+        // 2. Проверка проезда (уклонились)
+        if (obs.y > screenHeight) {
+            obs.el.remove();
+            obstaclesArray.splice(i, 1);
+            racingScore++;
+            document.getElementById('racing-score-display').innerText = racingScore;
+            
+            // Каждые 10 очков чуть-чуть ускоряем игру!
+            if (racingScore % 10 === 0 && racingSpeed < 15) {
+                racingSpeed += 0.5;
+            }
+        }
+    }
+}
+
+function crashGame() {
+    isRacingActive = false;
+    clearInterval(racingLoopInterval);
+    clearInterval(racingSpawnInterval);
+    
+    try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "heavy"}); } catch(e){}
+    playSound('audio/wrong.wav'); // Звук аварии
+    
+    document.getElementById('racing-final-score').innerText = racingScore;
+    document.getElementById('racing-game-over').style.display = 'block';
+    
+    // Эффект тряски экрана
+    const area = document.getElementById('racing-game-area');
+    area.style.transform = 'translateX(-10px)';
+    setTimeout(() => { area.style.transform = 'translateX(10px)'; }, 50);
+    setTimeout(() => { area.style.transform = 'translateX(-10px)'; }, 100);
+    setTimeout(() => { area.style.transform = 'translateX(0px)'; }, 150);
+}
