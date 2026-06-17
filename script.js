@@ -2236,15 +2236,14 @@ function checkBrainConfusionAnswer(btnElement, clickedId) {
 
 let racingLoopInterval = null;
 let racingSpawnInterval = null;
-let racingScore = 0;
-let racingSpeed = 5; // Стартовая скорость
+let racingScore = 0; // Теперь это наши километры
+let racingSpeed = 5; 
 let obstaclesArray = [];
 let isRacingActive = false;
+let engineAudio = null; 
 
-// Дороги: 0 и 1 - левая сторона, 2 и 3 - правая сторона
-// Значения в процентах для позиционирования
 const racingLanes = [12.5, 37.5, 62.5, 87.5]; 
-let carLanes = { left: 0, right: 2 }; // Текущие полосы машин
+let carLanes = { left: 0, right: 2 }; 
 
 function openBrainRacing() {
     try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(e){}
@@ -2254,14 +2253,12 @@ function openBrainRacing() {
     document.getElementById('racing-game-over').style.display = 'none';
     document.getElementById('racing-hint').style.display = 'block';
     
-    // Сброс позиций
     carLanes = { left: 0, right: 2 };
     document.getElementById('car-left').style.left = racingLanes[carLanes.left] + '%';
     document.getElementById('car-right').style.left = racingLanes[carLanes.right] + '%';
     document.getElementById('racing-obstacles').innerHTML = '';
-    document.getElementById('racing-score-display').innerText = '0';
+    document.getElementById('racing-score-display').innerText = '0 км';
     
-    // Даем секунду осмотреться и погнали!
     setTimeout(() => {
         if (document.getElementById('screen-brain-racing').classList.contains('active')) {
             startRacingGame();
@@ -2275,6 +2272,11 @@ function goBackToBrainFitnessFromRacing() {
     clearInterval(racingLoopInterval);
     clearInterval(racingSpawnInterval);
     
+    if (engineAudio) {
+        engineAudio.pause();
+        engineAudio.currentTime = 0;
+    }
+    
     document.getElementById('screen-brain-racing').classList.remove('active');
     document.getElementById('screen-brain-fitness-menu').classList.add('active');
 }
@@ -2284,25 +2286,27 @@ function startRacingGame() {
     
     isRacingActive = true;
     racingScore = 0;
-    racingSpeed = 6; // Начальная скорость падения
+    racingSpeed = 6; // Начальная скорость
     obstaclesArray = [];
     
     document.getElementById('racing-game-over').style.display = 'none';
     document.getElementById('racing-hint').style.display = 'none';
     document.getElementById('racing-obstacles').innerHTML = '';
-    document.getElementById('racing-score-display').innerText = racingScore;
+    document.getElementById('racing-score-display').innerText = racingScore + ' км';
 
     clearInterval(racingLoopInterval);
     clearInterval(racingSpawnInterval);
 
-    // Главный игровой цикл (60 кадров в секунду)
-    racingLoopInterval = setInterval(updateRacingFrame, 20);
+    if (engineAudio) { engineAudio.pause(); }
+    engineAudio = new Audio('audio/engine.wav');
+    engineAudio.loop = true; 
+    engineAudio.volume = 0.5; 
+    engineAudio.play().catch(e => console.log("Ошибка аудио:", e));
 
-    // Спавнер препятствий
+    racingLoopInterval = setInterval(updateRacingFrame, 20);
     racingSpawnInterval = setInterval(spawnObstacles, 1200);
 }
 
-// Управление тапами
 function toggleCarLane(side) {
     if (!isRacingActive) return;
     try { new Audio('audio/click.wav').play(); } catch(e) {}
@@ -2319,11 +2323,9 @@ function toggleCarLane(side) {
 function spawnObstacles() {
     if (!isRacingActive) return;
 
-    // Выбираем полосу случайным образом
     let spawnLeft = Math.random() > 0.5 ? 0 : 1;
     let spawnRight = Math.random() > 0.5 ? 2 : 3;
 
-    // Спавним либо слева, либо справа, либо с обеих сторон
     let spawnType = Math.floor(Math.random() * 3); 
     
     if (spawnType === 0 || spawnType === 2) createObstacleDom(spawnLeft);
@@ -2334,10 +2336,10 @@ function createObstacleDom(laneIndex) {
     const container = document.getElementById('racing-obstacles');
     const obs = document.createElement('img');
     
-    // 🔥 МАГИЯ ЗДЕСЬ: Игра бросает монетку и выбирает камень или лужу!
-    const randomObstacle = Math.random() > 0.5 ? 'img/rock.png' : 'img/puddle.png';
-    obs.src = randomObstacle;
+    const isRock = Math.random() > 0.5;
+    const obstacleType = isRock ? 'rock' : 'puddle'; 
     
+    obs.src = isRock ? 'img/rock.png' : 'img/puddle.png';
     obs.onerror = function() { this.src = 'img/garden_item_5.png'; }; 
 
     obs.style.position = 'absolute';
@@ -2352,22 +2354,21 @@ function createObstacleDom(laneIndex) {
     obstaclesArray.push({
         el: obs,
         lane: laneIndex,
-        y: -50
+        y: -50,
+        type: obstacleType 
     });
 }
 
 function updateRacingFrame() {
     if (!isRacingActive) return;
 
-    // Вычисляем "зону столкновения" (размеры экрана и машинки)
     const screenHeight = window.innerHeight;
-    const carBottomPx = screenHeight * 0.10; // 10vh от низа
-    const carTopPx = carBottomPx + 90; // Высота машинки
+    const carBottomPx = screenHeight * 0.10; 
+    const carTopPx = carBottomPx + 90; 
     
     const hitZoneTop = screenHeight - carTopPx - 20; 
     const hitZoneBottom = screenHeight - carBottomPx;
 
-    // Идем с конца массива, чтобы безопасно удалять элементы
     for (let i = obstaclesArray.length - 1; i >= 0; i--) {
         let obs = obstaclesArray[i];
         obs.y += racingSpeed;
@@ -2376,7 +2377,7 @@ function updateRacingFrame() {
         // 1. Проверка столкновения
         if (obs.y + 40 > hitZoneTop && obs.y < hitZoneBottom) {
             if (obs.lane === carLanes.left || obs.lane === carLanes.right) {
-                crashGame();
+                crashGame(obs.type); 
                 return;
             }
         }
@@ -2385,29 +2386,43 @@ function updateRacingFrame() {
         if (obs.y > screenHeight) {
             obs.el.remove();
             obstaclesArray.splice(i, 1);
-            racingScore++;
-            document.getElementById('racing-score-display').innerText = racingScore;
             
-            // Каждые 10 очков чуть-чуть ускоряем игру!
-            if (racingScore % 10 === 0 && racingSpeed < 15) {
-                racingSpeed += 0.5;
+            // 🔥 ДАЕМ СРАЗУ +5 КМ ЗА КАЖДОЕ ПРЕПЯТСТВИЕ! 🔥
+            racingScore += 5; 
+            document.getElementById('racing-score-display').innerText = racingScore + ' км';
+            
+            // 🔥 УСКОРЯЕМ ИГРУ КАЖДЫЕ 50 КМ 🔥
+            if (racingScore % 50 === 0 && racingSpeed < 18) {
+                racingSpeed += 1; 
             }
         }
     }
 }
 
-function crashGame() {
+function crashGame(hitType) {
     isRacingActive = false;
     clearInterval(racingLoopInterval);
     clearInterval(racingSpawnInterval);
     
-    try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "heavy"}); } catch(e){}
-    playSound('audio/wrong.wav'); // Звук аварии
+    if (engineAudio) { engineAudio.pause(); }
     
-    document.getElementById('racing-final-score').innerText = racingScore;
+    try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "heavy"}); } catch(e){}
+    
+    const gameOverTitle = document.getElementById('racing-game-over').querySelector('h2');
+    
+    if (hitType === 'rock') {
+        playSound('audio/crash_rock.wav'); 
+        gameOverTitle.innerText = 'БАМ! 💥';
+        gameOverTitle.style.color = '#F44336';
+    } else {
+        playSound('audio/splash.wav'); 
+        gameOverTitle.innerText = 'БУЛЬК! 💦';
+        gameOverTitle.style.color = '#2196F3'; 
+    }
+    
+    document.getElementById('racing-final-score').innerText = racingScore + ' км';
     document.getElementById('racing-game-over').style.display = 'block';
     
-    // Эффект тряски экрана
     const area = document.getElementById('racing-game-area');
     area.style.transform = 'translateX(-10px)';
     setTimeout(() => { area.style.transform = 'translateX(10px)'; }, 50);
