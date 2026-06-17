@@ -2197,6 +2197,7 @@ function handleConfusionTimeout() {
     }, 1500);
 }
 
+// 🔥 ИСПРАВЛЕННАЯ ПУТАНИЦА С НОВЫМ ЗВУКОМ 🔥
 function checkBrainConfusionAnswer(btnElement, clickedId) {
     if (isConfusionAnswering) return; 
     isConfusionAnswering = true;
@@ -2204,7 +2205,7 @@ function checkBrainConfusionAnswer(btnElement, clickedId) {
 
     if (clickedId === confusionTargetId) {
         try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "medium"}); } catch(e){}
-        playSound('audio/correct.wav'); // 🔥 И здесь тоже короткий дзинь! 🔥
+        playSound('audio/correct.wav'); // Тот самый дзинь!
         btnElement.style.border = '4px solid #4CAF50';
         btnElement.style.background = '#e8f5e9';
         document.getElementById('confusion-question-text').innerText = "Верно! ⚡";
@@ -2322,8 +2323,6 @@ function startRacingGame() {
 
 function toggleCarLane(side) {
     if (!isRacingActive) return;
-    
-    // 🔥 ЩЕЛЧКОВ БОЛЬШЕ НЕТ! АБСОЛЮТНАЯ ТИШИНА ПРИ ПЕРЕСТРОЕНИИ 🔥
     
     if (side === 'left') {
         carLanes.left = (carLanes.left === 0) ? 1 : 0;
@@ -2495,7 +2494,7 @@ function checkMultAnswer(btn, ans) {
         btn.style.background = '#4CAF50';
         btn.style.color = 'white';
         btn.style.borderColor = '#4CAF50';
-        playSound('audio/correct.wav'); // 🔥 Поменяли на короткий дзинь! 🔥
+        playSound('audio/correct.wav'); // Тот самый дзинь!
     } else {
         try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(e){}
         btn.style.background = '#F44336';
@@ -2511,7 +2510,7 @@ function checkMultAnswer(btn, ans) {
 }
 
 // ==========================================
-//        БРЕЙН-ФИТНЕС: ЗЕРКАЛЬНОЕ РИСОВАНИЕ (20 УРОВНЕЙ)
+//        БРЕЙН-ФИТНЕС: ЗЕРКАЛЬНОЕ РИСОВАНИЕ
 // ==========================================
 
 let mirrorCurrentLevel = 0;
@@ -2520,7 +2519,6 @@ let mirrorLeftCtx, mirrorRightCtx;
 let mirrorIsDrawingLeft = false;
 let mirrorIsDrawingRight = false;
 
-// 🔥 Математические генераторы непрерывных линий 🔥
 const genVLine = () => [[{x:0.5, y:0.1}, {x:0.5, y:0.9}]];
 const genHLine = () => [[{x:0.2, y:0.5}, {x:0.8, y:0.5}]];
 const genSlash = () => [[{x:0.2, y:0.8}, {x:0.8, y:0.2}]];
@@ -2569,7 +2567,6 @@ const genSpiral = () => {
     return [p];
 };
 
-// 20 хардкорных уровней без отрыва руки!
 const mirrorTemplates = [
     { title: "Ур. 1: Линии ➖ |", leftPaths: genVLine(), rightPaths: genHLine() },
     { title: "Ур. 2: Косые / \\", leftPaths: genSlash(), rightPaths: genBackslash() },
@@ -2649,7 +2646,6 @@ function drawTemplateGuide(ctx, paths, w, h) {
 }
 
 function setupMirrorTouchEvents() {
-    // ЛЕВАЯ РУКА
     mirrorLeftCanvas.addEventListener('pointerdown', (e) => {
         e.preventDefault();
         mirrorLeftCanvas.setPointerCapture(e.pointerId);
@@ -2663,7 +2659,7 @@ function setupMirrorTouchEvents() {
         if (!mirrorIsDrawingLeft) return;
         const rect = mirrorLeftCanvas.getBoundingClientRect();
         mirrorLeftCtx.lineTo(e.clientX - rect.left, e.clientY - rect.top);
-        mirrorLeftCtx.strokeStyle = '#2196F3'; // Синий
+        mirrorLeftCtx.strokeStyle = '#2196F3';
         mirrorLeftCtx.lineWidth = 5;
         mirrorLeftCtx.lineCap = 'round';
         mirrorLeftCtx.lineJoin = 'round';
@@ -2675,7 +2671,6 @@ function setupMirrorTouchEvents() {
         mirrorLeftCanvas.releasePointerCapture(e.pointerId);
     });
 
-    // ПРАВАЯ РУКА
     mirrorRightCanvas.addEventListener('pointerdown', (e) => {
         e.preventDefault();
         mirrorRightCanvas.setPointerCapture(e.pointerId);
@@ -2689,7 +2684,7 @@ function setupMirrorTouchEvents() {
         if (!mirrorIsDrawingRight) return;
         const rect = mirrorRightCanvas.getBoundingClientRect();
         mirrorRightCtx.lineTo(e.clientX - rect.left, e.clientY - rect.top);
-        mirrorRightCtx.strokeStyle = '#E91E63'; // Розовый
+        mirrorRightCtx.strokeStyle = '#E91E63'; 
         mirrorRightCtx.lineWidth = 5;
         mirrorRightCtx.lineCap = 'round';
         mirrorRightCtx.lineJoin = 'round';
@@ -2717,4 +2712,177 @@ function clearMirrorCanvas() {
     try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "medium"}); } catch(e){}
     try { new Audio('audio/click.wav').play(); } catch(e) {}
     initMirrorLevel(); 
+}
+
+// ==========================================
+//        БРЕЙН-ФИТНЕС: ПИНГВИН-СЛЕДОПЫТ
+// ==========================================
+
+let pathfinderTargetIndex = 12; // Индекс центральной льдинки в сетке 5x5 (от 0 до 24)
+let pathfinderCurrentSteps = 3; 
+let pathfinderGridCoords = []; 
+
+function openBrainPathfinder() {
+    try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(e){}
+    document.getElementById('screen-brain-fitness-menu').classList.remove('active');
+    document.getElementById('screen-brain-pathfinder').classList.add('active');
+    
+    pathfinderCurrentSteps = 3; 
+    document.getElementById('pathfinder-level-display').innerText = pathfinderCurrentSteps + ' шага';
+    
+    initPathfinderGrid();
+    document.getElementById('pathfinder-commands').innerHTML = 'Нажми "Начать"';
+    document.getElementById('btn-pathfinder-start').style.display = 'block';
+    movePenguinTo(12);
+}
+
+function goBackToBrainFitnessFromPathfinder() {
+    try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(e){}
+    document.getElementById('screen-brain-pathfinder').classList.remove('active');
+    document.getElementById('screen-brain-fitness-menu').classList.add('active');
+}
+
+function initPathfinderGrid() {
+    const grid = document.getElementById('pathfinder-grid');
+    const floes = grid.querySelectorAll('.ice-floe');
+    floes.forEach(f => f.remove());
+    
+    pathfinderGridCoords = [];
+
+    for (let i = 0; i < 25; i++) {
+        const floe = document.createElement('div');
+        floe.className = 'ice-floe';
+        floe.style.width = '60px';
+        floe.style.height = '60px';
+        floe.style.backgroundImage = "url('img/ice.png')";
+        floe.style.backgroundSize = "contain";
+        floe.style.backgroundPosition = "center";
+        floe.style.backgroundRepeat = "no-repeat";
+        floe.style.borderRadius = "10px";
+        floe.style.cursor = "pointer";
+        floe.style.display = "flex";
+        floe.style.alignItems = "center";
+        floe.style.justifyContent = "center";
+        floe.style.backgroundColor = "#b2ebf2"; 
+        
+        floe.onclick = () => checkPathfinderAnswer(i, floe);
+        grid.appendChild(floe);
+    }
+
+    for(let row=0; row<5; row++) {
+        for(let col=0; col<5; col++) {
+            pathfinderGridCoords.push({
+                x: col * 65 + 10, 
+                y: row * 65 + 10
+            });
+        }
+    }
+}
+
+function movePenguinTo(index) {
+    const penguin = document.getElementById('pathfinder-penguin');
+    if(pathfinderGridCoords[index]) {
+        penguin.style.left = pathfinderGridCoords[index].x + 'px';
+        penguin.style.top = pathfinderGridCoords[index].y + 'px';
+    }
+}
+
+function startPathfinderGame() {
+    try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(e){}
+    try { new Audio('audio/click.wav').play(); } catch(e) {}
+    
+    document.getElementById('btn-pathfinder-start').style.display = 'none';
+    document.getElementById('pathfinder-level-display').innerText = pathfinderCurrentSteps + ' ' + getWordForm(pathfinderCurrentSteps, 'шаг', 'шага', 'шагов');
+    
+    const floes = document.querySelectorAll('.ice-floe');
+    floes.forEach(f => {
+        f.style.border = 'none';
+        f.style.opacity = '1';
+    });
+
+    movePenguinTo(12); 
+    generatePathfinderRoute();
+}
+
+function generatePathfinderRoute() {
+    let currentPos = 12; 
+    let pathVisuals = [];
+    
+    for (let i = 0; i < pathfinderCurrentSteps; i++) {
+        let possibleMoves = [];
+        
+        let row = Math.floor(currentPos / 5);
+        let col = currentPos % 5;
+        
+        if (row > 0) possibleMoves.push({ arrow: '⬆️', move: -5 });
+        if (row < 4) possibleMoves.push({ arrow: '⬇️', move: 5 }); 
+        if (col > 0) possibleMoves.push({ arrow: '⬅️', move: -1 });
+        if (col < 4) possibleMoves.push({ arrow: '➡️', move: 1 });  
+        
+        let nextStep = possibleMoves[Math.floor(Math.random() * possibleMoves.length)];
+        pathVisuals.push(nextStep.arrow);
+        currentPos += nextStep.move;
+    }
+    
+    pathfinderTargetIndex = currentPos;
+    
+    const cmdBox = document.getElementById('pathfinder-commands');
+    cmdBox.innerHTML = '';
+    
+    let delay = 0;
+    pathVisuals.forEach(arrow => {
+        setTimeout(() => {
+            cmdBox.innerHTML += arrow + ' ';
+            try { new Audio('audio/click.wav').play(); } catch(e) {}
+        }, delay);
+        let speed = pathfinderCurrentSteps > 6 ? 400 : 600;
+        delay += speed; 
+    });
+}
+
+function checkPathfinderAnswer(clickedIndex, floeElement) {
+    if (document.getElementById('btn-pathfinder-start').style.display === 'block') return;
+
+    if (clickedIndex === pathfinderTargetIndex) {
+        try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "medium"}); } catch(e){}
+        playSound('audio/correct.wav');
+        
+        movePenguinTo(clickedIndex);
+        floeElement.style.border = '4px solid #4CAF50';
+        
+        if (pathfinderCurrentSteps < 15) pathfinderCurrentSteps++;
+        
+        setTimeout(() => {
+            startPathfinderGame();
+        }, 2000);
+        
+    } else {
+        try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "heavy"}); } catch(e){}
+        playSound('audio/splash.wav'); 
+        
+        floeElement.style.opacity = '0.3'; 
+        
+        const penguin = document.getElementById('pathfinder-penguin');
+        penguin.style.transform = 'scale(0) rotate(180deg)'; 
+        
+        const floes = document.querySelectorAll('.ice-floe');
+        floes[pathfinderTargetIndex].style.border = '4px solid #4CAF50';
+        
+        if (pathfinderCurrentSteps > 3) pathfinderCurrentSteps--;
+        
+        setTimeout(() => {
+            penguin.style.transform = 'scale(1) rotate(0deg)';
+            document.getElementById('btn-pathfinder-start').style.display = 'block';
+            document.getElementById('btn-pathfinder-start').innerText = 'Попробовать снова 🔄';
+        }, 1500);
+    }
+}
+
+function getWordForm(num, word1, word2, word5) {
+    let n = Math.abs(num) % 100;
+    let n1 = n % 10;
+    if (n > 10 && n < 20) return word5;
+    if (n1 > 1 && n1 < 5) return word2;
+    if (n1 === 1) return word1;
+    return word5;
 }
