@@ -2286,7 +2286,7 @@ function startRacingGame() {
     
     isRacingActive = true;
     racingScore = 0;
-    racingSpeed = 6; // Начальная скорость
+    racingSpeed = 6; 
     obstaclesArray = [];
     
     document.getElementById('racing-game-over').style.display = 'none';
@@ -2297,11 +2297,21 @@ function startRacingGame() {
     clearInterval(racingLoopInterval);
     clearInterval(racingSpawnInterval);
 
+    // 🔥 1. Включаем звук зажигания! 🔥
+    playSound('audio/ignition.wav');
+
+    // 2. Готовим фоновый мотор
     if (engineAudio) { engineAudio.pause(); }
     engineAudio = new Audio('audio/engine.wav');
     engineAudio.loop = true; 
     engineAudio.volume = 0.5; 
-    engineAudio.play().catch(e => console.log("Ошибка аудио:", e));
+
+    // 🔥 3. Запускаем фоновый мотор с задержкой в 1 секунду (пока крутит стартер) 🔥
+    setTimeout(() => {
+        if (isRacingActive) {
+            engineAudio.play().catch(e => console.log("Ошибка аудио:", e));
+        }
+    }, 1000); 
 
     racingLoopInterval = setInterval(updateRacingFrame, 20);
     racingSpawnInterval = setInterval(spawnObstacles, 1200);
