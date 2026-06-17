@@ -2236,7 +2236,7 @@ function checkBrainConfusionAnswer(btnElement, clickedId) {
 
 let racingLoopInterval = null;
 let racingSpawnInterval = null;
-let racingScore = 0; // Теперь это наши километры
+let racingScore = 0; 
 let racingSpeed = 5; 
 let obstaclesArray = [];
 let isRacingActive = false;
@@ -2286,7 +2286,7 @@ function startRacingGame() {
     
     isRacingActive = true;
     racingScore = 0;
-    racingSpeed = 6; // Начальная скорость
+    racingSpeed = 6; 
     obstaclesArray = [];
     
     document.getElementById('racing-game-over').style.display = 'none';
@@ -2297,24 +2297,19 @@ function startRacingGame() {
     clearInterval(racingLoopInterval);
     clearInterval(racingSpawnInterval);
 
-    // 1. Включаем звук зажигания!
     playSound('audio/ignition.wav');
 
-    // 2. Готовим фоновый мотор
     if (engineAudio) { engineAudio.pause(); }
     engineAudio = new Audio('audio/engine.wav');
     engineAudio.volume = 0.5; 
 
-    // 🔥 СЕКРЕТНЫЙ ХАК ДЛЯ БЕСШОВНОГО ЗВУКА 🔥
     engineAudio.addEventListener('timeupdate', function() {
-        // Как только до конца трека остается 0.2 секунды — мгновенно мотаем в начало!
         if (this.currentTime > this.duration - 0.2) {
             this.currentTime = 0;
             this.play();
         }
     });
 
-    // 3. Запускаем фоновый мотор с задержкой в 1 секунду
     setTimeout(() => {
         if (isRacingActive) {
             engineAudio.play().catch(e => console.log("Ошибка аудио:", e));
@@ -2328,8 +2323,7 @@ function startRacingGame() {
 function toggleCarLane(side) {
     if (!isRacingActive) return;
     
-    // Возвращаем аккуратный тихий клик вместо ужасных тормозов ))
-    try { new Audio('audio/click.wav').play(); } catch(e) {}
+    // 🔥 ЩЕЛЧКОВ БОЛЬШЕ НЕТ! АБСОЛЮТНАЯ ТИШИНА ПРИ ПЕРЕСТРОЕНИИ 🔥
     
     if (side === 'left') {
         carLanes.left = (carLanes.left === 0) ? 1 : 0;
@@ -2345,7 +2339,6 @@ function spawnObstacles() {
 
     let spawnLeft = Math.random() > 0.5 ? 0 : 1;
     let spawnRight = Math.random() > 0.5 ? 2 : 3;
-
     let spawnType = Math.floor(Math.random() * 3); 
     
     if (spawnType === 0 || spawnType === 2) createObstacleDom(spawnLeft);
@@ -2371,12 +2364,7 @@ function createObstacleDom(laneIndex) {
     
     container.appendChild(obs);
     
-    obstaclesArray.push({
-        el: obs,
-        lane: laneIndex,
-        y: -50,
-        type: obstacleType 
-    });
+    obstaclesArray.push({ el: obs, lane: laneIndex, y: -50, type: obstacleType });
 }
 
 function updateRacingFrame() {
@@ -2394,7 +2382,6 @@ function updateRacingFrame() {
         obs.y += racingSpeed;
         obs.el.style.top = obs.y + 'px';
 
-        // 1. Проверка столкновения
         if (obs.y + 40 > hitZoneTop && obs.y < hitZoneBottom) {
             if (obs.lane === carLanes.left || obs.lane === carLanes.right) {
                 crashGame(obs.type); 
@@ -2402,16 +2389,12 @@ function updateRacingFrame() {
             }
         }
 
-        // 2. Проверка проезда (уклонились)
         if (obs.y > screenHeight) {
             obs.el.remove();
             obstaclesArray.splice(i, 1);
-            
-            // 🔥 ДАЕМ СРАЗУ +5 КМ ЗА КАЖДОЕ ПРЕПЯТСТВИЕ! 🔥
             racingScore += 5; 
             document.getElementById('racing-score-display').innerText = racingScore + ' км';
             
-            // 🔥 УСКОРЯЕМ ИГРУ КАЖДЫЕ 50 КМ 🔥
             if (racingScore % 50 === 0 && racingSpeed < 18) {
                 racingSpeed += 1; 
             }
@@ -2425,11 +2408,9 @@ function crashGame(hitType) {
     clearInterval(racingSpawnInterval);
     
     if (engineAudio) { engineAudio.pause(); }
-    
     try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "heavy"}); } catch(e){}
     
     const gameOverTitle = document.getElementById('racing-game-over').querySelector('h2');
-    
     if (hitType === 'rock') {
         playSound('audio/crash_rock.wav'); 
         gameOverTitle.innerText = 'БАМ! 💥';
@@ -2451,7 +2432,86 @@ function crashGame(hitType) {
 }
 
 // ==========================================
-//        БРЕЙН-ФИТНЕС: ЗЕРКАЛЬНОЕ РИСОВАНИЕ
+//        ТРЕНАЖЕР УМНОЖЕНИЯ
+// ==========================================
+let multTestScore = 0;
+let multTestTotal = 0;
+let currentMultAnswer = 0;
+
+function openMultTest() {
+    try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(e){}
+    document.getElementById('screen-multiplication-menu').classList.remove('active');
+    document.getElementById('screen-mult-test').classList.add('active');
+    multTestScore = 0;
+    multTestTotal = 0;
+    document.getElementById('mult-test-score').innerText = '0 / 0';
+    nextMultTest();
+}
+
+function goBackToMultFromTest() {
+    try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(e){}
+    document.getElementById('screen-mult-test').classList.remove('active');
+    document.getElementById('screen-multiplication-menu').classList.add('active');
+}
+
+function nextMultTest() {
+    let a = Math.floor(Math.random() * 8) + 2; 
+    let b = Math.floor(Math.random() * 8) + 2; 
+    currentMultAnswer = a * b;
+
+    document.getElementById('mult-test-question').innerText = `${a} × ${b} = ?`;
+
+    let answers = [currentMultAnswer];
+    while(answers.length < 4) {
+        let offset = Math.floor(Math.random() * 5) - 2; 
+        let wrong = (a + offset) * b;
+        if(wrong !== currentMultAnswer && !answers.includes(wrong) && wrong > 0) {
+            answers.push(wrong);
+        }
+    }
+    while(answers.length < 4) {
+        let r = Math.floor(Math.random() * 80) + 4;
+        if(!answers.includes(r)) answers.push(r);
+    }
+
+    answers = shuffleArray(answers);
+    const container = document.getElementById('mult-test-options');
+    container.innerHTML = '';
+    
+    answers.forEach(ans => {
+        let btn = document.createElement('button');
+        btn.innerText = ans;
+        btn.style.cssText = "width: 100%; height: 80px; font-size: 32px; font-weight: bold; border-radius: 15px; border: 2px solid #ccc; background: #fff; cursor: pointer; transition: 0.2s;";
+        btn.onclick = () => checkMultAnswer(btn, ans);
+        container.appendChild(btn);
+    });
+}
+
+function checkMultAnswer(btn, ans) {
+    multTestTotal++;
+    if(ans === currentMultAnswer) {
+        try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "medium"}); } catch(e){}
+        multTestScore++;
+        btn.style.background = '#4CAF50';
+        btn.style.color = 'white';
+        btn.style.borderColor = '#4CAF50';
+        playSound('audio/words_win.wav');
+    } else {
+        try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(e){}
+        btn.style.background = '#F44336';
+        btn.style.color = 'white';
+        btn.style.borderColor = '#F44336';
+        playSound('audio/wrong.wav');
+    }
+    
+    document.getElementById('mult-test-score').innerText = `${multTestScore} / ${multTestTotal}`;
+    Array.from(document.getElementById('mult-test-options').children).forEach(b => b.disabled = true);
+
+    setTimeout(nextMultTest, 1200);
+}
+
+// ==========================================
+//        БРЕЙН-ФИТНЕС: ЗЕРКАЛЬНОЕ РИСОВАНИЕ (20 УРОВНЕЙ)
 // ==========================================
 
 let mirrorCurrentLevel = 0;
@@ -2460,53 +2520,77 @@ let mirrorLeftCtx, mirrorRightCtx;
 let mirrorIsDrawingLeft = false;
 let mirrorIsDrawingRight = false;
 
-// База данных контуров (левая и правая руки РАЗНЫЕ)
-const mirrorTemplates = [
-    {
-        title: "Уровень 1: Линии ➖ |",
-        leftPaths: [ [{x:0.5, y:0.2}, {x:0.5, y:0.8}] ], // Вертикальная
-        rightPaths: [ [{x:0.2, y:0.5}, {x:0.8, y:0.5}] ] // Горизонтальная
-    },
-    {
-        title: "Уровень 2: Круг и Квадрат 🔴 ⏹",
-        leftPaths: [
-            // Рисуем круг с помощью математики (многоугольник из 16 точек)
-            [...Array(17)].map((_, i) => ({
-                x: 0.5 + 0.35 * Math.cos(i * 2 * Math.PI / 16),
-                y: 0.5 + 0.35 * Math.sin(i * 2 * Math.PI / 16)
-            }))
-        ],
-        rightPaths: [
-            // Квадрат
-            [{x:0.15, y:0.15}, {x:0.85, y:0.15}, {x:0.85, y:0.85}, {x:0.15, y:0.85}, {x:0.15, y:0.15}]
-        ]
-    },
-    {
-        title: "Уровень 3: Треугольник и Круг 🔺 🔴",
-        leftPaths: [
-            // Треугольник
-            [{x:0.5, y:0.15}, {x:0.85, y:0.85}, {x:0.15, y:0.85}, {x:0.5, y:0.15}]
-        ],
-        rightPaths: [
-            // Круг
-            [...Array(17)].map((_, i) => ({
-                x: 0.5 + 0.35 * Math.cos(i * 2 * Math.PI / 16),
-                y: 0.5 + 0.35 * Math.sin(i * 2 * Math.PI / 16)
-            }))
-        ]
-    },
-    {
-        title: "Уровень 4: Плюс и Зигзаг ➕ ⚡",
-        leftPaths: [
-            // Плюс
-            [{x:0.5, y:0.2}, {x:0.5, y:0.8}],
-            [{x:0.2, y:0.5}, {x:0.8, y:0.5}]
-        ],
-        rightPaths: [
-            // Зигзаг
-            [{x:0.2, y:0.15}, {x:0.8, y:0.3}, {x:0.2, y:0.5}, {x:0.8, y:0.7}, {x:0.2, y:0.85}]
-        ]
+// 🔥 Математические генераторы непрерывных линий 🔥
+const genVLine = () => [[{x:0.5, y:0.1}, {x:0.5, y:0.9}]];
+const genHLine = () => [[{x:0.2, y:0.5}, {x:0.8, y:0.5}]];
+const genSlash = () => [[{x:0.2, y:0.8}, {x:0.8, y:0.2}]];
+const genBackslash = () => [[{x:0.2, y:0.2}, {x:0.8, y:0.8}]];
+const genSquare = () => [[{x:0.2,y:0.2}, {x:0.8,y:0.2}, {x:0.8,y:0.8}, {x:0.2,y:0.8}, {x:0.2,y:0.2}]];
+const genTriangle = () => [[{x:0.5,y:0.2}, {x:0.8,y:0.8}, {x:0.2,y:0.8}, {x:0.5,y:0.2}]];
+const genRhombus = () => [[{x:0.5,y:0.1}, {x:0.9,y:0.5}, {x:0.5,y:0.9}, {x:0.1,y:0.5}, {x:0.5,y:0.1}]];
+const genZ = () => [[{x:0.2,y:0.2}, {x:0.8,y:0.2}, {x:0.2,y:0.8}, {x:0.8,y:0.8}]];
+const genM = () => [[{x:0.2,y:0.8}, {x:0.2,y:0.2}, {x:0.5,y:0.5}, {x:0.8,y:0.2}, {x:0.8,y:0.8}]];
+const genZigzag = () => [[{x:0.2,y:0.1}, {x:0.8,y:0.3}, {x:0.2,y:0.5}, {x:0.8,y:0.7}, {x:0.2,y:0.9}]];
+
+const genCircle = () => { 
+    let p=[]; 
+    for(let i=0; i<=20; i++) p.push({x: 0.5+0.35*Math.cos(i*Math.PI*2/20), y: 0.5+0.35*Math.sin(i*Math.PI*2/20)}); 
+    return [p]; 
+};
+const genVWave = () => { 
+    let p=[]; 
+    for(let i=0; i<=30; i++) p.push({x: 0.5 + 0.3*Math.sin(i*Math.PI*2/10), y: 0.1 + 0.8*(i/30)}); 
+    return [p]; 
+};
+const genStar = () => {
+    let p=[];
+    for(let i=0; i<=5; i++){
+        let a = i * 4 * Math.PI / 5 - Math.PI/2;
+        p.push({x: 0.5 + 0.4*Math.cos(a), y: 0.5 + 0.4*Math.sin(a)});
     }
+    return [p];
+};
+const genInfinity = () => {
+    let p=[];
+    for(let i=0; i<=40; i++){
+        let t = i * 2 * Math.PI / 40;
+        let scale = 2 / (3 - Math.cos(2*t));
+        p.push({x: 0.5 + 0.3 * scale * Math.sin(2*t), y: 0.5 + 0.4 * scale * Math.cos(t)});
+    }
+    return [p];
+};
+const genSpiral = () => {
+    let p=[];
+    for(let i=0; i<=40; i++){
+        let t = i * 4 * Math.PI / 40; 
+        let r = 0.05 + 0.35 * (i/40);
+        p.push({x: 0.5 + r*Math.cos(t), y: 0.5 + r*Math.sin(t)});
+    }
+    return [p];
+};
+
+// 20 хардкорных уровней без отрыва руки!
+const mirrorTemplates = [
+    { title: "Ур. 1: Линии ➖ |", leftPaths: genVLine(), rightPaths: genHLine() },
+    { title: "Ур. 2: Косые / \\", leftPaths: genSlash(), rightPaths: genBackslash() },
+    { title: "Ур. 3: Углы Z и M", leftPaths: genZ(), rightPaths: genM() },
+    { title: "Ур. 4: Квадрат и Треугольник", leftPaths: genSquare(), rightPaths: genTriangle() },
+    { title: "Ур. 5: Круг и Ромб", leftPaths: genCircle(), rightPaths: genRhombus() },
+    { title: "Ур. 6: Зигзаг и Волна", leftPaths: genZigzag(), rightPaths: genVWave() },
+    { title: "Ур. 7: Спираль и Восьмёрка", leftPaths: genSpiral(), rightPaths: genInfinity() },
+    { title: "Ур. 8: Звезда и Круг", leftPaths: genStar(), rightPaths: genCircle() },
+    { title: "Ур. 9: Квадрат и Зигзаг", leftPaths: genSquare(), rightPaths: genZigzag() },
+    { title: "Ур. 10: Треугольник и Волна", leftPaths: genTriangle(), rightPaths: genVWave() },
+    { title: "Ур. 11: Ромб и Спираль", leftPaths: genRhombus(), rightPaths: genSpiral() },
+    { title: "Ур. 12: Восьмёрка и Звезда", leftPaths: genInfinity(), rightPaths: genStar() },
+    { title: "Ур. 13: Круг и Квадрат", leftPaths: genCircle(), rightPaths: genSquare() },
+    { title: "Ур. 14: Волна и Зигзаг", leftPaths: genVWave(), rightPaths: genZigzag() },
+    { title: "Ур. 15: Спираль и Треугольник", leftPaths: genSpiral(), rightPaths: genTriangle() },
+    { title: "Ур. 16: Звезда и Ромб", leftPaths: genStar(), rightPaths: genRhombus() },
+    { title: "Ур. 17: Зигзаг и Восьмёрка", leftPaths: genZigzag(), rightPaths: genInfinity() },
+    { title: "Ур. 18: Волна и Круг", leftPaths: genVWave(), rightPaths: genCircle() },
+    { title: "Ур. 19: Квадрат и Спираль", leftPaths: genSquare(), rightPaths: genSpiral() },
+    { title: "Ур. 20: Босс! Звезда и Восьмёрка", leftPaths: genStar(), rightPaths: genInfinity() }
 ];
 
 function openBrainMirrorDraw() {
@@ -2514,13 +2598,11 @@ function openBrainMirrorDraw() {
     document.getElementById('screen-brain-fitness-menu').classList.remove('active');
     document.getElementById('screen-brain-mirror-draw').classList.add('active');
     
-    // Инициализация холстов
     if (!mirrorLeftCanvas) {
         mirrorLeftCanvas = document.getElementById('mirror-canvas-left');
         mirrorRightCanvas = document.getElementById('mirror-canvas-right');
         mirrorLeftCtx = mirrorLeftCanvas.getContext('2d');
         mirrorRightCtx = mirrorRightCanvas.getContext('2d');
-        
         setupMirrorTouchEvents();
     }
     
@@ -2538,11 +2620,9 @@ function initMirrorLevel() {
     const template = mirrorTemplates[mirrorCurrentLevel];
     document.getElementById('mirror-level-title').innerText = template.title;
     
-    // Полностью очищаем холсты
     mirrorLeftCtx.clearRect(0, 0, mirrorLeftCanvas.width, mirrorLeftCanvas.height);
     mirrorRightCtx.clearRect(0, 0, mirrorRightCanvas.width, mirrorRightCanvas.height);
     
-    // Рисуем РАЗНЫЕ контуры для левой и правой руки
     drawTemplateGuide(mirrorLeftCtx, template.leftPaths, mirrorLeftCanvas.width, mirrorLeftCanvas.height);
     drawTemplateGuide(mirrorRightCtx, template.rightPaths, mirrorRightCanvas.width, mirrorRightCanvas.height);
 }
@@ -2558,10 +2638,8 @@ function drawTemplateGuide(ctx, paths, w, h) {
     paths.forEach(path => {
         ctx.beginPath();
         path.forEach((pt, idx) => {
-            // Теперь просто умножаем проценты на размер холста
             let realX = pt.x * w;
             let realY = pt.y * h;
-            
             if (idx === 0) ctx.moveTo(realX, realY);
             else ctx.lineTo(realX, realY);
         });
@@ -2571,7 +2649,7 @@ function drawTemplateGuide(ctx, paths, w, h) {
 }
 
 function setupMirrorTouchEvents() {
-    // Настройка независимого рисования для ЛЕВОЙ руки
+    // ЛЕВАЯ РУКА
     mirrorLeftCanvas.addEventListener('pointerdown', (e) => {
         e.preventDefault();
         mirrorLeftCanvas.setPointerCapture(e.pointerId);
@@ -2597,7 +2675,7 @@ function setupMirrorTouchEvents() {
         mirrorLeftCanvas.releasePointerCapture(e.pointerId);
     });
 
-    // Настройка независимого рисования для ПРАВОЙ руки
+    // ПРАВАЯ РУКА
     mirrorRightCanvas.addEventListener('pointerdown', (e) => {
         e.preventDefault();
         mirrorRightCanvas.setPointerCapture(e.pointerId);
