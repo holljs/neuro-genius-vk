@@ -2204,7 +2204,7 @@ function checkBrainConfusionAnswer(btnElement, clickedId) {
 
     if (clickedId === confusionTargetId) {
         try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "medium"}); } catch(e){}
-        playSound('audio/words_win.wav');
+        playSound('audio/correct.wav'); // 🔥 И здесь тоже короткий дзинь! 🔥
         btnElement.style.border = '4px solid #4CAF50';
         btnElement.style.background = '#e8f5e9';
         document.getElementById('confusion-question-text').innerText = "Верно! ⚡";
@@ -2495,7 +2495,7 @@ function checkMultAnswer(btn, ans) {
         btn.style.background = '#4CAF50';
         btn.style.color = 'white';
         btn.style.borderColor = '#4CAF50';
-        playSound('audio/words_win.wav');
+        playSound('audio/correct.wav'); // 🔥 Поменяли на короткий дзинь! 🔥
     } else {
         try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(e){}
         btn.style.background = '#F44336';
