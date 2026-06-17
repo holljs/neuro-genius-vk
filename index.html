@@ -711,34 +711,26 @@
             </div>
         </div>
 
-        <!-- Игровая зона гонок -->
         <div id="racing-game-area" style="position: relative; width: 100%; height: 100vh; overflow: hidden; touch-action: none; background: #555;">
             
-            <!-- Центральная разделительная полоса -->
             <div style="position: absolute; left: 50%; top: 0; bottom: 0; width: 4px; background: #fff; transform: translateX(-50%); z-index: 1; box-shadow: 0 0 10px rgba(255,255,255,0.5);"></div>
 
-            <!-- Левая и Правая зоны для нажатий пальцами -->
             <div id="racing-left-zone" style="position: absolute; left: 0; top: 0; width: 50%; height: 100%; z-index: 10;" onpointerdown="toggleCarLane('left')"></div>
             <div id="racing-right-zone" style="position: absolute; left: 50%; top: 0; width: 50%; height: 100%; z-index: 10;" onpointerdown="toggleCarLane('right')"></div>
 
-            <!-- Счет игры -->
-            <div id="racing-score-display" style="position: absolute; top: 90px; left: 50%; transform: translateX(-50%); z-index: 15; font-size: 36px; font-weight: 900; color: #fff; text-shadow: 0 4px 10px rgba(0,0,0,0.5);">0</div>
+            <div id="racing-score-display" style="position: absolute; top: 90px; left: 50%; transform: translateX(-50%); z-index: 15; font-size: 36px; font-weight: 900; color: #fff; text-shadow: 0 4px 10px rgba(0,0,0,0.5);">0 км</div>
 
-            <!-- Подсказка -->
             <div id="racing-hint" style="position: absolute; top: 150px; width: 100%; text-align: center; z-index: 15; font-size: 18px; color: rgba(255,255,255,0.8); font-weight: bold; pointer-events: none;">Нажимай по бокам, чтобы рулить! 👇</div>
 
-            <!-- Машинки -->
             <img id="car-left" src="img/car_blue.png" onerror="this.src='img/bs_car_big.png'" style="position: absolute; width: 50px; height: 90px; bottom: 10vh; left: 12.5%; transform: translateX(-50%); z-index: 5; transition: left 0.15s cubic-bezier(0.175, 0.885, 0.32, 1.275);">
             <img id="car-right" src="img/car_red.png" onerror="this.src='img/bs_car_big.png'" style="position: absolute; width: 50px; height: 90px; bottom: 10vh; left: 62.5%; transform: translateX(-50%); z-index: 5; transition: left 0.15s cubic-bezier(0.175, 0.885, 0.32, 1.275);">
 
-            <!-- Контейнер для препятствий -->
             <div id="racing-obstacles" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 4; pointer-events: none;"></div>
         </div>
 
-        <!-- Экран Аварии -->
         <div id="racing-game-over" style="display: none; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 30px; border-radius: 20px; text-align: center; z-index: 20; box-shadow: 0 10px 30px rgba(0,0,0,0.5); width: 80%; max-width: 300px;">
             <h2 style="color: #F44336; margin-top: 0; font-size: 28px;">БАМ! 💥</h2>
-            <p style="font-size: 18px; color: #555;">Твой счёт: <br><span id="racing-final-score" style="font-size: 42px; font-weight: 900; color: #333;">0</span></p>
+            <p style="font-size: 18px; color: #555;">Ты проехал: <br><span id="racing-final-score" style="font-size: 42px; font-weight: 900; color: #333;">0 км</span></p>
             <button onclick="startRacingGame()" style="margin-top: 15px; width: 100%; padding: 15px; font-size: 20px; border-radius: 25px; border: none; background: linear-gradient(135deg, #4CAF50 0%, #2E7D32 100%); color: white; font-weight: bold; cursor: pointer; box-shadow: 0 4px 15px rgba(76, 175, 80, 0.4);">Ещё раз! 🔄</button>
         </div>
     </div>
