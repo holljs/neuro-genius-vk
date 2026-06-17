@@ -232,6 +232,34 @@
                 <div class="category-title sub-title">Магия на 5</div>
                 <div class="category-subtitle">Секрет с половинкой</div>
             </div>
+
+            <div class="category-card sub-card" onclick="openMultTest()" style="background: #e8f5e9; border-color: #c8e6c9;">
+                <div style="margin: 0 auto 10px auto; width: 60px; height: 60px;">
+                    <img src="img/icon_soroban_play.png" alt="" style="width: 100%; height: 100%; object-fit: contain;">
+                </div>
+                <div class="category-title sub-title">Проверка знаний</div>
+                <div class="category-subtitle">Решай примеры</div>
+            </div>
+        </div>
+    </div>
+
+    <div id="screen-mult-test" class="screen" style="overflow-y: auto;">
+        <div class="header" style="position: sticky; top: 0; z-index: 10;">
+            <div class="header-title-row"><span id="room-title">Тренажёр умножения</span></div>
+            <div class="header-top">
+                <div class="back-btn" onclick="goBackToMultFromTest()">⬅ Назад</div>
+            </div>
+        </div>
+        
+        <div style="padding: 20px; text-align: center;">
+            <div style="font-size: 20px; font-weight: bold; color: #555; margin-bottom: 10px;">Твой счёт: <span id="mult-test-score" style="color: #4CAF50; font-size: 24px;">0 / 0</span></div>
+            
+            <div id="mult-test-question" style="font-size: 60px; font-weight: 900; margin: 30px 0; color: #333; text-shadow: 2px 2px 5px rgba(0,0,0,0.1);">
+                7 × 8 = ?
+            </div>
+
+            <div id="mult-test-options" style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; max-width: 300px; margin: 0 auto;">
+                </div>
         </div>
     </div>
 
