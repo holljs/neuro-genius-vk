@@ -2334,8 +2334,10 @@ function createObstacleDom(laneIndex) {
     const container = document.getElementById('racing-obstacles');
     const obs = document.createElement('img');
     
-    // Если картинки камня пока нет, используем наш орех из базы
-    obs.src = 'img/rock.png';
+    // 🔥 МАГИЯ ЗДЕСЬ: Игра бросает монетку и выбирает камень или лужу!
+    const randomObstacle = Math.random() > 0.5 ? 'img/rock.png' : 'img/puddle.png';
+    obs.src = randomObstacle;
+    
     obs.onerror = function() { this.src = 'img/garden_item_5.png'; }; 
 
     obs.style.position = 'absolute';
