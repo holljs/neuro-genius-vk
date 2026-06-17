@@ -2286,7 +2286,7 @@ function startRacingGame() {
     
     isRacingActive = true;
     racingScore = 0;
-    racingSpeed = 6; 
+    racingSpeed = 6; // Начальная скорость
     obstaclesArray = [];
     
     document.getElementById('racing-game-over').style.display = 'none';
@@ -2297,16 +2297,24 @@ function startRacingGame() {
     clearInterval(racingLoopInterval);
     clearInterval(racingSpawnInterval);
 
-    // 🔥 1. Включаем звук зажигания! 🔥
+    // 1. Включаем звук зажигания!
     playSound('audio/ignition.wav');
 
     // 2. Готовим фоновый мотор
     if (engineAudio) { engineAudio.pause(); }
     engineAudio = new Audio('audio/engine.wav');
-    engineAudio.loop = true; 
     engineAudio.volume = 0.5; 
 
-    // 🔥 3. Запускаем фоновый мотор с задержкой в 1 секунду (пока крутит стартер) 🔥
+    // 🔥 СЕКРЕТНЫЙ ХАК ДЛЯ БЕСШОВНОГО ЗВУКА 🔥
+    engineAudio.addEventListener('timeupdate', function() {
+        // Как только до конца трека остается 0.2 секунды — мгновенно мотаем в начало!
+        if (this.currentTime > this.duration - 0.2) {
+            this.currentTime = 0;
+            this.play();
+        }
+    });
+
+    // 3. Запускаем фоновый мотор с задержкой в 1 секунду
     setTimeout(() => {
         if (isRacingActive) {
             engineAudio.play().catch(e => console.log("Ошибка аудио:", e));
@@ -2320,13 +2328,8 @@ function startRacingGame() {
 function toggleCarLane(side) {
     if (!isRacingActive) return;
     
-    // 🔥 МАГИЯ: Визг тормозов вместо щелчков! 🔥
-    // Создаем отдельный звук для дрифта, чтобы он мог звучать одновременно с другими
-    try { 
-        let skidSound = new Audio('audio/skid.wav');
-        skidSound.volume = 0.6; // Чуть тише, чтобы не оглушить
-        skidSound.play(); 
-    } catch(e) {}
+    // Возвращаем аккуратный тихий клик вместо ужасных тормозов ))
+    try { new Audio('audio/click.wav').play(); } catch(e) {}
     
     if (side === 'left') {
         carLanes.left = (carLanes.left === 0) ? 1 : 0;
