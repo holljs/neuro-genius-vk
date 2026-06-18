@@ -2715,12 +2715,20 @@ function clearMirrorCanvas() {
 }
 
 // ==========================================
-//        БРЕЙН-ФИТНЕС: ПИНГВИН-СЛЕДОПЫТ
+//        БРЕЙН-ФИТНЕС: ПИНГВИН-СЛЕДОПЫТ (ВЕРСИЯ С 1 КАРТИНКОЙ)
 // ==========================================
 
-let pathfinderTargetIndex = 12; // Индекс центральной льдинки в сетке 5x5 (от 0 до 24)
+let pathfinderTargetIndex = 12; // Индекс центра в сетке 5x5
 let pathfinderCurrentSteps = 3; 
 let pathfinderGridCoords = []; 
+
+// 🔥 Маппинг ходов на ГРАДУСЫ ПОВОРОТА (картинка arrow_game.png изначально смотрит ВВЕРХ) 🔥
+const pathfinderArrowRotations = {
+    '-5': '0deg',    // Вверх (не вертим)
+    '5': '180deg',  // Вниз
+    '-1': '-90deg',  // Влево
+    '1': '90deg'     // Вправо
+};
 
 function openBrainPathfinder() {
     try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(e){}
@@ -2730,14 +2738,24 @@ function openBrainPathfinder() {
     pathfinderCurrentSteps = 3; 
     document.getElementById('pathfinder-level-display').innerText = pathfinderCurrentSteps + ' шага';
     
+    // Включаем озвучку инструкции
+    const instructionAudio = document.getElementById('pathfinder-instruction-audio');
+    if(instructionAudio) {
+        instructionAudio.currentTime = 0;
+        instructionAudio.play().catch(e => console.log("Автоплей озвучки заблокирован:", e));
+    }
+
     initPathfinderGrid();
-    document.getElementById('pathfinder-commands').innerHTML = 'Нажми "Начать"';
+    document.getElementById('pathfinder-commands').innerHTML = '<span style="color:#aaa; font-size:18px;">Жми "Начать"</span>';
     document.getElementById('btn-pathfinder-start').style.display = 'block';
     movePenguinTo(12);
 }
 
 function goBackToBrainFitnessFromPathfinder() {
     try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(e){}
+    const instructionAudio = document.getElementById('pathfinder-instruction-audio');
+    if(instructionAudio) instructionAudio.pause();
+    
     document.getElementById('screen-brain-pathfinder').classList.remove('active');
     document.getElementById('screen-brain-fitness-menu').classList.add('active');
 }
@@ -2760,9 +2778,6 @@ function initPathfinderGrid() {
         floe.style.backgroundRepeat = "no-repeat";
         floe.style.borderRadius = "10px";
         floe.style.cursor = "pointer";
-        floe.style.display = "flex";
-        floe.style.alignItems = "center";
-        floe.style.justifyContent = "center";
         floe.style.backgroundColor = "#b2ebf2"; 
         
         floe.onclick = () => checkPathfinderAnswer(i, floe);
@@ -2791,6 +2806,9 @@ function startPathfinderGame() {
     try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(e){}
     try { new Audio('audio/click.wav').play(); } catch(e) {}
     
+    const instructionAudio = document.getElementById('pathfinder-instruction-audio');
+    if(instructionAudio) instructionAudio.pause();
+    
     document.getElementById('btn-pathfinder-start').style.display = 'none';
     document.getElementById('pathfinder-level-display').innerText = pathfinderCurrentSteps + ' ' + getWordForm(pathfinderCurrentSteps, 'шаг', 'шага', 'шагов');
     
@@ -2810,17 +2828,16 @@ function generatePathfinderRoute() {
     
     for (let i = 0; i < pathfinderCurrentSteps; i++) {
         let possibleMoves = [];
-        
         let row = Math.floor(currentPos / 5);
         let col = currentPos % 5;
         
-        if (row > 0) possibleMoves.push({ arrow: '⬆️', move: -5 });
-        if (row < 4) possibleMoves.push({ arrow: '⬇️', move: 5 }); 
-        if (col > 0) possibleMoves.push({ arrow: '⬅️', move: -1 });
-        if (col < 4) possibleMoves.push({ arrow: '➡️', move: 1 });  
+        if (row > 0) possibleMoves.push({ move: -5 }); // Вверх
+        if (row < 4) possibleMoves.push({ move: 5 });  // Вниз
+        if (col > 0) possibleMoves.push({ move: -1 }); // Влево
+        if (col < 4) possibleMoves.push({ move: 1 });  // Вправо
         
         let nextStep = possibleMoves[Math.floor(Math.random() * possibleMoves.length)];
-        pathVisuals.push(nextStep.arrow);
+        pathVisuals.push(nextStep.move);
         currentPos += nextStep.move;
     }
     
@@ -2830,9 +2847,12 @@ function generatePathfinderRoute() {
     cmdBox.innerHTML = '';
     
     let delay = 0;
-    pathVisuals.forEach(arrow => {
+    pathVisuals.forEach(moveValue => {
         setTimeout(() => {
-            cmdBox.innerHTML += arrow + ' ';
+            // 🔥 БЕРЕМ ОДНУ КАРТИНКУ И ВЕРТИМ ЕЁ ЧЕРЕЗ STYLE="TRANSFORM" 🔥
+            const rotation = pathfinderArrowRotations[moveValue];
+            const imgHtml = `<img src="img/arrow_game.png" alt="arrow" style="width:40px; height:40px; object-fit:contain; transform: rotate(${rotation});">`;
+            cmdBox.innerHTML += imgHtml;
             try { new Audio('audio/click.wav').play(); } catch(e) {}
         }, delay);
         let speed = pathfinderCurrentSteps > 6 ? 400 : 600;
