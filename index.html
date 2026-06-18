@@ -737,6 +737,14 @@
                 <div class="category-title sub-title">Следопыт</div>
                 <div class="category-subtitle">Мысленный маршрут</div>
             </div>
+
+            <div class="category-card sub-card" onclick="openBrainGestures()">
+                <div style="margin: 0 auto 10px auto; width: 60px; height: 60px;">
+                    <img src="img/icon_gestures.png" onerror="this.src='img/icon_brain.png'" alt="" style="width: 100%; height: 100%; object-fit: contain;">
+                </div>
+                <div class="category-title sub-title">Нейро-жесты</div>
+                <div class="category-subtitle">Повторяй движения</div>
+            </div> 
         </div>
     </div>
 
@@ -869,6 +877,55 @@
             </div>
 
             <button id="btn-pathfinder-start" onclick="startPathfinderGame()" style="margin-top: 15px; width: 100%; max-width: 250px; padding: 15px; font-size: 18px; border-radius: 25px; border: none; background: linear-gradient(135deg, #00BCD4 0%, #00acc1 100%); color: white; font-weight: bold; cursor: pointer; box-shadow: 0 4px 15px rgba(0, 188, 212, 0.4);">Начать! ▶️</button>
+        </div>
+    </div>
+
+    <div id="screen-brain-gestures" class="screen" style="background: #f5f5f5; overflow-y: auto;">
+        <div class="header" style="position: sticky; top: 0; z-index: 10; background: rgba(255,255,255,0.95);">
+            <div class="header-title-row"><span>Нейро-жесты</span></div>
+            <div class="header-top">
+                <div class="back-btn" onclick="goBackToBrainFitnessFromGestures()">⬅ Назад</div>
+            </div>
+        </div>
+
+        <div style="padding: 10px; text-align: center;">
+            <div style="background: #fff; border: 2px solid #b0bec5; border-radius: 15px; padding: 15px; margin-bottom: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.05);">
+                <div style="font-size: 18px; color: #222; font-weight: 900; margin-bottom: 6px;">Повторяй жесты двумя руками! 👐</div>
+                <div style="font-size: 14px; color: #555;">Успевай менять знаки на руках до того, как сгорит таймер!</div>
+            </div>
+
+            <div style="width: 100%; max-width: 300px; height: 12px; background: #e0e0e0; border-radius: 10px; margin: 0 auto 15px auto; overflow: hidden; box-shadow: inset 0 2px 5px rgba(0,0,0,0.05);">
+                <div id="gestures-timer-bar" style="width: 100%; height: 100%; background: #4CAF50; transition: width 0.05s linear;"></div>
+            </div>
+
+            <div style="display: flex; justify-content: center; gap: 15px; margin: 0 auto 20px auto; max-width: 360px;">
+                <div id="gesture-card-left" style="flex: 1; background: white; border: 4px solid #2196F3; border-radius: 20px; padding: 15px; box-shadow: 0 6px 15px rgba(0,0,0,0.05); transition: transform 0.1s ease;">
+                    <div style="font-size: 14px; font-weight: bold; color: #2196F3; margin-bottom: 8px;">ЛЕВАЯ РУКА</div>
+                    <div style="width: 100%; height: 110px; display: flex; align-items: center; justify-content: center;">
+                        <img id="gesture-img-left" src="img/g_fist.png" style="max-width: 100%; max-height: 100%; object-fit: contain; transform: scaleX(-1);">
+                    </div>
+                    <div id="gesture-name-left" style="font-size: 18px; font-weight: 900; color: #333; margin-top: 8px;">Кулак</div>
+                </div>
+
+                <div id="gesture-card-right" style="flex: 1; background: white; border: 4px solid #E91E63; border-radius: 20px; padding: 15px; box-shadow: 0 6px 15px rgba(0,0,0,0.05); transition: transform 0.1s ease;">
+                    <div style="font-size: 14px; font-weight: bold; color: #E91E63; margin-bottom: 8px;">ПРАВАЯ РУКА</div>
+                    <div style="width: 100%; height: 110px; display: flex; align-items: center; justify-content: center;">
+                        <img id="gesture-img-right" src="img/g_palm.png" style="max-width: 100%; max-height: 100%; object-fit: contain;">
+                    </div>
+                    <div id="gesture-name-right" style="font-size: 18px; font-weight: 900; color: #333; margin-top: 8px;">Ладонь</div>
+                </div>
+            </div>
+
+            <div style="margin-bottom: 20px; display: flex; justify-content: center; align-items: center; gap: 15px; background: white; padding: 10px 20px; border-radius: 15px; inline-block; box-shadow: 0 4px 10px rgba(0,0,0,0.02); max-width: 280px; margin-left: auto; margin-right: auto;">
+                <button onclick="changeGesturesSpeed(-1)" style="padding: 8px 15px; font-size: 18px; font-weight: bold; border-radius: 10px; border: 1px solid #ccc; background: white; cursor: pointer;">◀</button>
+                <div style="flex: 1;">
+                    <div style="font-size: 12px; color: #777; font-weight: bold;">СКОРОСТЬ</div>
+                    <span id="gestures-speed-title" style="font-size: 16px; font-weight: bold; color: #333;">Обычная</span>
+                </div>
+                <button onclick="changeGesturesSpeed(1)" style="padding: 8px 15px; font-size: 18px; font-weight: bold; border-radius: 10px; border: 1px solid #ccc; background: white; cursor: pointer;">▶</button>
+            </div>
+
+            <button id="btn-gestures-start" onclick="startGesturesGame()" style="width: 100%; max-width: 250px; padding: 15px; font-size: 20px; border-radius: 25px; border: none; background: linear-gradient(135deg, #4CAF50 0%, #2E7D32 100%); color: white; font-weight: bold; cursor: pointer; box-shadow: 0 4px 15px rgba(76, 175, 80, 0.4);">Старт! ▶️</button>
         </div>
     </div>
 
