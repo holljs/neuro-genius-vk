@@ -843,12 +843,19 @@
         </div>
 
         <div style="padding: 10px; text-align: center;">
-            <div style="background: #fff; border: 2px solid #4dd0e1; border-radius: 15px; padding: 10px; margin-bottom: 15px; font-size: 15px; color: #00838f; font-weight: bold; box-shadow: 0 4px 10px rgba(0,0,0,0.05);">
-                Пингвин стоит в центре. Пройди мысленно по стрелочкам и нажми на нужную льдинку! 🐧❄️
+            <div style="background: #fff; border: 2px solid #4dd0e1; border-radius: 15px; padding: 15px; margin-bottom: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.05);">
+                <div style="font-size: 16px; color: #00838f; font-weight: bold; margin-bottom: 8px;">
+                    Пройди мысленно весь путь!
+                </div>
+                <div style="font-size: 14px; color: #555; line-height: 1.4;">
+                    Смотри на стрелочки, думай и нажми <b style="color: #e91e63;">только на финальную</b> льдинку, где должен оказаться пингвин. <br>
+                    <span style="color: #f57f17; font-weight:bold;">Не нажимай льдинки по пути! 🐧❄️</span>
+                </div>
+                <audio id="pathfinder-instruction-audio" src="audio/instruction_pathfinder.wav"></audio>
             </div>
 
-            <div style="min-height: 60px; margin-bottom: 15px; display: flex; justify-content: center; align-items: center; gap: 8px; flex-wrap: wrap;">
-                <div id="pathfinder-commands" style="font-size: 28px; font-weight: bold; color: #333; letter-spacing: 2px;"></div>
+            <div style="min-height: 70px; margin-bottom: 15px; background: #fff; border-radius: 15px; display: flex; justify-content: center; align-items: center; gap: 5px; flex-wrap: wrap; padding: 10px; box-sizing: border-box; border: 1px solid #eee;">
+                <div id="pathfinder-commands" style="display: flex; gap: 8px; justify-content: center; align-items: center; flex-wrap: wrap;"></div>
             </div>
 
             <div id="pathfinder-grid" style="display: grid; grid-template-columns: repeat(5, 60px); grid-gap: 5px; justify-content: center; margin: 0 auto; position: relative; width: 320px; height: 320px;">
