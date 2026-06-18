@@ -2906,3 +2906,132 @@ function getWordForm(num, word1, word2, word5) {
     if (n1 === 1) return word1;
     return word5;
 }
+
+// ==========================================
+//        БРЕЙН-ФИТНЕС: НЕЙРО-ЖЕСТЫ
+// ==========================================
+
+let gesturesTimerInterval = null;
+let gesturesTimeLeft = 100;
+let isGesturesActive = false;
+
+// База данных жестов (подтягивает созданные тобой одиночные картинки)
+const gesturesList = [
+    { id: 'fist', name: 'Кулак', img: 'img/g_fist.png' },
+    { id: 'palm', name: 'Ладонь', img: 'img/g_palm.png' },
+    { id: 'victory', name: 'Заяц ✌️', img: 'img/g_victory.png' },
+    { id: 'thumb', name: 'Класс 👍', img: 'img/g_thumb.png' },
+    { id: 'ok', name: 'Окей 👌', img: 'img/g_ok.png' },
+    { id: 'horns', name: 'Рожки 🤘', img: 'img/g_horns.png' }
+];
+
+// Варианты задержек в миллисекундах (3 сек, 2.3 сек, 1.6 сек, 1 сек)
+const gesturesSpeeds = [3000, 2300, 1600, 1000];
+const gesturesSpeedTitles = ["Новичок 🐢", "Обычная ⏰", "Быстро 🚀", "Турбо 🔥"];
+let currentGesturesSpeedIndex = 1; // По умолчанию "Обычная"
+
+function openBrainGestures() {
+    try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(e){}
+    document.getElementById('screen-brain-fitness-menu').classList.remove('active');
+    document.getElementById('screen-brain-gestures').classList.add('active');
+    
+    isGesturesActive = false;
+    clearInterval(gesturesTimerInterval);
+    document.getElementById('gestures-timer-bar').style.width = '100%';
+    document.getElementById('gestures-timer-bar').style.background = '#4CAF50';
+    document.getElementById('btn-gestures-start').style.display = 'inline-block';
+    document.getElementById('btn-gestures-start').innerText = 'Старт! ▶️';
+}
+
+function goBackToBrainFitnessFromGestures() {
+    try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(e){}
+    isGesturesActive = false;
+    clearInterval(gesturesTimerInterval);
+    document.getElementById('screen-brain-gestures').classList.remove('active');
+    document.getElementById('screen-brain-fitness-menu').classList.add('active');
+}
+
+function changeGesturesSpeed(direction) {
+    try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(e){}
+    try { new Audio('audio/click.wav').play(); } catch(e) {}
+    
+    currentGesturesSpeedIndex += direction;
+    if (currentGesturesSpeedIndex < 0) currentGesturesSpeedIndex = 0;
+    if (currentGesturesSpeedIndex >= gesturesSpeeds.length) currentGesturesSpeedIndex = gesturesSpeeds.length - 1;
+    
+    document.getElementById('gestures-speed-title').innerText = gesturesSpeedTitles[currentGesturesSpeedIndex];
+    
+    // Если игра активна — мгновенно перезапускаем таймер под новую скорость
+    if (isGesturesActive) {
+        nextGesturesPair();
+    }
+}
+
+function startGesturesGame() {
+    try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "heavy"}); } catch(e){}
+    try { new Audio('audio/click.wav').play(); } catch(e) {}
+    
+    isGesturesActive = true;
+    document.getElementById('btn-gestures-start').style.display = 'none';
+    nextGesturesPair();
+}
+
+function nextGesturesPair() {
+    if (!isGesturesActive) return;
+    clearInterval(gesturesTimerInterval);
+
+    // Выбираем случайный жест для левой руки
+    const leftGesture = gesturesList[Math.floor(Math.random() * gesturesList.length)];
+    
+    // Выбираем жест для правой руки (обязательно ДРУГОЙ, чтобы не было одинаковых!)
+    let rightGesture;
+    do {
+        rightGesture = gesturesList[Math.floor(Math.random() * gesturesList.length)];
+    } while (rightGesture.id === leftGesture.id);
+
+    // Обновляем левую карточку
+    document.getElementById('gesture-img-left').src = leftGesture.img;
+    document.getElementById('gesture-name-left').innerText = leftGesture.name;
+    
+    // Обновляем правую карточку
+    document.getElementById('gesture-img-right').src = rightGesture.img;
+    document.getElementById('gesture-name-right').innerText = rightGesture.name;
+
+    // Эффект вспышки/пульсации карт при смене знаков
+    const cLeft = document.getElementById('gesture-card-left');
+    const cRight = document.getElementById('gesture-card-right');
+    cLeft.style.transform = 'scale(1.05)';
+    cRight.style.transform = 'scale(1.05)';
+    try { new Audio('audio/click.wav').play(); } catch(e) {}
+    
+    setTimeout(() => {
+        cLeft.style.transform = 'scale(1)';
+        cRight.style.transform = 'scale(1)';
+    }, 100);
+
+    // Запуск полосы времени
+    gesturesTimeLeft = 100;
+    const bar = document.getElementById('gestures-timer-bar');
+    bar.style.background = '#4CAF50';
+    
+    // Интервал тика таймера (общая задержка делится на 50 шагов анимации)
+    const msInterval = gesturesSpeeds[currentGesturesSpeedIndex] / 50;
+    
+    gesturesTimerInterval = setInterval(() => {
+        if (!isGesturesActive) return;
+        gesturesTimeLeft -= 2; // Уменьшаем на 2% за тик (50 шагов по 2% = 100%)
+        bar.style.width = gesturesTimeLeft + '%';
+
+        if (gesturesTimeLeft < 40 && gesturesTimeLeft >= 16) {
+            bar.style.background = '#FFC107'; // Желтый цвет
+        } else if (gesturesTimeLeft < 16) {
+            bar.style.background = '#F44336'; // Красный цвет
+        }
+
+        if (gesturesTimeLeft <= 0) {
+            clearInterval(gesturesTimerInterval);
+            // Бесконечный цикл смены карточек, пока ребенок не нажмет кнопку «Назад»
+            nextGesturesPair(); 
+        }
+    }, msInterval);
+}
