@@ -3,17 +3,21 @@
 // ==========================================
 let userVkId = 0;
 let vkSignParams = "";
+let vkPlatform = "";
 let hasPremiumAccess = false;
 
-// 🔥 Вот наши финальные, идеальные настройки 🔥
+// 🔥🔥🔥 ВАЖНО: ВПИШИ СВОИ ДАННЫЕ СЮДА 🔥🔥🔥
 const BACKEND_URL = "https://neuro-master.online"; 
-const VK_GROUP_ID = 78549529;
+const VK_GROUP_ID = 78549529; // Твой ID группы без минуса
 
 try {
     vkBridge.send('VKWebAppInit').then(() => {
         const urlParams = new URLSearchParams(window.location.search);
         userVkId = urlParams.get('vk_user_id');
+        vkPlatform = urlParams.get('vk_platform'); // Получаем платформу
         vkSignParams = window.location.search.replace('?', '');
+        
+        hidePaymentsOnMobile(); // Проверяем и прячем оплату, если нужно
         
         fetch(`${BACKEND_URL}/api/user_geniy/${userVkId}`, {
             method: "GET",
@@ -30,6 +34,26 @@ try {
         }).catch(err => console.log("Ошибка доступа:", err));
     });
 } catch(e) { console.log("VK Bridge Error", e); }
+
+// Прячем ЮKassa для модераторов и пользователей в мобильных приложениях
+function hidePaymentsOnMobile() {
+    const ua = navigator.userAgent.toLowerCase();
+    
+    // Если это обычный браузер (с ПК или мобильного), ничего не делаем
+    if (vkPlatform === 'desktop_web' || vkPlatform === 'mobile_web') {
+        return; 
+    }
+
+    // Вычисляем именно НАТИВНЫЕ мобильные приложения
+    const isVkNative = vkPlatform === 'mobile_android' || vkPlatform === 'mobile_iphone' || vkPlatform === 'mobile_ipad' || ua.includes('vkandroidapp') || ua.includes('vkclient');
+
+    if (isVkNative) {
+        const buyBtn = document.getElementById('btn-buy-premium');
+        const mobileMsg = document.getElementById('mobile-payment-msg');
+        if (buyBtn) buyBtn.style.display = 'none';
+        if (mobileMsg) mobileMsg.style.display = 'block';
+    }
+}
 
 function checkAccessAndOpen(roomType) {
     if (hasPremiumAccess) {
