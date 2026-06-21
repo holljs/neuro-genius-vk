@@ -2157,3 +2157,97 @@ function nextGesturesPair() {
         if (gesturesTimeLeft <= 0) { clearInterval(gesturesTimerInterval); nextGesturesPair(); }
     }, msInterval);
 }
+
+// ==========================================
+//        УЧИМ КИТАЙСКИЙ (ПАНДА-КЛУБ) 🐼
+// ==========================================
+const chineseWords = [
+    { id: 'apple', img: 'img/p_opt_yabloko.png', ru: 'Яблоко', char: '苹果', pinyin: 'píngguǒ', audio: 'audio/ch_apple.wav' },
+    { id: 'water', img: 'img/p_opt_voda.png', ru: 'Вода', char: '水', pinyin: 'shuǐ', audio: 'audio/ch_water.wav' },
+    { id: 'dog', img: 'img/bs_dog.png', ru: 'Собака', char: '狗', pinyin: 'gǒu', audio: 'audio/ch_dog.wav' },
+    { id: 'cat', img: 'img/bs_cat.png', ru: 'Кошка', char: '猫', pinyin: 'māo', audio: 'audio/ch_cat.wav' },
+    { id: 'mama', img: 'img/icon_mom.png', ru: 'Мама', char: '妈妈', pinyin: 'māma', audio: 'audio/ch_mama.wav' },
+    { id: 'papa', img: 'img/icon_dad.png', ru: 'Папа', char: '爸爸', pinyin: 'bàba', audio: 'audio/ch_papa.wav' }
+];
+
+let currentChineseIndex = 0;
+let isCardFlipped = false;
+
+function openChineseMenu() {
+    try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(e){}
+    document.getElementById('screen-menu').classList.remove('active');
+    document.getElementById('screen-chinese-menu').classList.add('active');
+}
+
+function goMainFromChinese() {
+    try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(e){}
+    document.getElementById('screen-chinese-menu').classList.remove('active');
+    document.getElementById('screen-menu').classList.add('active');
+}
+
+function openChineseCards() {
+    try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(e){}
+    document.getElementById('screen-chinese-menu').classList.remove('active');
+    document.getElementById('screen-chinese-cards').classList.add('active');
+    currentChineseIndex = 0;
+    isCardFlipped = false;
+    updateChineseCard();
+}
+
+function goBackToChineseMenuFromCards() {
+    try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(e){}
+    document.getElementById('screen-chinese-cards').classList.remove('active');
+    document.getElementById('screen-chinese-menu').classList.add('active');
+    if (currentAudio) currentAudio.pause();
+}
+
+function updateChineseCard() {
+    const cardData = chineseWords[currentChineseIndex];
+    const cardEl = document.getElementById('chinese-card');
+    
+    isCardFlipped = false;
+    cardEl.classList.remove('flipped');
+
+    document.getElementById('ch-card-img').src = cardData.img;
+    document.getElementById('ch-card-char').innerText = cardData.char;
+    document.getElementById('ch-card-pinyin').innerText = cardData.pinyin;
+    document.getElementById('ch-card-ru').innerText = cardData.ru;
+
+    document.getElementById('btn-ch-prev').style.opacity = currentChineseIndex === 0 ? '0.3' : '1';
+    document.getElementById('btn-ch-next').style.opacity = currentChineseIndex === chineseWords.length - 1 ? '0.3' : '1';
+}
+
+function flipChineseCard() {
+    try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "medium"}); } catch(e){}
+    const cardEl = document.getElementById('chinese-card');
+    const cardData = chineseWords[currentChineseIndex];
+
+    isCardFlipped = !isCardFlipped;
+    
+    if (isCardFlipped) {
+        cardEl.classList.add('flipped');
+        playSound(cardData.audio); 
+    } else {
+        cardEl.classList.remove('flipped');
+    }
+}
+
+function changeChineseCard(direction) {
+    if ((direction === -1 && currentChineseIndex === 0) || 
+        (direction === 1 && currentChineseIndex === chineseWords.length - 1)) {
+        return; 
+    }
+    
+    try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(e){}
+    
+    if (isCardFlipped) {
+        document.getElementById('chinese-card').classList.remove('flipped');
+        setTimeout(() => {
+            currentChineseIndex += direction;
+            updateChineseCard();
+        }, 300);
+    } else {
+        currentChineseIndex += direction;
+        updateChineseCard();
+    }
+}
