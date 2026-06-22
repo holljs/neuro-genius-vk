@@ -2158,14 +2158,14 @@ function nextGesturesPair() {
     }, msInterval);
 }
 
-// Наша база слов (теперь с русской транскрипцией!)
+// Наша база слов (Изолированные картинки и русская транскрипция!)
 const chineseWords = [
-    { id: 'apple', img: 'img/apple.png', ru: 'Яблоко', char: '苹果', pinyin: 'píngguǒ', ru_trans: 'пин-гуо', audio: 'audio/ch_apple.mp3' },
-    { id: 'water', img: 'img/water.png', ru: 'Вода', char: '水', pinyin: 'shuǐ', ru_trans: 'шуэй', audio: 'audio/ch_water.mp3' },
-    { id: 'dog', img: 'img/bs_dog.png', ru: 'Собака', char: '狗', pinyin: 'gǒu', ru_trans: 'гоу', audio: 'audio/ch_dog.mp3' },
-    { id: 'cat', img: 'img/bs_cat.png', ru: 'Кошка', char: '猫', pinyin: 'māo', ru_trans: 'мао', audio: 'audio/ch_cat.mp3' },
-    { id: 'mama', img: 'img/icon_mom.png', ru: 'Мама', char: '妈妈', pinyin: 'māma', ru_trans: 'ма-ма', audio: 'audio/ch_mama.mp3' },
-    { id: 'papa', img: 'img/icon_dad.png', ru: 'Папа', char: '爸爸', pinyin: 'bàba', ru_trans: 'ба-ба', audio: 'audio/ch_papa.mp3' }
+    { id: 'apple', img: 'img/ch_apple.jpg', ru: 'Яблоко', char: '苹果', pinyin: 'píngguǒ', ru_trans: 'пин-гуо', audio: 'audio/ch_apple.mp3' },
+    { id: 'water', img: 'img/ch_water.jpg', ru: 'Вода', char: '水', pinyin: 'shuǐ', ru_trans: 'шуэй', audio: 'audio/ch_water.mp3' },
+    { id: 'dog', img: 'img/ch_dog.jpg', ru: 'Собака', char: '狗', pinyin: 'gǒu', ru_trans: 'гоу', audio: 'audio/ch_dog.mp3' },
+    { id: 'cat', img: 'img/ch_cat.jpg', ru: 'Кошка', char: '猫', pinyin: 'māo', ru_trans: 'мао', audio: 'audio/ch_cat.mp3' },
+    { id: 'mama', img: 'img/ch_mama.jpg', ru: 'Мама', char: '妈妈', pinyin: 'māma', ru_trans: 'ма-ма', audio: 'audio/ch_mama.mp3' },
+    { id: 'papa', img: 'img/ch_papa.jpg', ru: 'Папа', char: '爸爸', pinyin: 'bàba', ru_trans: 'ба-ба', audio: 'audio/ch_papa.mp3' }
 ];
 
 let currentChineseIndex = 0;
