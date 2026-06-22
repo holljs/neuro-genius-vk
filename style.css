@@ -367,43 +367,44 @@ body {
     z-index: 10001;
 }
 
-/* --- КИТАЙСКАЯ КОМНАТА: КАРТОЧКИ --- */
+/* --- КИТАЙСКАЯ КОМНАТА: КАРТОЧКИ (БРОНЕБОЙНАЯ ВЕРСИЯ) --- */
 .flip-card-container { 
     perspective: 1000px; 
-    width: 85vw;          
-    max-width: 340px;     
-    aspect-ratio: 1 / 1;  /* 🔥 ВОТ ОНО! Делаем идеальный квадрат */
+    width: 85vw !important;          
+    max-width: 340px !important;     
+    aspect-ratio: 1 / 1 !important;  /* Принудительный квадрат */
+    height: auto !important;         /* Убиваем старую высоту */
     margin: 20px auto; 
     cursor: pointer; 
 }
+
 .flip-card-inner { position: relative; width: 100%; height: 100%; text-align: center; transition: transform 0.6s cubic-bezier(0.4, 0.2, 0.2, 1); transform-style: preserve-3d; }
 .flip-card-container.flipped .flip-card-inner { transform: rotateY(180deg); }
 
-/* Лицевая и обратная сторона */
 .flip-card-front, .flip-card-back { 
     position: absolute; width: 100%; height: 100%; backface-visibility: hidden; 
-    border-radius: 25px; box-shadow: 0 12px 35px rgba(0,0,0,0.15); 
+    border-radius: 25px !important; box-shadow: 0 12px 35px rgba(0,0,0,0.15); 
     display: flex; flex-direction: column; align-items: center; justify-content: center; 
     background: #fff; border: 5px solid #ffe082; box-sizing: border-box; 
 }
 
-/* 🔥 Лицевая сторона: убираем внутренние отступы и обрезаем края, чтобы картинка влезла идеально */
-.flip-card-front { padding: 0; overflow: hidden; }
+/* 🔥 Лицевая: убираем отступы принудительно */
+.flip-card-front { padding: 0 !important; overflow: hidden !important; }
 
-/* 🔥 Картинка теперь растягивается на 100% ширины и высоты квадрата без искажений */
+/* 🔥 Картинка: растягиваем на 100% карточки */
 .flip-card-front img { 
-    width: 100%; 
-    height: 100%; 
-    max-width: none; 
-    max-height: none; 
-    object-fit: cover; 
-    border-radius: 20px; 
+    width: 100% !important; 
+    height: 100% !important; 
+    max-width: none !important; 
+    max-height: none !important; 
+    object-fit: cover !important; 
+    border-radius: 18px !important; 
+    margin: 0 !important;
+    display: block !important;
 }
 
-/* Обратная сторона: оставляем отступы для текста */
-.flip-card-back { transform: rotateY(180deg); background: #fffde7; border-color: #ffca28; padding: 15px; }
+.flip-card-back { transform: rotateY(180deg); background: #fffde7; border-color: #ffca28; padding: 15px !important; }
 
-/* Тексты: чуть сжали отступы между строками, чтобы всё красиво влезло в квадратный формат */
-.chinese-character { font-size: 85px; font-weight: normal; color: #d32f2f; line-height: 1.1; margin-bottom: 5px; text-shadow: 2px 2px 5px rgba(0,0,0,0.05); }
-.chinese-pinyin { font-size: 22px; color: #777; margin-bottom: 5px; line-height: 1.4; }
-.chinese-translation { font-size: 32px; font-weight: 900; color: #333; line-height: 1; }
+.chinese-character { font-size: 85px !important; font-weight: normal; color: #d32f2f; line-height: 1.1; margin-bottom: 5px; text-shadow: 2px 2px 5px rgba(0,0,0,0.05); }
+.chinese-pinyin { font-size: 22px !important; color: #777; margin-bottom: 5px; line-height: 1.4; }
+.chinese-translation { font-size: 32px !important; font-weight: 900; color: #333; line-height: 1; }
