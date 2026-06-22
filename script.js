@@ -2248,7 +2248,7 @@ function flipChineseCard() {
     
     if (isCardFlipped) {
         cardEl.classList.add('flipped');
-        speakChinese(cardData.char); // Озвучиваем слово на китайском!
+        playSound(cardData.audio); // Запускаем наш mp3 файл!
     } else {
         cardEl.classList.remove('flipped');
     }
