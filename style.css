@@ -372,22 +372,38 @@ body {
     perspective: 1000px; 
     width: 85vw;          
     max-width: 340px;     
-    aspect-ratio: 3 / 4;  /* Идеальная пропорция карточки! */
-    height: auto;         /* Высота подстроится сама */
-    min-height: 380px;    /* Чтобы не сплющилась на маленьких экранах */
+    aspect-ratio: 1 / 1;  /* 🔥 ВОТ ОНО! Делаем идеальный квадрат */
     margin: 20px auto; 
     cursor: pointer; 
 }
 .flip-card-inner { position: relative; width: 100%; height: 100%; text-align: center; transition: transform 0.6s cubic-bezier(0.4, 0.2, 0.2, 1); transform-style: preserve-3d; }
 .flip-card-container.flipped .flip-card-inner { transform: rotateY(180deg); }
-.flip-card-front, .flip-card-back { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; border-radius: 25px; box-shadow: 0 12px 35px rgba(0,0,0,0.15); display: flex; flex-direction: column; align-items: center; justify-content: center; background: #fff; border: 5px solid #ffe082; box-sizing: border-box; padding: 15px; }
 
-/* Картинка на 95% карточки, с закругленными краями */
-.flip-card-front img { width: 95%; height: 95%; object-fit: cover; border-radius: 15px; }
+/* Лицевая и обратная сторона */
+.flip-card-front, .flip-card-back { 
+    position: absolute; width: 100%; height: 100%; backface-visibility: hidden; 
+    border-radius: 25px; box-shadow: 0 12px 35px rgba(0,0,0,0.15); 
+    display: flex; flex-direction: column; align-items: center; justify-content: center; 
+    background: #fff; border: 5px solid #ffe082; box-sizing: border-box; 
+}
 
-.flip-card-back { transform: rotateY(180deg); background: #fffde7; border-color: #ffca28; justify-content: center; }
+/* 🔥 Лицевая сторона: убираем внутренние отступы и обрезаем края, чтобы картинка влезла идеально */
+.flip-card-front { padding: 0; overflow: hidden; }
 
-/* Тексты: уменьшили иероглиф, чтобы влезло всё */
-.chinese-character { font-size: 75px; font-weight: normal; color: #d32f2f; line-height: 1.1; margin-bottom: 20px; text-shadow: 2px 2px 5px rgba(0,0,0,0.05); }
-.chinese-pinyin { font-size: 22px; color: #777; margin-bottom: 15px; line-height: 1.4; }
+/* 🔥 Картинка теперь растягивается на 100% ширины и высоты квадрата без искажений */
+.flip-card-front img { 
+    width: 100%; 
+    height: 100%; 
+    max-width: none; 
+    max-height: none; 
+    object-fit: cover; 
+    border-radius: 20px; 
+}
+
+/* Обратная сторона: оставляем отступы для текста */
+.flip-card-back { transform: rotateY(180deg); background: #fffde7; border-color: #ffca28; padding: 15px; }
+
+/* Тексты: чуть сжали отступы между строками, чтобы всё красиво влезло в квадратный формат */
+.chinese-character { font-size: 85px; font-weight: normal; color: #d32f2f; line-height: 1.1; margin-bottom: 5px; text-shadow: 2px 2px 5px rgba(0,0,0,0.05); }
+.chinese-pinyin { font-size: 22px; color: #777; margin-bottom: 5px; line-height: 1.4; }
 .chinese-translation { font-size: 32px; font-weight: 900; color: #333; line-height: 1; }
