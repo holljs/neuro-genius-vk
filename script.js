@@ -2158,14 +2158,14 @@ function nextGesturesPair() {
     }, msInterval);
 }
 
-// Наша база слов (убрали аудио-файлы, они больше не нужны!)
+// Наша база слов (теперь с русской транскрипцией!)
 const chineseWords = [
-    { id: 'apple', img: 'img/apple.png', ru: 'Яблоко', char: '苹果', pinyin: 'píngguǒ' },
-    { id: 'water', img: 'img/water.png', ru: 'Вода', char: '水', pinyin: 'shuǐ' },
-    { id: 'dog', img: 'img/bs_dog.png', ru: 'Собака', char: '狗', pinyin: 'gǒu' },
-    { id: 'cat', img: 'img/bs_cat.png', ru: 'Кошка', char: '猫', pinyin: 'māo' },
-    { id: 'mama', img: 'img/icon_mom.png', ru: 'Мама', char: '妈妈', pinyin: 'māma' },
-    { id: 'papa', img: 'img/icon_dad.png', ru: 'Папа', char: '爸爸', pinyin: 'bàba' }
+    { id: 'apple', img: 'img/apple.png', ru: 'Яблоко', char: '苹果', pinyin: 'píngguǒ', ru_trans: 'пин-гуо', audio: 'audio/ch_apple.mp3' },
+    { id: 'water', img: 'img/water.png', ru: 'Вода', char: '水', pinyin: 'shuǐ', ru_trans: 'шуэй', audio: 'audio/ch_water.mp3' },
+    { id: 'dog', img: 'img/bs_dog.png', ru: 'Собака', char: '狗', pinyin: 'gǒu', ru_trans: 'гоу', audio: 'audio/ch_dog.mp3' },
+    { id: 'cat', img: 'img/bs_cat.png', ru: 'Кошка', char: '猫', pinyin: 'māo', ru_trans: 'мао', audio: 'audio/ch_cat.mp3' },
+    { id: 'mama', img: 'img/icon_mom.png', ru: 'Мама', char: '妈妈', pinyin: 'māma', ru_trans: 'ма-ма', audio: 'audio/ch_mama.mp3' },
+    { id: 'papa', img: 'img/icon_dad.png', ru: 'Папа', char: '爸爸', pinyin: 'bàba', ru_trans: 'ба-ба', audio: 'audio/ch_papa.mp3' }
 ];
 
 let currentChineseIndex = 0;
@@ -2207,7 +2207,8 @@ function updateChineseCard() {
 
     document.getElementById('ch-card-img').src = cardData.img;
     document.getElementById('ch-card-char').innerText = cardData.char;
-    document.getElementById('ch-card-pinyin').innerText = cardData.pinyin;
+    // Выводим Пиньинь, а под ним — русскую транскрипцию серым цветом
+    document.getElementById('ch-card-pinyin').innerHTML = `${cardData.pinyin} <br><span style="color: #9e9e9e; font-size: 14px;">[ ${cardData.ru_trans} ]</span>`;
     document.getElementById('ch-card-ru').innerText = cardData.ru;
 
     document.getElementById('btn-ch-prev').style.opacity = currentChineseIndex === 0 ? '0.3' : '1';
