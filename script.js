@@ -2214,13 +2214,27 @@ function updateChineseCard() {
     document.getElementById('btn-ch-next').style.opacity = currentChineseIndex === chineseWords.length - 1 ? '0.3' : '1';
 }
 
-// 🔥 МАГИЯ ОЗВУЧКИ: Встроенный китайский голос телефона!
+// 🔥 МАГИЯ ОЗВУЧКИ: Усиленная версия!
 function speakChinese(text) {
     if ('speechSynthesis' in window) {
+        // 1. Даем пинка зависшим фразам
+        window.speechSynthesis.cancel();
+        
         const utterance = new SpeechSynthesisUtterance(text);
-        utterance.lang = 'zh-CN'; // Код китайского языка
-        utterance.rate = 0.8;     // Чуть медленнее, чтобы ребенок расслышал тона
+        utterance.lang = 'zh-CN'; // Китайский язык
+        utterance.rate = 0.8;     // Скорость
+        
+        // 2. Пытаемся явно найти китайский голос в системе
+        const voices = window.speechSynthesis.getVoices();
+        const zhVoice = voices.find(voice => voice.lang.includes('zh') || voice.lang.includes('CN'));
+        if (zhVoice) {
+            utterance.voice = zhVoice;
+        }
+
+        // 3. Говорим!
         window.speechSynthesis.speak(utterance);
+    } else {
+        alert("Ой! Твой телефон не поддерживает озвучку 😔");
     }
 }
 
