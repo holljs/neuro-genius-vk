@@ -2158,16 +2158,28 @@ function nextGesturesPair() {
     }, msInterval);
 }
 
-// Наша база слов (Изолированные картинки и русская транскрипция!)
-const chineseWords = [
-    { id: 'apple', img: 'img/ch_apple.jpg', ru: 'Яблоко', char: '苹果', pinyin: 'píngguǒ', ru_trans: 'пин-гуо', audio: 'audio/ch_apple.mp3' },
-    { id: 'water', img: 'img/ch_water.jpg', ru: 'Вода', char: '水', pinyin: 'shuǐ', ru_trans: 'шуэй', audio: 'audio/ch_water.mp3' },
-    { id: 'dog', img: 'img/ch_dog.jpg', ru: 'Собака', char: '狗', pinyin: 'gǒu', ru_trans: 'гоу', audio: 'audio/ch_dog.mp3' },
-    { id: 'cat', img: 'img/ch_cat.jpg', ru: 'Кошка', char: '猫', pinyin: 'māo', ru_trans: 'мао', audio: 'audio/ch_cat.mp3' },
-    { id: 'mama', img: 'img/ch_mama.jpg', ru: 'Мама', char: '妈妈', pinyin: 'māma', ru_trans: 'ма-ма', audio: 'audio/ch_mama.mp3' },
-    { id: 'papa', img: 'img/ch_papa.jpg', ru: 'Папа', char: '爸爸', pinyin: 'bàba', ru_trans: 'ба-ба', audio: 'audio/ch_papa.mp3' }
-];
+// ==========================================
+//        УЧИМ КИТАЙСКИЙ (КАТЕГОРИИ) 🐼
+// ==========================================
 
+// Наша новая База Данных, разбитая по темам!
+const chineseDatabase = {
+    'food': [
+        { id: 'apple', img: 'img/ch_apple.jpg', ru: 'Яблоко', char: '苹果', pinyin: 'píngguǒ', ru_trans: 'пин-гуо', audio: 'audio/ch_apple.mp3' },
+        { id: 'water', img: 'img/ch_water.jpg', ru: 'Вода', char: '水', pinyin: 'shuǐ', ru_trans: 'шуэй', audio: 'audio/ch_water.mp3' }
+    ],
+    'animals': [
+        { id: 'dog', img: 'img/ch_dog.jpg', ru: 'Собака', char: '狗', pinyin: 'gǒu', ru_trans: 'гоу', audio: 'audio/ch_dog.mp3' },
+        { id: 'cat', img: 'img/ch_cat.jpg', ru: 'Кошка', char: '猫', pinyin: 'māo', ru_trans: 'мао', audio: 'audio/ch_cat.mp3' }
+    ],
+    'family': [
+        { id: 'mama', img: 'img/ch_mama.jpg', ru: 'Мама', char: '妈妈', pinyin: 'māma', ru_trans: 'ма-ма', audio: 'audio/ch_mama.mp3' },
+        { id: 'papa', img: 'img/ch_papa.jpg', ru: 'Папа', char: '爸爸', pinyin: 'bàba', ru_trans: 'ба-ба', audio: 'audio/ch_papa.mp3' }
+    ]
+};
+
+// Переменные состояния
+let currentChineseCategory = 'food'; // По умолчанию
 let currentChineseIndex = 0;
 let isCardFlipped = false;
 
@@ -2183,12 +2195,17 @@ function goMainFromChinese() {
     document.getElementById('screen-menu').classList.add('active');
 }
 
-function openChineseCards() {
+// 🔥 НОВАЯ ФУНКЦИЯ: Запускает выбранную категорию!
+function openChineseCategory(categoryName) {
     try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(e){}
+    
+    currentChineseCategory = categoryName; // Запоминаем, куда зашли
+    currentChineseIndex = 0;               // Начинаем с первой карточки
+    isCardFlipped = false;
+    
     document.getElementById('screen-chinese-menu').classList.remove('active');
     document.getElementById('screen-chinese-cards').classList.add('active');
-    currentChineseIndex = 0;
-    isCardFlipped = false;
+    
     updateChineseCard();
 }
 
@@ -2199,7 +2216,9 @@ function goBackToChineseMenuFromCards() {
 }
 
 function updateChineseCard() {
-    const cardData = chineseWords[currentChineseIndex];
+    // Достаем массив слов именно для ТЕКУЩЕЙ категории
+    const currentArray = chineseDatabase[currentChineseCategory];
+    const cardData = currentArray[currentChineseIndex];
     const cardEl = document.getElementById('chinese-card');
     
     isCardFlipped = false;
@@ -2207,68 +2226,45 @@ function updateChineseCard() {
 
     document.getElementById('ch-card-img').src = cardData.img;
     document.getElementById('ch-card-char').innerText = cardData.char;
-    // Выводим Пиньинь, а под ним — русскую транскрипцию серым цветом
     document.getElementById('ch-card-pinyin').innerHTML = `${cardData.pinyin} <br><span style="color: #9e9e9e; font-size: 14px;">[ ${cardData.ru_trans} ]</span>`;
     document.getElementById('ch-card-ru').innerText = cardData.ru;
 
+    // Скрываем стрелочки, если это конец или начало массива
     document.getElementById('btn-ch-prev').style.opacity = currentChineseIndex === 0 ? '0.3' : '1';
-    document.getElementById('btn-ch-next').style.opacity = currentChineseIndex === chineseWords.length - 1 ? '0.3' : '1';
-}
-
-// 🔥 МАГИЯ ОЗВУЧКИ: Усиленная версия!
-function speakChinese(text) {
-    if ('speechSynthesis' in window) {
-        // 1. Даем пинка зависшим фразам
-        window.speechSynthesis.cancel();
-        
-        const utterance = new SpeechSynthesisUtterance(text);
-        utterance.lang = 'zh-CN'; // Китайский язык
-        utterance.rate = 0.8;     // Скорость
-        
-        // 2. Пытаемся явно найти китайский голос в системе
-        const voices = window.speechSynthesis.getVoices();
-        const zhVoice = voices.find(voice => voice.lang.includes('zh') || voice.lang.includes('CN'));
-        if (zhVoice) {
-            utterance.voice = zhVoice;
-        }
-
-        // 3. Говорим!
-        window.speechSynthesis.speak(utterance);
-    } else {
-        alert("Ой! Твой телефон не поддерживает озвучку 😔");
-    }
+    document.getElementById('btn-ch-next').style.opacity = currentChineseIndex === currentArray.length - 1 ? '0.3' : '1';
 }
 
 function flipChineseCard() {
     try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "medium"}); } catch(e){}
     const cardEl = document.getElementById('chinese-card');
-    const cardData = chineseWords[currentChineseIndex];
+    const currentArray = chineseDatabase[currentChineseCategory];
+    const cardData = currentArray[currentChineseIndex];
 
     isCardFlipped = !isCardFlipped;
     
     if (isCardFlipped) {
         cardEl.classList.add('flipped');
-        playSound(cardData.audio); // Запускаем наш mp3 файл!
+        playSound(cardData.audio); 
     } else {
         cardEl.classList.remove('flipped');
     }
 }
 
 function changeChineseCard(direction) {
+    const currentArray = chineseDatabase[currentChineseCategory];
     const newIndex = currentChineseIndex + direction;
     
-    // Блокируем, если выходим за пределы массива
-    if (newIndex < 0 || newIndex >= chineseWords.length) return;
+    // Блокируем выход за пределы массива
+    if (newIndex < 0 || newIndex >= currentArray.length) return;
     
     try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(e){}
     
-    // Если карточка перевернута, сначала возвращаем её обратно
     if (isCardFlipped) {
         document.getElementById('chinese-card').classList.remove('flipped');
         setTimeout(() => {
             currentChineseIndex = newIndex;
             updateChineseCard();
-        }, 300); // Ждем полоборота анимации
+        }, 300);
     } else {
         currentChineseIndex = newIndex;
         updateChineseCard();
