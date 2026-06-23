@@ -683,24 +683,33 @@
         </div>
     </div>
 
-    <div id="screen-chinese-menu" class="screen" style="overflow-y: auto;">
+    <div id="screen-chinese-menu" class="screen" style="overflow-y: auto; background: var(--bg-color);">
         <div class="header" style="position: sticky; top: 0; z-index: 10;">
-            <div class="header-title-row"><span id="room-title">Учим Китайский 🐼</span></div>
-            <div class="header-top"><div class="back-btn" onclick="goMainFromChinese()">⬅ В главное меню</div></div>
+            <div class="header-title-row"><span id="room-title">Китайские карточки</span></div>
+            <div class="header-top"><div class="back-btn" onclick="goMainFromChinese()">⬅ Назад</div></div>
         </div>
-        <div class="hero-title">Выбери тренировку:</div>
-        <div class="menu-grid sub-grid">
-            <div class="category-card sub-card" onclick="openChineseCards()">
-                <div style="margin: 0 auto 10px auto; width: 60px; height: 60px;"><img src="img/icon_cards.png" onerror="this.src='img/icon_memo.png'" style="width: 100%; height: 100%; object-fit: contain;"></div>
-                <div class="category-title sub-title">Слова-перевёртыши</div><div class="category-subtitle">Базовые слова</div>
+        <div class="hero-title">Выбери тему:</div>
+        
+        <div class="menu-grid">
+            <div class="category-card" onclick="openChineseCategory('food')">
+                <div class="category-icon-placeholder" style="border-radius: 15px; overflow: hidden; width: 100px; height: 100px; margin-bottom: 10px;">
+                    <img src="img/ch_apple.jpg" onerror="this.src='img/icon_memo.png'" style="width: 100%; height: 100%; object-fit: cover;">
+                </div>
+                <div class="category-title">Вкусняшки</div>
             </div>
-            <div class="category-card sub-card" onclick="alert('Скоро откроется! 👐')">
-                <div style="margin: 0 auto 10px auto; width: 60px; height: 60px;"><img src="img/icon_gestures.png" onerror="this.src='img/icon_memo.png'" style="width: 100%; height: 100%; object-fit: contain;"></div>
-                <div class="category-title sub-title">Китайский счет</div><div class="category-subtitle">Считаем на пальцах</div>
+
+            <div class="category-card" onclick="openChineseCategory('animals')">
+                <div class="category-icon-placeholder" style="border-radius: 15px; overflow: hidden; width: 100px; height: 100px; margin-bottom: 10px;">
+                    <img src="img/ch_dog.jpg" onerror="this.src='img/icon_memo.png'" style="width: 100%; height: 100%; object-fit: cover;">
+                </div>
+                <div class="category-title">Зверята</div>
             </div>
-            <div class="category-card sub-card" onclick="alert('Скоро откроется! 🖌️')">
-                <div style="margin: 0 auto 10px auto; width: 60px; height: 60px;"><img src="img/icon_draw.png" onerror="this.src='img/icon_memo.png'" style="width: 100%; height: 100%; object-fit: contain;"></div>
-                <div class="category-title sub-title">Магия иероглифов</div><div class="category-subtitle">Рисуем по контуру</div>
+
+            <div class="category-card" onclick="openChineseCategory('family')">
+                <div class="category-icon-placeholder" style="border-radius: 15px; overflow: hidden; width: 100px; height: 100px; margin-bottom: 10px;">
+                    <img src="img/ch_mama.jpg" onerror="this.src='img/icon_memo.png'" style="width: 100%; height: 100%; object-fit: cover;">
+                </div>
+                <div class="category-title">Семья</div>
             </div>
         </div>
     </div>
