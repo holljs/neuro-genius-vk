@@ -2200,7 +2200,6 @@ const chineseDatabase = {
         { id: 'hand', img: 'img/ch_hand.jpg', ru: 'Рука', char: '手', pinyin: 'shǒu', ru_trans: 'шоу', audio: 'audio/ch_hand.mp3' }
     ]
 };
-};
 
 // Переменные состояния
 let currentChineseCategory = 'food'; // По умолчанию
