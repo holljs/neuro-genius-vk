@@ -2199,6 +2199,42 @@ const chineseDatabase = {
         { id: 'mouth', img: 'img/ch_mouth.jpg', ru: 'Рот', char: '嘴巴', pinyin: 'zuǐba', ru_trans: 'цзуй-ба', audio: 'audio/ch_mouth.mp3', ru_audio: 'audio/ru_mouth.mp3' },
         { id: 'hand', img: 'img/ch_hand.jpg', ru: 'Рука', char: '手', pinyin: 'shǒu', ru_trans: 'шоу', audio: 'audio/ch_hand.mp3', ru_audio: 'audio/ru_hand.mp3' }
     ]
+    // === РАЗДЕЛ ФРАЗ ===
+    'ph_manners': [
+        { id: 'hello', img: 'img/ph_hello.jpg', ru: 'Привет!', char: '你好', pinyin: 'Nǐ hǎo', ru_trans: 'Ни хао', audio: 'audio/ch_ph_hello.mp3', ru_audio: 'audio/ru_ph_hello.mp3' },
+        { id: 'thanks', img: 'img/ph_thanks.jpg', ru: 'Спасибо!', char: '谢谢', pinyin: 'Xièxiè', ru_trans: 'Сье-сье', audio: 'audio/ch_ph_thanks.mp3', ru_audio: 'audio/ru_ph_thanks.mp3' },
+        { id: 'morning', img: 'img/ph_morning.jpg', ru: 'Доброе утро!', char: '早上好', pinyin: 'Zǎoshang hǎo', ru_trans: 'Цзао-шан хао', audio: 'audio/ch_ph_morning.mp3', ru_audio: 'audio/ru_ph_morning.mp3' },
+        { id: 'how', img: 'img/ph_how.jpg', ru: 'Как дела?', char: '你好吗?', pinyin: 'Nǐ hǎo ma?', ru_trans: 'Ни хао ма?', audio: 'audio/ch_ph_how.mp3', ru_audio: 'audio/ru_ph_how.mp3' },
+        { id: 'bye', img: 'img/ph_bye.jpg', ru: 'До свидания!', char: '再见', pinyin: 'Zàijiàn', ru_trans: 'Цзай-цзьень', audio: 'audio/ch_ph_bye.mp3', ru_audio: 'audio/ru_ph_bye.mp3' }
+    ],
+    'ph_needs': [
+        { id: 'hungry', img: 'img/ph_hungry.jpg', ru: 'Я хочу есть', char: '我饿了', pinyin: 'Wǒ è le', ru_trans: 'Во э ле', audio: 'audio/ch_ph_hungry.mp3', ru_audio: 'audio/ru_ph_hungry.mp3' },
+        { id: 'water', img: 'img/ph_thirsty.jpg', ru: 'Я хочу пить', char: '我想喝水', pinyin: 'Wǒ xiǎng hē shuǐ', ru_trans: 'Во сян хэ шуэй', audio: 'audio/ch_ph_thirsty.mp3', ru_audio: 'audio/ru_ph_thirsty.mp3' },
+        { id: 'tired', img: 'img/ph_tired.jpg', ru: 'Я устал', char: '我累了', pinyin: 'Wǒ lèi le', ru_trans: 'Во лэй ле', audio: 'audio/ch_ph_tired.mp3', ru_audio: 'audio/ru_ph_tired.mp3' },
+        { id: 'love', img: 'img/ph_love.jpg', ru: 'Я тебя люблю', char: '我爱你', pinyin: 'Wǒ ài nǐ', ru_trans: 'Во ай ни', audio: 'audio/ch_ph_love.mp3', ru_audio: 'audio/ru_ph_love.mp3' },
+        { id: 'happy', img: 'img/ph_happy.jpg', ru: 'Я очень рад!', char: '我很高兴', pinyin: 'Wǒ hěn gāoxìng', ru_trans: 'Во хэнь гао-син', audio: 'audio/ch_ph_happy.mp3', ru_audio: 'audio/ru_ph_happy.mp3' }
+    ],
+    'ph_play': [
+        { id: 'play', img: 'img/ph_play.jpg', ru: 'Давай играть!', char: '我们玩儿吧', pinyin: 'Wǒmen wánr ba', ru_trans: 'Во-мэнь вань-эр ба', audio: 'audio/ch_ph_play.mp3', ru_audio: 'audio/ru_ph_play.mp3' },
+        { id: 'turn', img: 'img/ph_turn.jpg', ru: 'Моя очередь', char: '该我了', pinyin: 'Gāi wǒ le', ru_trans: 'Гай во ле', audio: 'audio/ch_ph_turn.mp3', ru_audio: 'audio/ru_ph_turn.mp3' },
+        { id: 'win', img: 'img/ph_win.jpg', ru: 'Я выиграл!', char: '我赢了', pinyin: 'Wǒ yíng le', ru_trans: 'Во ин ле', audio: 'audio/ch_ph_win.mp3', ru_audio: 'audio/ru_ph_win.mp3' },
+        { id: 'catch', img: 'img/ph_catch.jpg', ru: 'Догони меня!', char: '快来追我吧', pinyin: 'Kuài lái zhuī wǒ ba', ru_trans: 'Куай лай чжуй во ба', audio: 'audio/ch_ph_catch.mp3', ru_audio: 'audio/ru_ph_catch.mp3' },
+        { id: 'fun', img: 'img/ph_fun.jpg', ru: 'Это весело!', char: '这很有趣', pinyin: 'Zhè hěn yǒuqù', ru_trans: 'Чжэ хэнь ю-цюй', audio: 'audio/ch_ph_fun.mp3', ru_audio: 'audio/ru_ph_fun.mp3' }
+    ],
+    'ph_shop': [
+        { id: 'cost', img: 'img/ph_cost.jpg', ru: 'Сколько это стоит?', char: '这个多少钱?', pinyin: 'Zhège duōshǎo qián?', ru_trans: 'Чжэ-гэ до-шао цень?', audio: 'audio/ch_ph_cost.mp3', ru_audio: 'audio/ru_ph_cost.mp3' },
+        { id: 'expensive', img: 'img/ph_expensive.jpg', ru: 'Слишком дорого!', char: '太贵了', pinyin: 'Tài guì le', ru_trans: 'Тай гуэй ле', audio: 'audio/ch_ph_expensive.mp3', ru_audio: 'audio/ru_ph_expensive.mp3' },
+        { id: 'want', img: 'img/ph_want.jpg', ru: 'Я хочу это', char: '我要这个', pinyin: 'Wǒ yào zhège', ru_trans: 'Во яо чжэ-гэ', audio: 'audio/ch_ph_want.mp3', ru_audio: 'audio/ru_ph_want.mp3' },
+        { id: 'discount', img: 'img/ph_discount.jpg', ru: 'Сделайте скидку', char: '便宜一点儿吧', pinyin: 'Piányí yīdiǎnr ba', ru_trans: 'Пень-и и-дьер ба', audio: 'audio/ch_ph_discount.mp3', ru_audio: 'audio/ru_ph_discount.mp3' },
+        { id: 'cheap', img: 'img/ph_cheap.jpg', ru: 'Это дешево', char: '很便宜', pinyin: 'Hěn piányí', ru_trans: 'Хэнь пень-и', audio: 'audio/ch_ph_cheap.mp3', ru_audio: 'audio/ru_ph_cheap.mp3' }
+    ],
+    'ph_way': [
+        { id: 'where', img: 'img/ph_where.jpg', ru: 'Где находится...?', char: '... 在哪儿?', pinyin: '... zài nǎr?', ru_trans: '... цзай на-эр?', audio: 'audio/ch_ph_where.mp3', ru_audio: 'audio/ru_ph_where.mp3' },
+        { id: 'help', img: 'img/ph_help.jpg', ru: 'Помогите мне', char: '请帮帮我', pinyin: 'Qǐng bāng bāng wǒ', ru_trans: 'Цин бан-бан во', audio: 'audio/ch_ph_help.mp3', ru_audio: 'audio/ru_ph_help.mp3' },
+        { id: 'lost', img: 'img/ph_lost.jpg', ru: 'Я потерялся', char: '我迷路了', pinyin: 'Wǒ mílù le', ru_trans: 'Во ми-лу ле', audio: 'audio/ch_ph_lost.mp3', ru_audio: 'audio/ru_ph_lost.mp3' },
+        { id: 'straight', img: 'img/ph_straight.jpg', ru: 'Иди прямо', char: '向前走', pinyin: 'Xiàng qián zǒu', ru_trans: 'Сян цень цзоу', audio: 'audio/ch_ph_straight.mp3', ru_audio: 'audio/ru_ph_straight.mp3' },
+        { id: 'right', img: 'img/ph_right.jpg', ru: 'Поверни направо', char: '向右转', pinyin: 'Xiàng yòu zhuǎn', ru_trans: 'Сян ю чжуань', audio: 'audio/ch_ph_right.mp3', ru_audio: 'audio/ru_ph_right.mp3' }
+    ]
 };
 
 // Переменные состояния
