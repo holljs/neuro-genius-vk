@@ -2198,7 +2198,7 @@ const chineseDatabase = {
         { id: 'ear', img: 'img/ch_ear.jpg', ru: 'Ухо', char: '耳朵', pinyin: 'ěrduo', ru_trans: 'эр-дуо', audio: 'audio/ch_ear.mp3', ru_audio: 'audio/ru_ear.mp3' },
         { id: 'mouth', img: 'img/ch_mouth.jpg', ru: 'Рот', char: '嘴巴', pinyin: 'zuǐba', ru_trans: 'цзуй-ба', audio: 'audio/ch_mouth.mp3', ru_audio: 'audio/ru_mouth.mp3' },
         { id: 'hand', img: 'img/ch_hand.jpg', ru: 'Рука', char: '手', pinyin: 'shǒu', ru_trans: 'шоу', audio: 'audio/ch_hand.mp3', ru_audio: 'audio/ru_hand.mp3' }
-    ]
+    ],
     // === РАЗДЕЛ ФРАЗ ===
     'ph_manners': [
         { id: 'hello', img: 'img/ph_hello.jpg', ru: 'Привет!', char: '你好', pinyin: 'Nǐ hǎo', ru_trans: 'Ни хао', audio: 'audio/ch_ph_hello.mp3', ru_audio: 'audio/ru_ph_hello.mp3' },
