@@ -672,7 +672,7 @@
         </div>
     </div>
 
-    <div id="screen-chinese-main-menu" class="screen" style="background: var(--bg-color);">
+   <div id="screen-chinese-main-menu" class="screen" style="background: var(--bg-color);">
         <div class="header" style="position: sticky; top: 0; z-index: 10;">
             <div class="header-title-row"><span id="room-title">Китайский язык</span></div>
             <div class="header-top"><div class="back-btn" onclick="goMainFromChinese()">⬅ В главное меню</div></div>
@@ -737,6 +737,29 @@
             </div>
         </div>
     </div>
+
+    <div id="screen-chinese-cards" class="screen" style="overflow-y: auto; background: #fafafa;">
+        <div class="header" style="position: sticky; top: 0; z-index: 10; background: rgba(255,255,255,0.95);">
+            <div class="header-title-row"><span>Китайские карточки</span></div>
+            <div class="header-top"><div class="back-btn" onclick="goBackToChineseMenuFromCards()">⬅ Назад</div></div>
+        </div>
+        <div style="padding: 15px; text-align: center;">
+            <div style="background: #fff; border: 2px solid #ffcc80; border-radius: 15px; padding: 10px; margin-bottom: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); font-size: 15px; color: #e65100; font-weight: bold;">
+                Нажми на карточку, чтобы перевернуть её и узнать иероглиф!
+            </div>
+
+            <div id="chinese-card" class="flip-card-container" onclick="flipChineseCard()">
+                <div class="flip-card-inner">
+                    <div class="flip-card-front">
+                        <img id="ch-card-img" src="" alt="Картинка" onerror="this.src='img/icon_memo.png'">
+                    </div>
+                    <div class="flip-card-back">
+                        <div id="ch-card-char" class="chinese-character"></div>
+                        <div id="ch-card-pinyin" class="chinese-pinyin"></div>
+                        <div id="ch-card-ru" class="chinese-translation"></div>
+                    </div>
+                </div>
+            </div>
 
             <div style="display: flex; justify-content: center; gap: 40px; margin-top: 30px;">
                 <button id="btn-ch-prev" onclick="changeChineseCard(-1)" style="padding: 15px 25px; font-size: 24px; border-radius: 20px; border: none; background: #e0e0e0; color: #333; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">◀</button>
