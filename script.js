@@ -2242,59 +2242,73 @@ let currentChineseCategory = 'food'; // По умолчанию
 let currentChineseIndex = 0;
 let isCardFlipped = false;
 
+// Переменные состояния
+let currentChineseCategory = 'food'; // По умолчанию
+let currentChineseIndex = 0;
+let isCardFlipped = false;
+
+// 1. Вход в главное меню Китайского (с главного экрана)
 function openChineseMenu() {
     try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(e){}
-    document.getElementById('screen-menu').classList.remove('active');
-    document.getElementById('screen-chinese-menu').classList.add('active');
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.getElementById('screen-chinese-main-menu').classList.add('active');
 }
 
+// 2. Выход из Китайского в главное меню приложения
 function goMainFromChinese() {
     try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(e){}
-    document.getElementById('screen-chinese-menu').classList.remove('active');
+    document.getElementById('screen-chinese-main-menu').classList.remove('active');
     document.getElementById('screen-menu').classList.add('active');
 }
 
-// 🔥 НОВАЯ ФУНКЦИЯ: Запускает выбранную категорию!
+// 3. Открываем подменю "Слова"
+function openChineseWordsMenu() {
+    try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(e){}
+    document.getElementById('screen-chinese-main-menu').classList.remove('active');
+    document.getElementById('screen-chinese-words-menu').classList.add('active');
+}
+
+// 4. Открываем подменю "Фразы"
+function openChinesePhrasesMenu() {
+    try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(e){}
+    document.getElementById('screen-chinese-main-menu').classList.remove('active');
+    document.getElementById('screen-chinese-phrases-menu').classList.add('active');
+}
+
+// 5. Возврат из Слова/Фразы обратно в Главное меню Китайского
+function goBackToChineseMain(fromScreenId) {
+    try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(e){}
+    document.getElementById(fromScreenId).classList.remove('active');
+    document.getElementById('screen-chinese-main-menu').classList.add('active');
+}
+
+// 6. Запускаем выбранную категорию карточек!
 function openChineseCategory(categoryName) {
     try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(e){}
     
-    currentChineseCategory = categoryName; // Запоминаем, куда зашли
-    currentChineseIndex = 0;               // Начинаем с первой карточки
+    currentChineseCategory = categoryName; 
+    currentChineseIndex = 0;               
     isCardFlipped = false;
     
-    document.getElementById('screen-chinese-menu').classList.remove('active');
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
     document.getElementById('screen-chinese-cards').classList.add('active');
     
     updateChineseCard();
 }
 
+// 7. Возврат с экрана карточек в нужное подменю!
 function goBackToChineseMenuFromCards() {
     try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(e){}
     document.getElementById('screen-chinese-cards').classList.remove('active');
-    document.getElementById('screen-chinese-menu').classList.add('active');
-}
-
-function updateChineseCard() {
-    // Достаем массив слов именно для ТЕКУЩЕЙ категории
-    const currentArray = chineseDatabase[currentChineseCategory];
-    const cardData = currentArray[currentChineseIndex];
-    const cardEl = document.getElementById('chinese-card');
     
-    isCardFlipped = false;
-    cardEl.classList.remove('flipped');
-
-    document.getElementById('ch-card-img').src = cardData.img;
-    document.getElementById('ch-card-char').innerText = cardData.char;
-    document.getElementById('ch-card-pinyin').innerHTML = `${cardData.pinyin} <br><span style="color: #9e9e9e; font-size: 14px;">[ ${cardData.ru_trans} ]</span>`;
-    document.getElementById('ch-card-ru').innerText = cardData.ru;
-
-    // Скрываем стрелочки, если это конец или начало массива
-    document.getElementById('btn-ch-prev').style.opacity = currentChineseIndex === 0 ? '0.3' : '1';
-    document.getElementById('btn-ch-next').style.opacity = currentChineseIndex === currentArray.length - 1 ? '0.3' : '1';
-
-    // 🔥 Запускаем русскую озвучку при показе новой карточки!
-    if (cardData.ru_audio) {
-        playSound(cardData.ru_audio);
+    if (currentAudio) { currentAudio.pause(); currentAudio.currentTime = 0; }
+    
+    // Если категория начиналась на "ph_" (фразы), возвращаемся в меню фраз
+    if (currentChineseCategory.startsWith('ph_')) {
+        document.getElementById('screen-chinese-phrases-menu').classList.add('active');
+    } else {
+        // Иначе возвращаемся в меню слов
+        document.getElementById('screen-chinese-words-menu').classList.add('active');
     }
 }
 
