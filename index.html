@@ -672,77 +672,68 @@
         </div>
     </div>
 
-    <div id="screen-chinese-menu" class="screen" style="overflow-y: auto; background: var(--bg-color);">
+    <div id="screen-chinese-main-menu" class="screen" style="background: var(--bg-color);">
         <div class="header" style="position: sticky; top: 0; z-index: 10;">
             <div class="header-title-row"><span id="room-title">Китайский язык</span></div>
-            <div class="header-top"><div class="back-btn" onclick="goMainFromChinese()">⬅ Назад</div></div>
+            <div class="header-top"><div class="back-btn" onclick="goMainFromChinese()">⬅ В главное меню</div></div>
         </div>
-
-        <div class="hero-title">Учим слова:</div>
+        <div class="hero-title">Выберите режим:</div>
         <div class="menu-grid">
-            <div class="category-card" onclick="openChineseCategory('food')">
-                <div class="category-icon-placeholder" style="border-radius: 15px; overflow: hidden; width: 100px; height: 100px; margin-bottom: 10px;">
-                    <img src="img/ch_apple.jpg" onerror="this.src='img/icon_memo.png'" style="width: 100%; height: 100%; object-fit: cover;">
-                </div>
-                <div class="category-title">Вкусняшки</div>
+            <div class="category-card" onclick="openChineseWordsMenu()">
+                <div style="margin: 0 auto 15px auto; width: 80px; height: 80px;"><img src="img/icon_words.png" alt="" style="width: 100%; height: 100%; object-fit: contain;"></div>
+                <div class="category-title">Слова</div><div class="category-subtitle">Учим базовые иероглифы</div>
             </div>
-            <div class="category-card" onclick="openChineseCategory('animals')">
-                <div class="category-icon-placeholder" style="border-radius: 15px; overflow: hidden; width: 100px; height: 100px; margin-bottom: 10px;">
-                    <img src="img/ch_dog.jpg" onerror="this.src='img/icon_memo.png'" style="width: 100%; height: 100%; object-fit: cover;">
-                </div>
-                <div class="category-title">Зверята</div>
+            <div class="category-card" onclick="openChinesePhrasesMenu()">
+                <div style="margin: 0 auto 15px auto; width: 80px; height: 80px;"><img src="img/icon_memo.png" alt="" style="width: 100%; height: 100%; object-fit: contain;"></div>
+                <div class="category-title">Фразы</div><div class="category-subtitle">Слушаем и говорим</div>
             </div>
-            <div class="category-card" onclick="openChineseCategory('family')">
-                <div class="category-icon-placeholder" style="border-radius: 15px; overflow: hidden; width: 100px; height: 100px; margin-bottom: 10px;">
-                    <img src="img/ch_mama.jpg" onerror="this.src='img/icon_memo.png'" style="width: 100%; height: 100%; object-fit: cover;">
-                </div>
-                <div class="category-title">Семья</div>
+            <div class="category-card" onclick="alert('Скоро появится!')">
+                <div style="margin: 0 auto 15px auto; width: 80px; height: 80px;"><img src="img/icon_magicwand.png" alt="" style="width: 100%; height: 100%; object-fit: contain;"></div>
+                <div class="category-title">Лайфхаки</div><div class="category-subtitle">Магия ассоциаций</div>
             </div>
-            <div class="category-card" onclick="openChineseCategory('transport')">
-                <div class="category-icon-placeholder" style="border-radius: 15px; overflow: hidden; width: 100px; height: 100px; margin-bottom: 10px;">
-                    <img src="img/ch_car.jpg" onerror="this.src='img/icon_memo.png'" style="width: 100%; height: 100%; object-fit: cover;">
-                </div>
-                <div class="category-title">Транспорт</div>
-            </div>
-            <div class="category-card" onclick="openChineseCategory('body')">
-                <div class="category-icon-placeholder" style="border-radius: 15px; overflow: hidden; width: 100px; height: 100px; margin-bottom: 10px;">
-                    <img src="img/ch_eye.jpg" onerror="this.src='img/icon_memo.png'" style="width: 100%; height: 100%; object-fit: cover;">
-                </div>
-                <div class="category-title">Моё тело</div>
+            <div class="category-card" onclick="alert('Скоро появится!')">
+                <div style="margin: 0 auto 15px auto; width: 80px; height: 80px;"><img src="img/icon_poem.png" alt="" style="width: 100%; height: 100%; object-fit: contain;"></div>
+                <div class="category-title">Рисуем иероглифы</div><div class="category-subtitle">Каллиграфия по шагам</div>
             </div>
         </div>
+    </div>
 
-        <div class="hero-title" style="margin-top: 25px; color: #d32f2f;">Разговорник:</div>
-        <div class="menu-grid">
-            <div class="category-card" onclick="openChineseCategory('ph_manners')">
-                <div class="category-icon-placeholder" style="border-radius: 15px; overflow: hidden; width: 100px; height: 100px; margin-bottom: 10px;">
-                    <img src="img/ph_hello.jpg" onerror="this.src='img/icon_memo.png'" style="width: 100%; height: 100%; object-fit: cover;">
-                </div>
-                <div class="category-title">Этикет</div>
+    <div id="screen-chinese-words-menu" class="screen" style="overflow-y: auto; background: var(--bg-color);">
+        <div class="header" style="position: sticky; top: 0; z-index: 10;">
+            <div class="header-title-row"><span id="room-title">Слова</span></div>
+            <div class="header-top"><div class="back-btn" onclick="goBackToChineseMain('screen-chinese-words-menu')">⬅ Назад</div></div>
+        </div>
+        <div class="menu-grid soroban-sub-grid-split">
+            <div class="sub-column">
+                <div class="sub-title-header">Базовые</div>
+                <div class="category-card sub-card" style="background-color: #ffebee; border-color: #ffcdd2;" onclick="openChineseCategory('family')"><div class="category-title sub-title">Семья</div></div>
+                <div class="category-card sub-card" style="background-color: #e3f2fd; border-color: #bbdefb;" onclick="openChineseCategory('body')"><div class="category-title sub-title">Моё тело</div></div>
             </div>
-            <div class="category-card" onclick="openChineseCategory('ph_needs')">
-                <div class="category-icon-placeholder" style="border-radius: 15px; overflow: hidden; width: 100px; height: 100px; margin-bottom: 10px;">
-                    <img src="img/ph_hungry.jpg" onerror="this.src='img/icon_memo.png'" style="width: 100%; height: 100%; object-fit: cover;">
-                </div>
-                <div class="category-title">Потребности</div>
+            <div class="sub-column">
+                <div class="sub-title-header">Окружение</div>
+                <div class="category-card sub-card" style="background-color: #e8f5e9; border-color: #c8e6c9;" onclick="openChineseCategory('food')"><div class="category-title sub-title">Вкусняшки</div></div>
+                <div class="category-card sub-card" style="background-color: #fff3e0; border-color: #ffe0b2;" onclick="openChineseCategory('animals')"><div class="category-title sub-title">Зверята</div></div>
+                <div class="category-card sub-card" style="background-color: #f3e5f5; border-color: #e1bee7;" onclick="openChineseCategory('transport')"><div class="category-title sub-title">Транспорт</div></div>
             </div>
-            <div class="category-card" onclick="openChineseCategory('ph_play')">
-                <div class="category-icon-placeholder" style="border-radius: 15px; overflow: hidden; width: 100px; height: 100px; margin-bottom: 10px;">
-                    <img src="img/ph_play.jpg" onerror="this.src='img/icon_memo.png'" style="width: 100%; height: 100%; object-fit: cover;">
-                </div>
-                <div class="category-title">Игры</div>
+        </div>
+    </div>
+
+    <div id="screen-chinese-phrases-menu" class="screen" style="overflow-y: auto; background: var(--bg-color);">
+        <div class="header" style="position: sticky; top: 0; z-index: 10;">
+            <div class="header-title-row"><span id="room-title">Фразы</span></div>
+            <div class="header-top"><div class="back-btn" onclick="goBackToChineseMain('screen-chinese-phrases-menu')">⬅ Назад</div></div>
+        </div>
+        <div class="menu-grid soroban-sub-grid-split">
+            <div class="sub-column">
+                <div class="sub-title-header">Общение</div>
+                <div class="category-card sub-card" style="background-color: #fffde7; border-color: #fff59d;" onclick="openChineseCategory('ph_manners')"><div class="category-title sub-title">Этикет</div></div>
+                <div class="category-card sub-card" style="background-color: #ffebee; border-color: #ffcdd2;" onclick="openChineseCategory('ph_needs')"><div class="category-title sub-title">Потребности</div></div>
+                <div class="category-card sub-card" style="background-color: #e0f7fa; border-color: #b2ebf2;" onclick="openChineseCategory('ph_play')"><div class="category-title sub-title">Игры</div></div>
             </div>
-            <div class="category-card" onclick="openChineseCategory('ph_shop')">
-                <div class="category-icon-placeholder" style="border-radius: 15px; overflow: hidden; width: 100px; height: 100px; margin-bottom: 10px;">
-                    <img src="img/ph_cost.jpg" onerror="this.src='img/icon_memo.png'" style="width: 100%; height: 100%; object-fit: cover;">
-                </div>
-                <div class="category-title">Магазин</div>
-            </div>
-            <div class="category-card" onclick="openChineseCategory('ph_way')">
-                <div class="category-icon-placeholder" style="border-radius: 15px; overflow: hidden; width: 100px; height: 100px; margin-bottom: 10px;">
-                    <img src="img/ph_where.jpg" onerror="this.src='img/icon_memo.png'" style="width: 100%; height: 100%; object-fit: cover;">
-                </div>
-                <div class="category-title">Поиск пути</div>
+            <div class="sub-column">
+                <div class="sub-title-header">В городе</div>
+                <div class="category-card sub-card" style="background-color: #e8f5e9; border-color: #c8e6c9;" onclick="openChineseCategory('ph_shop')"><div class="category-title sub-title">В магазине</div></div>
+                <div class="category-card sub-card" style="background-color: #ede7f6; border-color: #d1c4e9;" onclick="openChineseCategory('ph_way')"><div class="category-title sub-title">Поиск пути</div></div>
             </div>
         </div>
     </div>
