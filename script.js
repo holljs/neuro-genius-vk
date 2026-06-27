@@ -2320,7 +2320,16 @@ function updateChineseCard() {
     isCardFlipped = false;
     cardEl.classList.remove('flipped');
 
-    document.getElementById('ch-card-img').src = cardData.img;
+    // --- ЗАМЕНЯЕМ <img> на background-image ---
+    const front = document.querySelector('.flip-card-front');
+    if (front) {
+        front.style.backgroundImage = `url(${cardData.img})`;
+        front.style.backgroundSize = 'cover';
+        front.style.backgroundPosition = 'center';
+    }
+    // СТАРУЮ СТРОКУ УДАЛЯЕМ (или комментируем):
+    // document.getElementById('ch-card-img').src = cardData.img;
+
     document.getElementById('ch-card-char').innerText = cardData.char;
     document.getElementById('ch-card-pinyin').innerHTML = `${cardData.pinyin} <br><span style="color: #9e9e9e; font-size: 14px;">[ ${cardData.ru_trans} ]</span>`;
     document.getElementById('ch-card-ru').innerText = cardData.ru;
