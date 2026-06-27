@@ -2237,17 +2237,16 @@ const chineseDatabase = {
     ]
 };
 
-// Переменные состояния
-let currentChineseCategory = 'food'; // По умолчанию
+// ==========================================
+//        ЛОГИКА КИТАЙСКОГО МЕНЮ И КАРТОЧЕК
+// ==========================================
+
+// Переменные состояния (один раз!)
+let currentChineseCategory = 'food'; 
 let currentChineseIndex = 0;
 let isCardFlipped = false;
 
-// Переменные состояния
-let currentChineseCategory = 'food'; // По умолчанию
-let currentChineseIndex = 0;
-let isCardFlipped = false;
-
-// 1. Вход в главное меню Китайского (с главного экрана)
+// 1. Вход в главное меню Китайского
 function openChineseMenu() {
     try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(e){}
     document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
@@ -2312,6 +2311,30 @@ function goBackToChineseMenuFromCards() {
     }
 }
 
+// 8. Обновление (отрисовка) карточки на экране
+function updateChineseCard() {
+    const currentArray = chineseDatabase[currentChineseCategory];
+    const cardData = currentArray[currentChineseIndex];
+    const cardEl = document.getElementById('chinese-card');
+    
+    isCardFlipped = false;
+    cardEl.classList.remove('flipped');
+
+    document.getElementById('ch-card-img').src = cardData.img;
+    document.getElementById('ch-card-char').innerText = cardData.char;
+    document.getElementById('ch-card-pinyin').innerHTML = `${cardData.pinyin} <br><span style="color: #9e9e9e; font-size: 14px;">[ ${cardData.ru_trans} ]</span>`;
+    document.getElementById('ch-card-ru').innerText = cardData.ru;
+
+    document.getElementById('btn-ch-prev').style.opacity = currentChineseIndex === 0 ? '0.3' : '1';
+    document.getElementById('btn-ch-next').style.opacity = currentChineseIndex === currentArray.length - 1 ? '0.3' : '1';
+
+    // Русская озвучка при показе карточки
+    if (cardData.ru_audio) {
+        playSound(cardData.ru_audio);
+    }
+}
+
+// 9. Переворот карточки
 function flipChineseCard() {
     try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "medium"}); } catch(e){}
     const cardEl = document.getElementById('chinese-card');
@@ -2322,20 +2345,18 @@ function flipChineseCard() {
     
     if (isCardFlipped) {
         cardEl.classList.add('flipped');
-        // Играем китайский на обратной стороне
         if (cardData.audio) playSound(cardData.audio); 
     } else {
         cardEl.classList.remove('flipped');
-        // Играем русский при возврате на лицевую сторону
         if (cardData.ru_audio) playSound(cardData.ru_audio);
     }
 }
 
+// 10. Переключение на следующую/предыдущую карточку
 function changeChineseCard(direction) {
     const currentArray = chineseDatabase[currentChineseCategory];
     const newIndex = currentChineseIndex + direction;
     
-    // Блокируем выход за пределы массива
     if (newIndex < 0 || newIndex >= currentArray.length) return;
     
     try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(e){}
