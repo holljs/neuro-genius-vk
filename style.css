@@ -368,14 +368,16 @@ body {
 }
 
 /* --- КИТАЙСКАЯ КОМНАТА: КАРТОЧКИ (БРОНЕБОЙНАЯ ВЕРСИЯ) --- */
-.flip-card-container { 
-    perspective: 1000px; 
-    width: 85vw !important;          
-    max-width: 340px !important;     
-    aspect-ratio: 1 / 1 !important;  /* Принудительный квадрат */
-    height: auto !important;         /* Убиваем старую высоту */
-    margin: 20px auto; 
-    cursor: pointer; 
+.flip-card-container {
+    perspective: 1000px;
+    width: 85vw !important;
+    max-width: 340px !important;
+    height: 0 !important;                  /* сбрасываем auto */
+    padding-bottom: 85vw !important;       /* квадрат за счёт отступа */
+    max-height: 340px !important;          /* ограничиваем максимум */
+    margin: 20px auto;
+    cursor: pointer;
+    position: relative;
 }
 
 .flip-card-inner { position: relative; width: 100%; height: 100%; text-align: center; transition: transform 0.6s cubic-bezier(0.4, 0.2, 0.2, 1); transform-style: preserve-3d; }
