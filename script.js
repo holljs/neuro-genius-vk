@@ -55,6 +55,29 @@ function hidePaymentsOnMobile() {
     }
 }
 
+// ==========================================
+//        ОКНО "О ПРИЛОЖЕНИИ" И ПОДДЕРЖКА
+// ==========================================
+function openAboutModal() {
+    try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(e){}
+    document.getElementById('about-modal').style.display = 'flex';
+}
+
+function closeAboutModal() {
+    try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(e){}
+    document.getElementById('about-modal').style.display = 'none';
+}
+
+function openSupport() {
+    try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "medium"}); } catch(e){}
+    try {
+        // Открываем диалог с группой напрямую (ID 78549529)
+        vkBridge.send("VKWebAppOpenURL", {"url": "https://vk.com/im?sel=-78549529"});
+    } catch(e) {
+        window.open("https://vk.com/im?sel=-78549529", "_blank");
+    }
+}
+
 function checkAccessAndOpen(roomType) {
     if (hasPremiumAccess) {
         if (roomType === 'soroban') openSorobanMenu();
