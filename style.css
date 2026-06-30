@@ -413,6 +413,43 @@ body {
 .flip-card-back { transform: rotateY(180deg); background: #fffde7; border-color: #ffca28; padding: 15px !important; }
 
 /* Тексты */
-.chinese-character { font-size: 85px !important; font-weight: normal; color: #d32f2f; line-height: 1.1; margin-bottom: 5px; text-shadow: 2px 2px 5px rgba(0,0,0,0.05); }
-.chinese-pinyin { font-size: 22px !important; color: #777; margin-bottom: 5px; line-height: 1.4; }
-.chinese-translation { font-size: 32px !important; font-weight: 900; color: #333; line-height: 1; }
+.chinese-character { 
+    /* Функция min() выберет 11vw на мобилках, но никогда не превысит 85px на планшетах */
+    font-size: min(11vw, 85px) !important; 
+    font-weight: normal; 
+    color: #d32f2f; 
+    line-height: 1.1; 
+    margin-bottom: 8px; 
+    text-shadow: 2px 2px 5px rgba(0,0,0,0.05);
+    
+    /* Эти свойства гарантируют аккуратный перенос фраз по иероглифам */
+    white-space: normal !important;
+    word-break: break-all !important; 
+    
+    padding: 0 15px !important;         /* Защитный отступ от краев карточки */
+    text-align: center;
+    width: 100%;                        /* Растягиваем блок, чтобы центровка работала идеально */
+    box-sizing: border-box;
+}
+
+.chinese-pinyin { 
+    font-size: min(5vw, 22px) !important; /* Тоже делаем адаптивным, чтобы пиньинь не вылезал */
+    color: #777; 
+    margin-bottom: 8px; 
+    line-height: 1.3; 
+    text-align: center;
+    padding: 0 10px !important;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.chinese-translation { 
+    font-size: min(6.5vw, 28px) !important; /* Русский перевод теперь тоже идеально встанет на смартфонах */
+    font-weight: 900; 
+    color: #333; 
+    line-height: 1.2; 
+    text-align: center;
+    padding: 0 10px !important;
+    width: 100%;
+    box-sizing: border-box;
+}
