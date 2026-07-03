@@ -696,7 +696,7 @@
                 <div class="category-subtitle">Слушаем и говорим</div>
             </div>
             
-            <div class="category-card" onclick="alert('Скоро появится!')">
+            <div class="category-card" onclick="openChineseHacks()">
                 <div style="margin: 0 auto 15px auto; width: 80px; height: 80px;">
                     <img src="img/ch_icon_hacks.png" alt="" style="width: 100%; height: 100%; object-fit: contain;">
                 </div>
@@ -818,6 +818,25 @@
             </button>
         </div>
     </div>
+
+    <!-- Модальное окно "Лайфхаки" -->
+<div id="hacks-modal" class="comic-modal" style="display: none;">
+    <div class="comic-slider-box" style="background: #FFFDF3; border: 4px solid #FFE082;">
+        <h3 id="hack-title" style="margin: 0 0 10px 0; color: #333; font-size: 20px; text-align: center;">Заголовок</h3>
+        
+        <img id="hack-img" src="" alt="Лайфхак" style="width: 100%; aspect-ratio: 1/1; object-fit: cover; border-radius: 20px; margin-bottom: 12px; border: 2px solid #FFECA1;">
+        
+        <p id="hack-text" style="color: #555; font-size: 15px; text-align: center; line-height: 1.4; margin: 0 0 15px 0; min-height: 80px; padding: 0 5px;"></p>
+        
+        <div class="comic-slider-nav">
+            <div class="comic-nav-btn" id="hack-prev-btn" onclick="moveHack(-1)">◀</div>
+            <div id="hack-dots"></div>
+            <div class="comic-nav-btn" id="hack-next-btn" onclick="moveHack(1)">▶</div>
+        </div>
+        
+        <button id="btn-hack-close" onclick="closeChineseHacks()" style="width: 100%; padding: 12px; background: #FFB300; color: white; border: none; border-radius: 16px; font-size: 16px; font-weight: 800; cursor: pointer; box-shadow: 0 4px 10px rgba(255,179,0,0.3);">Понятно! 💡</button>
+    </div>
+</div>
     
     <script src="script.js?v=8888"></script>
 </body>
