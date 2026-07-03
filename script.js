@@ -2445,6 +2445,13 @@ function openChineseHacks() {
 
 function closeChineseHacks() {
     document.getElementById('hacks-modal').style.display = 'none';
+    
+    // Ставим на паузу аудио, если оно играет при закрытии окна
+    if (currentAudio) { 
+        currentAudio.pause(); 
+        currentAudio.currentTime = 0; 
+    }
+    
     try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(e){}
 }
 
@@ -2453,6 +2460,11 @@ function updateHackCard() {
     document.getElementById('hack-title').innerText = hack.title;
     document.getElementById('hack-text').innerText = hack.text;
     document.getElementById('hack-img').src = hack.img;
+    
+    // Включаем озвучку карточки! 🎤
+    if (hack.audio) {
+        playSound(hack.audio);
+    }
     
     // Активность стрелок переключения
     document.getElementById('hack-prev-btn').classList.toggle('disabled', currentHackIndex === 0);
