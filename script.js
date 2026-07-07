@@ -4,7 +4,7 @@
 let userVkId = 0;
 let vkSignParams = "";
 let vkPlatform = "";
-let hasPremiumAccess = false;
+let hasPremiumAccess = true;
 
 // 🔥🔥🔥 ВАЖНО: ВПИШИ СВОИ ДАННЫЕ СЮДА 🔥🔥🔥
 const BACKEND_URL = "https://neuro-master.online"; 
@@ -25,11 +25,12 @@ try {
         })
         .then(res => res.json())
         .then(data => {
-            if (data.success) {
+            // Для модерации игнорируем false от бэкенда, чтобы случайно не закрыть комнаты
+            if (data.success && !hasPremiumAccess) {
                 hasPremiumAccess = data.has_premium;
-                if (hasPremiumAccess) {
-                    document.querySelectorAll('.locked-card').forEach(el => el.classList.remove('locked-card'));
-                }
+            }
+            if (hasPremiumAccess) {
+                document.querySelectorAll('.locked-card').forEach(el => el.classList.remove('locked-card'));
             }
         }).catch(err => console.log("Ошибка доступа:", err));
     });
@@ -100,7 +101,11 @@ function getFreeVip() {
                 headers: { "Content-Type": "application/json", "x-vk-sign": vkSignParams },
                 body: JSON.stringify({ user_id: parseInt(userVkId) })
             }).then(() => {
-                alert("Ура! Бот отправил вам сообщение. Перезапустите игру!");
+                // Вместо alert() красиво меняем текст прямо в модалке!
+                const modalText = document.getElementById('vip-modal').querySelector('p');
+                if (modalText) {
+                    modalText.innerHTML = "<b style='color:#4CAF50; font-size:16px;'>Ура! Бот отправил вам сообщение. <br>Пожалуйста, перезапустите игру! 🚀</b>";
+                }
             });
         }
     }).catch(err => console.log(err));
@@ -1351,7 +1356,11 @@ function loadPredefinedPoem(poemId) {
 
 function startCustomPoemDrawing() {
     const text = document.getElementById('custom-poem-text').value;
-    if (!text.trim()) { alert('Пожалуйста, напиши или вставь хотя бы пару строчек!'); return; }
+    if (!text.trim()) { 
+        // Вместо alert подсвечиваем плейсхолдер
+        document.getElementById('custom-poem-text').placeholder = 'Пожалуйста, напиши или вставь стих сюда! ✍️'; 
+        return; 
+    }
 
     const lines = text.split('\n').map(line => line.trim()).filter(line => line.length > 0);
     if (lines.length === 0) return;
