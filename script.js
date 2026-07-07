@@ -4,7 +4,7 @@
 let userVkId = 0;
 let vkSignParams = "";
 let vkPlatform = "";
-let hasPremiumAccess = true; // 🔥 РЕЖИМ ПРОВЕРКИ ВК: Открываем всё бесплатно для модераторов!
+let hasPremiumAccess = false;
 
 // 🔥🔥🔥 ВАЖНО: ВПИШИ СВОИ ДАННЫЕ СЮДА 🔥🔥🔥
 const BACKEND_URL = "https://neuro-master.online"; 
@@ -16,21 +16,20 @@ try {
         userVkId = urlParams.get('vk_user_id');
         vkPlatform = urlParams.get('vk_platform'); // Получаем платформу
         vkSignParams = window.location.search.replace('?', '');
-        
+
         hidePaymentsOnMobile(); // Проверяем и прячем оплату, если нужно
-        
+
         fetch(`${BACKEND_URL}/api/user_geniy/${userVkId}`, {
             method: "GET",
             headers: { "x-vk-sign": vkSignParams }
         })
         .then(res => res.json())
         .then(data => {
-            // Для модерации игнорируем ответ бэкенда, чтобы принудительно держать Premium открытым
-            if (data.success && !hasPremiumAccess) {
+            if (data.success) {
                 hasPremiumAccess = data.has_premium;
-            }
-            if (hasPremiumAccess) {
-                document.querySelectorAll('.locked-card').forEach(el => el.classList.remove('locked-card'));
+                if (hasPremiumAccess) {
+                    document.querySelectorAll('.locked-card').forEach(el => el.classList.remove('locked-card'));
+                }
             }
         }).catch(err => console.log("Ошибка доступа:", err));
     });
@@ -39,7 +38,7 @@ try {
 // Прячем ЮKassa для модераторов и пользователей в мобильных приложениях
 function hidePaymentsOnMobile() {
     const ua = navigator.userAgent.toLowerCase();
-    
+
     // Если это обычный браузер (с ПК или мобильного), ничего не делаем
     if (vkPlatform === 'desktop_web' || vkPlatform === 'mobile_web') {
         return; 
@@ -95,16 +94,13 @@ function getFreeVip() {
     vkBridge.send("VKWebAppAllowMessagesFromGroup", {"group_id": VK_GROUP_ID})
     .then(data => {
         if (data.result) {
+            document.getElementById('vip-modal').style.display = 'none';
             fetch(`${BACKEND_URL}/api/geniy/grant_bonus`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json", "x-vk-sign": vkSignParams },
                 body: JSON.stringify({ user_id: parseInt(userVkId) })
             }).then(() => {
-                // ПУНКТ 1: Избавились от alert() - меняем текст в интерфейсе модалки
-                const modalText = document.getElementById('vip-modal').querySelector('p');
-                if (modalText) {
-                    modalText.innerHTML = "<b style='color:#4CAF50; font-size:16px;'>Ура! Бот отправил вам сообщение. <br>Пожалуйста, перезапустите игру! 🚀</b>";
-                }
+                alert("Ура! Бот отправил вам сообщение. Перезапустите игру!");
             });
         }
     }).catch(err => console.log(err));
@@ -155,7 +151,7 @@ const chineseHacksData = [
         title: "🧩 Язык-Конструктор",
         text: "В китайском языке нет букв! Вместо них — маленькие детальки-кубики (они называются ключи). Их всего 214, и из них, как из конструктора, собираются все-все слова в мире!",
         img: "img/hack_lego.png",
-        audio: "audio/hack_lego.wav"
+        audio: "audio/hack_lego.wav" // Путь к озвучке карточки!
     },
     {
         title: "🗣️ Поющие слова",
@@ -332,83 +328,344 @@ const roomsData = {
 }; 
 
 // ==========================================
-//        УЧИМ КИТАЙСКИЙ (КАТЕГОРИИ) 🐼
+//        ГЕНЕРАТОР ПРИМЕРОВ СОРОБАН
 // ==========================================
-const chineseDatabase = {
-    'food': [
-        { id: 'apple', img: 'img/ch_apple.jpg', ru: 'Яблоко', char: '苹果', pinyin: 'píngguǒ', ru_trans: 'пин-гуо', audio: 'audio/ch_apple.mp3', ru_audio: 'audio/ru_apple.mp3' },
-        { id: 'water', img: 'img/ch_water.jpg', ru: 'Вода', char: '水', pinyin: 'shuǐ', ru_trans: 'шуэй', audio: 'audio/ch_water.mp3', ru_audio: 'audio/ru_water.mp3' },
-        { id: 'bread', img: 'img/ch_bread.jpg', ru: 'Хлеб', char: '面包', pinyin: 'miànbāo', ru_trans: 'мьен-бао', audio: 'audio/ch_bread.mp3', ru_audio: 'audio/ru_bread.mp3' },
-        { id: 'milk', img: 'img/ch_milk.jpg', ru: 'Молоко', char: '牛奶', pinyin: 'niúnǎi', ru_trans: 'ню-най', audio: 'audio/ch_milk.mp3', ru_audio: 'audio/ru_milk.mp3' },
-        { id: 'banana', img: 'img/ch_banana.jpg', ru: 'Банан', char: '香蕉', pinyin: 'xiāngjiāo', ru_trans: 'сян-дзяо', audio: 'audio/ch_banana.mp3', ru_audio: 'audio/ru_banana.mp3' }
-    ],
-    'animals': [
-        { id: 'dog', img: 'img/ch_dog.jpg', ru: 'Собака', char: '狗', pinyin: 'gǒu', ru_trans: 'гоу', audio: 'audio/ch_dog.mp3', ru_audio: 'audio/ru_dog.mp3' },
-        { id: 'cat', img: 'img/ch_cat.jpg', ru: 'Кошка', char: '猫', pinyin: 'māo', ru_trans: 'мао', audio: 'audio/ch_cat.mp3', ru_audio: 'audio/ru_cat.mp3' },
-        { id: 'elephant', img: 'img/ch_elephant.jpg', ru: 'Слон', char: '大象', pinyin: 'dàxiàng', ru_trans: 'да-сян', audio: 'audio/ch_elephant.mp3', ru_audio: 'audio/ru_elephant.mp3' },
-        { id: 'tiger', img: 'img/ch_tiger.jpg', ru: 'Тигр', char: '老虎', pinyin: 'lǎohǔ', ru_trans: 'лао-ху', audio: 'audio/ch_tiger.mp3', ru_audio: 'audio/ru_tiger.mp3' },
-        { id: 'bird', img: 'img/ch_bird.jpg', ru: 'Птичка', char: '小鸟', pinyin: 'xiǎoniǎo', ru_trans: 'сяо-няо', audio: 'audio/ch_bird.mp3', ru_audio: 'audio/ru_bird.mp3' }
-    ],
-    'family': [
-        { id: 'mama', img: 'img/ch_mama.jpg', ru: 'Мама', char: '妈妈', pinyin: 'māma', ru_trans: 'ма-ма', audio: 'audio/ch_mama.mp3', ru_audio: 'audio/ru_mama.mp3' },
-        { id: 'papa', img: 'img/ch_papa.jpg', ru: 'Папа', char: '爸爸', pinyin: 'bàba', ru_trans: 'ба-ба', audio: 'audio/ch_papa.mp3', ru_audio: 'audio/ru_papa.mp3' },
-        { id: 'grandpa', img: 'img/ch_grandpa.jpg', ru: 'Дедушка', char: '爷爷', pinyin: 'yéye', ru_trans: 'е-е', audio: 'audio/ch_grandpa.mp3', ru_audio: 'audio/ru_grandpa.mp3' },
-        { id: 'grandma', img: 'img/ch_grandma.jpg', ru: 'Бабушка', char: '奶奶', pinyin: 'nǎinai', ru_trans: 'най-най', audio: 'audio/ch_grandma.mp3', ru_audio: 'audio/ru_grandma.mp3' },
-        { id: 'baby', img: 'img/ch_baby.jpg', ru: 'Малыш', char: '宝宝', pinyin: 'bǎobao', ru_trans: 'бао-бао', audio: 'audio/ch_baby.mp3', ru_audio: 'audio/ru_baby.mp3' }
-    ],
-    'transport': [
-        { id: 'car', img: 'img/ch_car.jpg', ru: 'Машина', char: '汽车', pinyin: 'qìchē', ru_trans: 'ци-чхы', audio: 'audio/ch_car.mp3', ru_audio: 'audio/ru_car.mp3' },
-        { id: 'train', img: 'img/ch_train.jpg', ru: 'Поезд', char: '火车', pinyin: 'huǒchē', ru_trans: 'хуо-чхы', audio: 'audio/ch_train.mp3', ru_audio: 'audio/ru_train.mp3' },
-        { id: 'plane', img: 'img/ch_plane.jpg', ru: 'Самолёт', char: '飞机', pinyin: 'fēijī', ru_trans: 'фэй-дзи', audio: 'audio/ch_plane.mp3', ru_audio: 'audio/ru_plane.mp3' },
-        { id: 'boat', img: 'img/ch_boat.jpg', ru: 'Лодка', char: '船', pinyin: 'chuán', ru_trans: 'чуань', audio: 'audio/ch_boat.mp3', ru_audio: 'audio/ru_boat.mp3' },
-        { id: 'bus', img: 'img/ch_bus.jpg', ru: 'Автобус', char: '巴士', pinyin: 'bāshì', ru_trans: 'ба-шы', audio: 'audio/ch_bus.mp3', ru_audio: 'audio/ru_bus.mp3' }
-    ],
-    'body': [
-        { id: 'eye', img: 'img/ch_eye.jpg', ru: 'Глаз', char: '眼睛', pinyin: 'yǎnjing', ru_trans: 'йен-дзин', audio: 'audio/ch_eye.mp3', ru_audio: 'audio/ru_eye.mp3' },
-        { id: 'nose', img: 'img/ch_nose.jpg', ru: 'Нос', char: '鼻子', pinyin: 'bízi', ru_trans: 'би-дзы', audio: 'audio/ch_nose.mp3', ru_audio: 'audio/ru_nose.mp3' },
-        { id: 'ear', img: 'img/ch_ear.jpg', ru: 'Ухо', char: '耳朵', pinyin: 'ěrduo', ru_trans: 'эр-дуо', audio: 'audio/ch_ear.mp3', ru_audio: 'audio/ru_ear.mp3' },
-        { id: 'mouth', img: 'img/ch_mouth.jpg', ru: 'Рот', char: '嘴巴', pinyin: 'zuǐba', ru_trans: 'цзуй-ба', audio: 'audio/ch_mouth.mp3', ru_audio: 'audio/ru_mouth.mp3' },
-        { id: 'hand', img: 'img/ch_hand.jpg', ru: 'Рука', char: '手', pinyin: 'shǒu', ru_trans: 'шоу', audio: 'audio/ch_hand.mp3', ru_audio: 'audio/ru_hand.mp3' }
-    ],
-    'ph_manners': [
-        { id: 'hello', img: 'img/ph_hello.jpg', ru: 'Привет!', char: '你好', pinyin: 'Nǐ hǎo', ru_trans: 'Ни хао', audio: 'audio/ch_ph_hello.mp3', ru_audio: 'audio/ru_ph_hello.mp3' },
-        { id: 'thanks', img: 'img/ph_thanks.jpg', ru: 'Спасибо!', char: '谢谢', pinyin: 'Xièxiè', ru_trans: 'Сье-сье', audio: 'audio/ch_ph_thanks.mp3', ru_audio: 'audio/ru_ph_thanks.mp3' },
-        { id: 'morning', img: 'img/ph_morning.jpg', ru: 'Доброе утро!', char: '早上好', pinyin: 'Zǎoshang hǎo', ru_trans: 'Цзао-шан хао', audio: 'audio/ch_ph_morning.mp3', ru_audio: 'audio/ru_ph_morning.mp3' },
-        { id: 'how', img: 'img/ph_how.jpg', ru: 'Как дела?', char: '你好吗?', pinyin: 'Nǐ hǎo ma?', ru_trans: 'Ни хао ма?', audio: 'audio/ch_ph_how.mp3', ru_audio: 'audio/ru_ph_how.mp3' },
-        { id: 'bye', img: 'img/ph_bye.jpg', ru: 'До свидания!', char: '再见', pinyin: 'Zàijiàn', ru_trans: 'Цзай-цзьень', audio: 'audio/ch_ph_bye.mp3', ru_audio: 'audio/ru_ph_bye.mp3' }
-    ],
-    'ph_needs': [
-        { id: 'hungry', img: 'img/ph_hungry.jpg', ru: 'Я хочу есть', char: '我饿了', pinyin: 'Wǒ è le', ru_trans: 'Во э ле', audio: 'audio/ch_ph_hungry.mp3', ru_audio: 'audio/ru_ph_hungry.mp3' },
-        { id: 'water', img: 'img/ph_thirsty.jpg', ru: 'Я хочу пить', char: '我想喝水', pinyin: 'Wǒ xiǎng hē shuǐ', ru_trans: 'Во сян хэ шуэй', audio: 'audio/ch_ph_thirsty.mp3', ru_audio: 'audio/ru_ph_thirsty.mp3' },
-        { id: 'tired', img: 'img/ph_tired.jpg', ru: 'Я устал', char: '我累了', pinyin: 'Wǒ lèi le', ru_trans: 'Во лэй ле', audio: 'audio/ch_ph_tired.mp3', ru_audio: 'audio/ru_ph_tired.mp3' },
-        { id: 'love', img: 'img/ph_love.jpg', ru: 'Я тебя люблю', char: '我爱你', pinyin: 'Wǒ ài nǐ', ru_trans: 'Во ай ни', audio: 'audio/ch_ph_love.mp3', ru_audio: 'audio/ru_ph_love.mp3' },
-        { id: 'happy', img: 'img/ph_happy.jpg', ru: 'Я очень рад!', char: '我很高兴', pinyin: 'Wǒ hěn gāoxìng', ru_trans: 'Во хэнь гао-син', audio: 'audio/ch_ph_happy.mp3', ru_audio: 'audio/ru_ph_happy.mp3' }
-    ],
-    'ph_play': [
-        { id: 'play', img: 'img/ph_play.jpg', ru: 'Давай играть!', char: '我们玩儿吧', pinyin: 'Wǒmen wánr ba', ru_trans: 'Во-мэнь вань-эр ба', audio: 'audio/ch_ph_play.mp3', ru_audio: 'audio/ru_ph_play.mp3' },
-        { id: 'turn', img: 'img/ph_turn.jpg', ru: 'Моя очередь', char: '该我了', pinyin: 'Gāi wǒ le', ru_trans: 'Гай во ле', audio: 'audio/ch_ph_turn.mp3', ru_audio: 'audio/ru_ph_turn.mp3' },
-        { id: 'win', img: 'img/ph_win.jpg', ru: 'Я выиграл!', char: '我赢了', pinyin: 'Wǒ yíng le', ru_trans: 'Во ин ле', audio: 'audio/ch_ph_win.mp3', ru_audio: 'audio/ru_ph_win.mp3' },
-        { id: 'catch', img: 'img/ph_catch.jpg', ru: 'Догони меня!', char: '快来追我吧', pinyin: 'Kuài lái zhuī wǒ ba', ru_trans: 'Куай лай чжуй во ба', audio: 'audio/ch_ph_catch.mp3', ru_audio: 'audio/ru_ph_catch.mp3' },
-        { id: 'fun', img: 'img/ph_fun.jpg', ru: 'Это весело!', char: '这很有趣', pinyin: 'Zhè hěn yǒuqù', ru_trans: 'Чжэ хэнь ю-цюй', audio: 'audio/ch_ph_fun.mp3', ru_audio: 'audio/ru_ph_fun.mp3' }
-    ],
-    'ph_shop': [
-        { id: 'cost', img: 'img/ph_cost.jpg', ru: 'Сколько это стоит?', char: '这个多少钱?', pinyin: 'Zhège duōshǎo qián?', ru_trans: 'Чжэ-гэ до-шао цень?', audio: 'audio/ch_ph_cost.mp3', ru_audio: 'audio/ru_ph_cost.mp3' },
-        { id: 'expensive', img: 'img/ph_expensive.jpg', ru: 'Слишком дорого!', char: '太贵了', pinyin: 'Tài guì le', ru_trans: 'Тай гуэй ле', audio: 'audio/ch_ph_expensive.mp3', ru_audio: 'audio/ru_ph_expensive.mp3' },
-        { id: 'want', img: 'img/ph_want.jpg', ru: 'Я хочу это', char: '我要 этот', pinyin: 'Wǒ yào zhège', ru_trans: 'Во яо чжэ-гэ', audio: 'audio/ch_ph_want.mp3', ru_audio: 'audio/ru_ph_want.mp3' },
-        { id: 'discount', img: 'img/ph_discount.jpg', ru: 'Сделайте скидку', char: '便宜一点儿吧', pinyin: 'Piányí yīdiǎnr ba', ru_trans: 'Пень-и и-дьер ба', audio: 'audio/ch_ph_discount.mp3', ru_audio: 'audio/ru_ph_discount.mp3' },
-        { id: 'cheap', img: 'img/ph_cheap.jpg', ru: 'Это дешево', char: '很便宜', pinyin: 'Hěn piányí', ru_trans: 'Хэнь пень-и', audio: 'audio/ch_ph_cheap.mp3', ru_audio: 'audio/ru_ph_cheap.mp3' }
-    ],
-    'ph_way': [
-        { id: 'where', img: 'img/ph_where.jpg', ru: 'Где находится...?', char: '... 在哪儿?', pinyin: '... zài nǎr?', ru_trans: '... цзай на-эр?', audio: 'audio/ch_ph_where.mp3', ru_audio: 'audio/ru_ph_where.mp3' },
-        { id: 'help', img: 'img/ph_help.jpg', ru: 'Помогите мне', char: '请帮帮我', pinyin: 'Qǐng bāng bāng wǒ', ru_trans: 'Цин бан-бан во', audio: 'audio/ch_ph_help.mp3', ru_audio: 'audio/ru_ph_help.mp3' },
-        { id: 'lost', img: 'img/ph_lost.jpg', ru: 'Я потерялся', char: '我迷路了', pinyin: 'Wǒ mílù le', ru_trans: 'Во ми-лу ле', audio: 'audio/ch_ph_lost.mp3', ru_audio: 'audio/ru_ph_lost.mp3' },
-        { id: 'straight', img: 'img/ph_straight.jpg', ru: 'Иди прямо', char: '向前走', pinyin: 'Xiàng qián zǒu', ru_trans: 'Сян цень цзоу', audio: 'audio/ch_ph_straight.mp3', ru_audio: 'audio/ru_ph_straight.mp3' },
-        { id: 'right', img: 'img/ph_right.jpg', ru: 'Поверни направо', char: '向右转', pinyin: 'Xiàng yòu zhuǎn', ru_trans: 'Сян ю чжуань', audio: 'audio/ch_ph_right.mp3', ru_audio: 'audio/ru_ph_right.mp3' }
-    ]
-};
+function generateEndlessTask(category) {
+    let a, b, sign, target;
+
+    if (category === 'play_simple') {
+        const pairs = [[1,'+',2], [2,'+',2], [5,'+',3], [3,'+',1], [1,'+',1], [6,'+',2], [7,'+',1], [4,'-',2], [8,'-',5], [9,'-',4], [7,'-',2], [3,'-',1], [6,'-',5], [9,'-',5]];
+        let pick = pairs[Math.floor(Math.random() * pairs.length)];
+        let mult = Math.random() > 0.5 ? 10 : 1;
+        a = pick[0] * mult; b = pick[2] * mult; sign = pick[1];
+        target = sign === '+' ? a + b : a - b;
+    } 
+    else if (category === 'play_friends_5') {
+        const pairs = [[4,'+',1], [3,'+',2], [2,'+',3], [1,'+',4], [4,'+',2], [4,'+',3], [3,'+',4]];
+        let pick = pairs[Math.floor(Math.random() * pairs.length)];
+        let mult = Math.random() > 0.5 ? 10 : 1;
+        a = pick[0] * mult; b = pick[2] * mult; sign = pick[1];
+        target = sign === '+' ? a + b : a - b;
+    } 
+    else if (category === 'play_friends_10') {
+        const pairs = [[9,'+',1], [8,'+',2], [7,'+',3], [6,'+',4], [5,'+',5], [4,'+',6], [3,'+',7], [2,'+',8], [1,'+',9], [8,'+',3], [7,'+',4], [6,'+',5], [9,'+',9], [8,'+',8]];
+        let pick = pairs[Math.floor(Math.random() * pairs.length)];
+        let mult = Math.random() > 0.5 ? 10 : 1;
+        a = pick[0] * mult; b = pick[2] * mult; sign = pick[1];
+        target = sign === '+' ? a + b : a - b;
+    }
+    else if (category === 'play_mult') {
+        a = Math.floor(Math.random() * 8) + 2; 
+        b = Math.floor(Math.random() * 8) + 2; 
+        sign = '×'; target = a * b;
+    }
+    else if (category === 'play_div') {
+        b = Math.floor(Math.random() * 8) + 2; 
+        target = Math.floor(Math.random() * 8) + 2; 
+        a = b * target; sign = ':';
+    }
+    return {
+        taskText: `Реши пример: <br><span style="font-size:32px;">${a} ${sign} ${b} = ?</span>`,
+        initialValue: 0, target: target
+    };
+}
+
+function fillEndlessTasks(category) {
+    let tasks = [];
+    for(let i = 0; i < 10; i++) { tasks.push(generateEndlessTask(category)); }
+    roomsData[category] = tasks;
+}
 
 // ==========================================
-//        ГЕНЕРАТОР ПРИМЕРОВ СОРОБАН И ИГРЫ
+//        ЛАЙТБОКС И НАВИГАЦИЯ
+// ==========================================
+function openLightbox(src) {
+    const lb = document.getElementById('image-lightbox');
+    document.getElementById('lightbox-img').src = src;
+    lb.style.display = 'flex';
+    setTimeout(() => lb.style.opacity = '1', 10);
+}
+
+function closeLightbox() {
+    const lb = document.getElementById('image-lightbox');
+    lb.style.opacity = '0';
+    setTimeout(() => lb.style.display = 'none', 200);
+}        
+
+function goMainFromSubmenu() { document.getElementById('screen-soroban-menu').classList.remove('active'); document.getElementById('screen-menu').classList.add('active'); }
+function goMainFromMemorika() { document.getElementById('screen-memorika-menu').classList.remove('active'); document.getElementById('screen-menu').classList.add('active'); }
+function goMainFromWordsMenu() { document.getElementById('screen-words-menu').classList.remove('active'); document.getElementById('screen-menu').classList.add('active'); }
+function openWordsMenu() { document.getElementById('screen-menu').classList.remove('active'); document.getElementById('screen-words-menu').classList.add('active'); }
+function openSorobanMenu() { document.getElementById('screen-menu').classList.remove('active'); document.getElementById('screen-soroban-menu').classList.add('active'); }
+function openMemorikaMenu() { document.getElementById('screen-menu').classList.remove('active'); document.getElementById('screen-memorika-menu').classList.add('active'); }
+function openSorobanLearnMenu() { document.getElementById('screen-soroban-menu').classList.remove('active'); document.getElementById('screen-soroban-learn-menu').classList.add('active'); }
+function openSorobanPlayMenu() { document.getElementById('screen-soroban-menu').classList.remove('active'); document.getElementById('screen-soroban-play-menu').classList.add('active'); }
+function goBackToSorobanMenuFromLearn() { document.getElementById('screen-soroban-learn-menu').classList.remove('active'); document.getElementById('screen-soroban-menu').classList.add('active'); }
+function goBackToSorobanMenuFromPlay() { document.getElementById('screen-soroban-play-menu').classList.remove('active'); document.getElementById('screen-soroban-menu').classList.add('active'); }
+
+function goBackFromGame() {
+    try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(e){}
+    if (currentAudio) { currentAudio.pause(); currentAudio.currentTime = 0; }
+
+    const oldAbacus = document.getElementById('abacus-body-container');
+    if (oldAbacus) { oldAbacus.remove(); globalLowerBeadsRefs = []; globalUpperBeadsRefs = []; }
+
+    document.getElementById('screen-room').classList.remove('active');
+    document.getElementById('game-area').classList.remove('active');
+
+    if (currentRoom.startsWith('words')) {
+        document.getElementById('screen-words-menu').classList.add('active');
+    } else if (currentRoom === 'soroban') {
+        if (sorobanMode === 'free') document.getElementById('screen-soroban-menu').classList.add('active');
+        else if (sorobanMode === 'learn') document.getElementById('screen-soroban-learn-menu').classList.add('active');
+        else if (sorobanMode === 'play') document.getElementById('screen-soroban-play-menu').classList.add('active');
+    }
+}
+
+function openRoom(roomId, title) {
+    try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(e){}
+    currentRoom = roomId;
+    document.getElementById('game-room-title').innerText = title;
+    document.getElementById('screen-menu').classList.remove('active');
+    document.getElementById('screen-words-menu').classList.remove('active');
+    document.getElementById('screen-room').classList.add('active');
+    document.getElementById('game-area').classList.add('active');
+    document.getElementById('btn-back-to-menu').onclick = goBackFromGame;
+
+    if (roomId.startsWith('words')) {
+        currentWordIndex = 0;
+        document.getElementById('word-image-container').style.display = 'flex';
+        document.getElementById('soroban-controls').style.display = 'none';
+        document.getElementById('soroban-score').style.display = 'none';
+        document.getElementById('target-zone').style.display = 'flex';
+        document.getElementById('drag-zone').style.display = 'flex';
+        setupWordsGame();
+    }
+}
+
+function startSoroban(mode, category, title) {
+    try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(e){}
+    currentRoom = 'soroban';
+    sorobanMode = mode;
+    sorobanCategory = category;
+    currentLessonIndex = 0;
+    isTaskLock = false;
+
+    if (mode === 'play' && category.startsWith('play_')) { fillEndlessTasks(category); }
+    if (roomsData[category]) { roomsData[category].forEach(t => t._comicShown = false); }
+
+    document.getElementById('game-room-title').innerText = title
+    document.getElementById('screen-soroban-menu').classList.remove('active');
+    document.getElementById('screen-soroban-learn-menu').classList.remove('active');
+    document.getElementById('screen-soroban-play-menu').classList.remove('active');
+    document.getElementById('screen-room').classList.add('active');
+    document.getElementById('game-area').classList.add('active');
+    document.getElementById('btn-back-to-menu').onclick = goBackFromGame;
+
+    document.getElementById('word-image-container').style.display = 'none';
+    document.getElementById('target-zone').style.display = 'none';
+    document.getElementById('drag-zone').style.display = 'none';
+
+    document.getElementById('soroban-controls').style.display = 'flex';
+    document.getElementById('soroban-score').style.display = 'block';
+
+    const taskContainer = document.getElementById('soroban-task-container');
+    if (mode === 'free') {
+        taskContainer.style.display = 'none';
+    } else {
+        if (!roomsData[category] || roomsData[category].length === 0) {
+            taskContainer.style.display = 'flex';
+            document.getElementById('soroban-task-text').innerHTML = "Задания скоро появятся!";
+            document.getElementById('soroban-hint-container').style.display = 'none';
+            document.getElementById('soroban-nav-arrows').style.display = 'none';
+            isTaskLock = true;
+        } else {
+            taskContainer.style.display = 'flex';
+            document.getElementById('soroban-nav-arrows').style.display = 'flex';
+            nextSorobanTask();
+        }
+    }
+    resetAbacusBeads();
+}
+
+// ==========================================
+//        ИГРА СЛОГИ
+// ==========================================
+function setupWordsGame() {
+    const dragZone = document.getElementById('drag-zone');
+    const targetZone = document.getElementById('target-zone');
+    dragZone.innerHTML = ''; targetZone.innerHTML = '';
+    matchedCount = 0;
+
+    const wordData = roomsData[currentRoom][currentWordIndex];
+    document.getElementById('word-3d-image').src = wordData.image;
+    if (currentWordIndex === 0) { playSound('audio/words_intro.wav'); } else { playSound(wordData.sound); }
+
+    document.getElementById('btn-prev-word').classList.toggle('disabled', currentWordIndex === 0);
+    document.getElementById('btn-next-word').classList.toggle('disabled', currentWordIndex === roomsData[currentRoom].length - 1);
+
+    wordData.syllables.forEach((syl, index) => {
+        const slot = document.createElement('div');
+        slot.className = 'target-item';
+        slot.style.backgroundImage = "url('img/slot_bg.png?v=2')";
+        slot.innerText = syl;
+        slot.setAttribute('data-syl', syl);
+        slot.setAttribute('data-index', index);
+        targetZone.appendChild(slot);
+    });
+
+    wordData.syllables.forEach((syl, i) => {
+        const brick = document.createElement('div');
+        brick.className = 'draggable-item';
+        brick.style.backgroundImage = "url('img/brick_bg.png')";
+        brick.style.touchAction = 'none'; 
+        brick.innerText = syl;
+        brick.setAttribute('data-syl', syl);
+        brick.setAttribute('data-audio', wordData.audioSyllables[i]);
+        brick.addEventListener('pointerdown', handlePointerStart);
+        dragZone.appendChild(brick);
+    });
+
+    let bricks = Array.from(dragZone.children);
+    shuffleArray(bricks);
+    dragZone.innerHTML = '';
+    bricks.forEach(b => dragZone.appendChild(b));
+}
+
+function changeWord(direction) {
+    try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(e){}
+    currentWordIndex += direction;
+    if (currentWordIndex < 0) currentWordIndex = 0;
+    if (currentWordIndex >= roomsData[currentRoom].length) currentWordIndex = roomsData[currentRoom].length - 1;
+    setupWordsGame();
+}
+
+function handlePointerStart(e) {
+    if (activeItem) return; 
+    if (e.target.classList.contains('matched')) return;
+
+    activeItem = e.target;
+    activeItem.setPointerCapture(e.pointerId);
+
+    const rect = activeItem.getBoundingClientRect();
+    const offsetX = e.clientX - rect.left;
+    const offsetY = e.clientY - rect.top;
+
+    activeItem._dragOffsetX = offsetX;
+    activeItem._dragOffsetY = offsetY;
+
+    activeItem.style.width = rect.width + 'px';
+    activeItem.style.height = rect.height + 'px';
+    activeItem.style.transform = 'none';
+
+    playSound(activeItem.getAttribute('data-audio'));
+
+    activeItem.classList.add('dragging');
+    activeItem.style.position = 'fixed';
+    activeItem.style.margin = '0';
+    activeItem.style.zIndex = '1000';
+    activeItem.style.left = (e.clientX - offsetX) + 'px';
+    activeItem.style.top = (e.clientY - offsetY) + 'px';
+
+    activeItem.addEventListener('pointermove', handlePointerMove);
+    activeItem.addEventListener('pointerup', handlePointerEnd);
+    activeItem.addEventListener('pointercancel', handlePointerEnd); 
+}
+
+function handlePointerMove(e) {
+    if (!activeItem) return;
+    const offsetX = activeItem._dragOffsetX;
+    const offsetY = activeItem._dragOffsetY;
+    activeItem.style.left = (e.clientX - offsetX) + 'px';
+    activeItem.style.top = (e.clientY - offsetY) + 'px';
+}
+
+function handlePointerEnd(e) {
+    if (!activeItem) return;
+
+    activeItem.releasePointerCapture(e.pointerId);
+    activeItem.classList.remove('dragging');
+    activeItem.removeEventListener('pointermove', handlePointerMove);
+    activeItem.removeEventListener('pointerup', handlePointerEnd);
+    activeItem.removeEventListener('pointercancel', handlePointerEnd); 
+
+    const itemSyl = activeItem.getAttribute('data-syl');
+    const clientX = e.clientX;
+    const clientY = e.clientY;
+
+    activeItem.style.display = 'none';
+
+    let targets = document.querySelectorAll('.target-item');
+    let matchedTarget = null;
+
+    targets.forEach(t => {
+        const rect = t.getBoundingClientRect();
+        const tolerance = 30;
+        if (clientX >= (rect.left - tolerance) && clientX <= (rect.right + tolerance) && 
+            clientY >= (rect.top - tolerance) && clientY <= (rect.bottom + tolerance)) {
+            if (t.getAttribute('data-syl') === itemSyl && !t.classList.contains('matched')) {
+                matchedTarget = t;
+            }
+        }
+    });
+
+    activeItem.style.display = 'flex';
+
+    if (matchedTarget) {
+        try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "medium"}); } catch(err) {}
+        activeItem.classList.add('matched');
+        matchedTarget.classList.add('matched');
+        activeItem.style.display = 'none';
+        matchedTarget.style.backgroundImage = "url('img/brick_bg.png')";
+        matchedCount++;
+        if (matchedCount === roomsData[currentRoom][currentWordIndex].syllables.length) {
+            setTimeout(() => {
+                currentWordIndex++;
+                if (currentWordIndex < roomsData[currentRoom].length) {
+                    setupWordsGame();
+                } else {
+                    playSound('audio/words_win.wav');
+                    setTimeout(goBackFromGame, 3000); 
+                }
+            }, 1200);
+        }
+    } else {
+        try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(err) {}
+        playSound('audio/wrong.wav');
+        activeItem.style.transition = 'all 0.3s ease';
+        activeItem.style.position = 'relative';
+        activeItem.style.left = '0px';
+        activeItem.style.top = '0px';
+        activeItem.style.width = '';
+        activeItem.style.height = '';
+        activeItem.style.zIndex = '';
+        activeItem.style.transform = ''; 
+        setTimeout(() => { if(activeItem) activeItem.style.transition = 'none'; }, 300);
+    }
+
+    delete activeItem._dragOffsetX;
+    delete activeItem._dragOffsetY;
+    activeItem = null;
+}
+
+function shuffleArray(array) {
+    for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+    }
+    return array;
+}
+
+function playSound(soundFile) {
+    if (soundFile) {
+        if (currentAudio) { currentAudio.pause(); currentAudio.currentTime = 0; }
+        currentAudio = new Audio(soundFile);
+        currentAudio.play().catch(err => console.log("Ошибка аудио:", err));
+    }
+}
+
+// ==========================================
+//        СОРОБАН
 // ==========================================
 let sorobanState = [
     { upper: false, lower: 0 }, { upper: false, lower: 0 }, { upper: false, lower: 0 }
@@ -420,7 +677,7 @@ function setupSorobanGame() {
     const gameArea = document.getElementById('game-area');
     const oldAbacus = document.getElementById('abacus-body-container');
     if (oldAbacus) oldAbacus.remove();
-    
+
     globalLowerBeadsRefs = [];
     globalUpperBeadsRefs = [];
 
@@ -442,7 +699,7 @@ function setupSorobanGame() {
         const rod = document.createElement('div');
         rod.className = "soroban-rod";
         rod.style.left = (85 + s * 95) + "px";
-        
+
         const label = document.createElement('div');
         label.innerText = rodLabels[s];
         label.style.position = "absolute"; label.style.bottom = "-35px";
@@ -454,7 +711,7 @@ function setupSorobanGame() {
         upperBead.className = `bead-3d ${rodColors[s]}`;
         upperBead.style.top = "5px";
         globalUpperBeadsRefs.push({ img: upperBead, rodIndex: s });
-        
+
         upperBead.onclick = () => {
             if (isTaskLock && sorobanMode !== 'free') return;
             try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(e){}
@@ -469,7 +726,7 @@ function setupSorobanGame() {
             const lowerBead = document.createElement('div');
             lowerBead.className = `bead-3d ${rodColors[s]}`;
             lowerBead.style.top = (360 - (3 - b) * 34) + "px";
-            
+
             lowerBead.onclick = () => {
                 if (isTaskLock && sorobanMode !== 'free') return;
                 try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(e){}
@@ -549,7 +806,7 @@ function nextSorobanTask() {
     const currentTask = tasks[currentLessonIndex];
     if (sorobanMode === 'play') document.getElementById('soroban-task-text').innerHTML = currentTask.taskText;
     else document.getElementById('soroban-task-text').innerHTML = `${currentTask.taskText} <span class="target-highlight">(${currentTask.target})</span>`;
-    
+
     if (currentTask.slides && currentTask.slides.length > 0 && !currentTask._comicShown) {
         openComicSlider(currentTask.slides, currentTask.audioSlides);
         currentTask._comicShown = true;
@@ -563,7 +820,7 @@ function nextSorobanTask() {
         hintCard.src = currentTask.hint;
         hintContainer.style.display = 'flex';
     } else { hintContainer.style.display = 'none'; }
-    
+
     isTaskLock = false;
     const scrollBtn = document.getElementById('scroll-btn');
     if (scrollBtn) scrollBtn.style.display = (sorobanMode === 'play' && (sorobanCategory === 'play_mult' || sorobanCategory === 'play_div')) ? 'block' : 'none';
@@ -575,7 +832,7 @@ function updateSorobanScore() {
     total += (sorobanState[0].upper ? 5 : 0) * 100 + sorobanState[0].lower * 100;
     total += (sorobanState[1].upper ? 5 : 0) * 10 + sorobanState[1].lower * 10;
     total += (sorobanState[2].upper ? 5 : 0) * 1 + sorobanState[2].lower * 1;
-    
+
     const scoreDisplay = document.getElementById('soroban-score');
     scoreDisplay.innerText = total;
 
@@ -594,7 +851,7 @@ function updateSorobanScore() {
         setTimeout(() => {
             scoreDisplay.classList.remove('correct-flash');
             document.getElementById('abacus-body-container').classList.remove('success-lock');
-            
+
             if (currentLessonIndex < tasks.length - 1) {
                 currentLessonIndex++;
                 resetAbacusBeads();
@@ -672,7 +929,7 @@ function openMagic9() {
     try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(e){}
     document.getElementById('screen-multiplication-menu').classList.remove('active');
     document.getElementById('screen-magic-9').classList.add('active');
-    
+
     currentMagicFinger = 0;
     document.getElementById('hands-image').src = 'img/hands_0.jpg';
     document.getElementById('magic-9-result').innerHTML = "Нажми стрелочку вправо ☝️";
@@ -696,15 +953,15 @@ function changeMagicFinger(direction) {
     document.getElementById('btn-prev-magic').classList.toggle('disabled', currentMagicFinger === 1);
     document.getElementById('btn-next-magic').classList.toggle('disabled', currentMagicFinger === 10);
     document.getElementById('hands-image').src = `img/hands_${currentMagicFinger}.jpg`;
-    
+
     let tens = currentMagicFinger - 1;
     let units = 10 - currentMagicFinger;
     let result = tens * 10 + units;
-    
+
     document.getElementById('magic-9-result').innerHTML = 
         `9 × ${currentMagicFinger} = <span style="font-size:42px; color:#E91E63;">${result}</span><br>
          <span style="font-size:16px; color:#777; font-weight: normal;">(Слева десятков: <b>${tens}</b>, Справа единиц: <b>${units}</b>)</span>`;
-         
+
     playSound(`audio/magic9_${currentMagicFinger}.wav`);
 }
 
@@ -746,70 +1003,6 @@ function updatePoemCard() {
     document.getElementById('btn-prev-poem').classList.toggle('disabled', currentPoemIndex === 0);
     document.getElementById('btn-next-poem').classList.toggle('disabled', currentPoemIndex === poemsData.length - 1);
     playSound(poem.audio);
-}
-
-// ТРЕЕНАЖЁР УМНОЖЕНИЯ (ТЕСТ)
-let multTestScoreCorrect = 0;
-let multTestScoreTotal = 0;
-let multTestCurrentTarget = 0;
-
-function openMultTest() {
-    try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(e){}
-    document.getElementById('screen-multiplication-menu').classList.remove('active');
-    document.getElementById('screen-mult-test').classList.add('active');
-    multTestScoreCorrect = 0;
-    multTestScoreTotal = 0;
-    document.getElementById('mult-test-score').innerText = "0 / 0";
-    generateMultTestQuestion();
-}
-
-function goBackToMultFromTest() {
-    try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(e){}
-    document.getElementById('screen-mult-test').classList.remove('active');
-    document.getElementById('screen-multiplication-menu').classList.add('active');
-}
-
-function generateMultTestQuestion() {
-    let pick = poemsData[Math.floor(Math.random() * poemsData.length)];
-    let rawMath = pick.math.split('=')[0].replace('×', '').trim();
-    let num1 = parseInt(rawMath[0]);
-    let num2 = parseInt(rawMath[rawMath.length - 1]);
-    multTestCurrentTarget = num1 * num2;
-
-    document.getElementById('mult-test-question').innerHTML = `${num1} × ${num2} = ?`;
-
-    let answers = [multTestCurrentTarget];
-    while(answers.length < 4) {
-        let fake = (Math.floor(Math.random() * 8) + 2) * (Math.floor(Math.random() * 8) + 2);
-        if(!answers.includes(fake)) answers.push(fake);
-    }
-    shuffleArray(answers);
-
-    const opts = document.getElementById('mult-test-options');
-    opts.innerHTML = '';
-    answers.forEach(ans => {
-        const btn = document.createElement('button');
-        btn.style.cssText = "padding: 15px; font-size: 22px; font-weight: bold; border-radius: 15px; border: 2px solid #ccc; background: white; cursor: pointer; transition: 0.1s;";
-        btn.innerText = ans;
-        btn.onclick = () => checkMultTestAnswer(btn, ans);
-        opts.appendChild(btn);
-    });
-}
-
-function checkMultTestAnswer(btn, chosen) {
-    multTestScoreTotal++;
-    if(chosen === multTestCurrentTarget) {
-        multTestScoreCorrect++;
-        try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "medium"}); } catch(e){}
-        playSound('audio/correct.wav');
-        btn.style.background = '#e8f5e9'; btn.style.borderColor = '#4CAF50';
-    } else {
-        try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "heavy"}); } catch(e){}
-        playSound('audio/wrong.wav');
-        btn.style.background = '#ffebee'; btn.style.borderColor = '#F44336';
-    }
-    document.getElementById('mult-test-score').innerText = `${multTestScoreCorrect} / ${multTestScoreTotal}`;
-    setTimeout(generateMultTestQuestion, 1200);
 }
 
 function changePoem(direction) {
@@ -915,8 +1108,10 @@ function goBackToMemorikaFromChain() {
 
 function startChainTraining(count) {
     try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(e){}
-    if (count > chainItemsPool.length) return;
-    
+    if (count > chainItemsPool.length) {
+        alert(`В копилке пока только ${chainItemsPool.length} предметов! Добавь больше картинок для уровня "${count}".`);
+        return;
+    }
     document.getElementById('screen-chain-menu').classList.remove('active');
     document.getElementById('screen-chain-game').classList.add('active');
 
@@ -937,10 +1132,10 @@ function showTrainingObserveStage(count) {
     const msg = document.getElementById('chain-message');
     msg.innerHTML = `Свяжи эти <b style="color:#FF9800">${count} предметов</b> в одну смешную сказку!`;
     playSound('audio/chain_train.wav');
-    
+
     area.innerHTML = ''; area.style.flexDirection = 'row';
     area.style.alignItems = "center"; area.style.flexWrap = 'wrap'; 
-    
+
     learningSequence.forEach(item => {
         const img = document.createElement('img');
         img.src = item.img; img.style.width = "65px"; img.style.height = "65px";
@@ -982,7 +1177,7 @@ function showObserveStage() {
     playSound('audio/chain_remember.wav');
     area.innerHTML = ''; area.style.flexDirection = 'row'; area.style.alignItems = "center"; 
     document.getElementById('btn-chain-next').style.display = 'none';
-    
+
     learningSequence.forEach(item => {
         const img = document.createElement('img');
         img.src = item.img; img.style.width = "80px"; img.style.height = "80px";
@@ -1069,7 +1264,7 @@ function setupChainGame() {
         item.style.display = 'flex'; item.style.alignItems = 'center'; item.style.justifyContent = 'center';
         item.style.borderRadius = '10px'; item.style.cursor = 'pointer'; item.style.transition = 'transform 0.1s ease'; 
         item.setAttribute('data-id', card.id);
-        
+
         const img = document.createElement('img');
         img.src = card.img; img.style.width = '55px'; img.style.height = '55px';
         img.style.objectFit = 'contain'; img.style.pointerEvents = 'none'; 
@@ -1097,10 +1292,10 @@ function handleChainItemClick(e) {
         img.style.objectFit = 'contain'; img.style.transform = 'scale(0.5)';
         img.style.transition = 'transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
         currentTargetSlot.appendChild(img);
-        
+
         setTimeout(() => { img.style.transform = 'scale(1)'; }, 10);
         currentChainStep++;
-        
+
         if (currentChainStep === chainGameTargets.length) {
             setTimeout(() => {
                 document.getElementById('chain-message').innerText = "Супер! Ты настоящий Гений! 🎉";
@@ -1130,7 +1325,6 @@ function goBackToChainMenu() {
 // ==========================================
 let drawingPoem = []; 
 let currentDrawIndex = 0;
-// Избавились от alert() - ПУНКТ 1
 let userDrawings = [];
 let canvas, ctx;
 let isDrawing = false;
@@ -1157,10 +1351,7 @@ function loadPredefinedPoem(poemId) {
 
 function startCustomPoemDrawing() {
     const text = document.getElementById('custom-poem-text').value;
-    if (!text.trim()) { 
-        document.getElementById('custom-poem-text').placeholder = 'Пожалуйста, напиши или вставь стих сюда! ✍️'; 
-        return; 
-    }
+    if (!text.trim()) { alert('Пожалуйста, напиши или вставь хотя бы пару строчек!'); return; }
 
     const lines = text.split('\n').map(line => line.trim()).filter(line => line.length > 0);
     if (lines.length === 0) return;
@@ -1302,7 +1493,7 @@ function startWardrobeGame(count) {
     document.getElementById('wardrobe-instruction').style.background = "#e3f2fd";
     document.getElementById('wardrobe-instruction').style.borderColor = "#64b5f6";
     document.getElementById('wardrobe-instruction').style.color = "#1565c0";
-    
+
     document.getElementById('btn-camera').style.display = 'inline-block';
     document.getElementById('room-photo-container').style.display = 'flex';
     document.getElementById('wardrobe-items-pool').style.display = 'flex';
@@ -1338,12 +1529,12 @@ function renderWardrobePool(items) {
         item.style.width = '70px'; item.style.height = '70px'; item.style.backgroundSize = '100% 100%';
         item.style.display = 'flex'; item.style.alignItems = 'center'; item.style.justifyContent = 'center';
         item.style.borderRadius = '10px'; item.style.cursor = 'pointer'; item.setAttribute('data-id', card.id);
-        
+
         const img = document.createElement('img');
         img.src = card.image || card.img; img.style.width = '55px'; img.style.height = '55px';
         img.style.objectFit = 'contain'; img.style.pointerEvents = 'none'; 
         item.appendChild(img);
-        
+
         item.onclick = (e) => {
             try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(err) {}
             if (activeWardrobeItem) activeWardrobeItem.classList.remove('selected-wardrobe-item');
@@ -1386,7 +1577,7 @@ function startWardrobeRecall() {
     document.getElementById('wardrobe-items-pool').style.display = 'none';
     document.getElementById('btn-camera').style.display = 'none';
     document.getElementById('btn-wardrobe-memorized').style.display = 'none';
-    
+
     const instr = document.getElementById('wardrobe-instruction');
     instr.innerHTML = "<b>Магия! Комната исчезла! 🙈</b><br><span style='font-size:14px; font-weight:normal; color:#444;'>Вспомни, как ты расставлял предметы, и выбери их по порядку!</span>";
     instr.style.background = "#fff9c4"; instr.style.borderColor = "#fbc02d"; instr.style.color = "#f57f17";
@@ -1394,7 +1585,7 @@ function startWardrobeRecall() {
 
     document.getElementById('wardrobe-recall-area').style.display = 'block';
     const targetsContainer = document.getElementById('wardrobe-targets'); targetsContainer.innerHTML = '';
-    
+
     currentWardrobeSequence.forEach((item, index) => {
         const slot = document.createElement('div');
         slot.style.backgroundImage = "url('img/slot_bg.png?v=2')";
@@ -1416,7 +1607,7 @@ function startWardrobeRecall() {
         item.style.display = 'flex'; item.style.alignItems = 'center'; item.style.justifyContent = 'center';
         item.style.borderRadius = '10px'; item.style.cursor = 'pointer'; item.style.transition = 'transform 0.1s ease'; 
         item.setAttribute('data-id', card.id);
-        
+
         const img = document.createElement('img');
         img.src = card.image || card.img; img.style.width = '45px'; img.style.height = '45px';
         img.style.objectFit = 'contain'; img.style.pointerEvents = 'none'; 
@@ -1444,7 +1635,7 @@ function handleWardrobeRecallClick(e) {
         img.style.transition = 'transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
         currentTargetSlot.appendChild(img);
         setTimeout(() => { img.style.transform = 'scale(1)'; }, 10);
-        
+
         wardrobeRecallStep++;
         if (wardrobeRecallStep === currentWardrobeSequence.length) {
             setTimeout(() => {
@@ -1516,7 +1707,7 @@ function nextBrainConfusionTask() {
     document.getElementById('confusion-main-img').src = visualAnimal.img;
     document.getElementById('confusion-question-text').innerText = "Слушай внимательно...";
     document.getElementById('confusion-question-text').style.color = "#e91e63";
-    
+
     const optionsContainer = document.getElementById('confusion-options'); optionsContainer.innerHTML = '';
     let options = shuffleArray([visualAnimal, audioAnimal, targetAnimal]);
 
@@ -1537,7 +1728,7 @@ function nextBrainConfusionTask() {
     playSound(audioAnimal.sound);
     if (confusionQuestionAudio) confusionQuestionAudio.pause();
     confusionQuestionAudio = new Audio(targetAnimal.question);
-    
+
     setTimeout(() => {
         if (document.getElementById('screen-brain-confusion').classList.contains('active')) {
             confusionQuestionAudio.play();
@@ -1658,6 +1849,172 @@ function spawnObstacles() {
     if (spawnType === 1 || spawnType === 2) createObstacleDom(spawnRight);
 }
 
+function createObstacleDom(laneIndex) {
+    const container = document.getElementById('racing-obstacles');
+    const obs = document.createElement('img');
+    const isRock = Math.random() > 0.5; const obstacleType = isRock ? 'rock' : 'puddle'; 
+    obs.src = isRock ? 'img/rock.png' : 'img/puddle.png';
+    obs.onerror = function() { this.src = 'img/garden_item_5.png'; }; 
+    obs.style.position = 'absolute'; obs.style.width = '45px'; obs.style.height = '45px';
+    obs.style.left = racingLanes[laneIndex] + '%'; obs.style.transform = 'translateX(-50%)'; obs.style.top = '-50px';
+    container.appendChild(obs);
+    obstaclesArray.push({ el: obs, lane: laneIndex, y: -50, type: obstacleType });
+}
+
+function updateRacingFrame() {
+    if (!isRacingActive) return;
+    const screenHeight = window.innerHeight;
+    const carBottomPx = screenHeight * 0.10; const carTopPx = carBottomPx + 90; 
+    const hitZoneTop = screenHeight - carTopPx - 20; const hitZoneBottom = screenHeight - carBottomPx;
+    for (let i = obstaclesArray.length - 1; i >= 0; i--) {
+        let obs = obstaclesArray[i];
+        obs.y += racingSpeed; obs.el.style.top = obs.y + 'px';
+        if (obs.y + 40 > hitZoneTop && obs.y < hitZoneBottom) {
+            if (obs.lane === carLanes.left || obs.lane === carLanes.right) { crashGame(obs.type); return; }
+        }
+        if (obs.y > screenHeight) {
+            obs.el.remove(); obstaclesArray.splice(i, 1);
+            racingScore += 5; document.getElementById('racing-score-display').innerText = racingScore + ' км';
+            if (racingScore % 50 === 0 && racingSpeed < 18) racingSpeed += 1; 
+        }
+    }
+}
+
+function crashGame(hitType) {
+    isRacingActive = false; clearInterval(racingLoopInterval); clearInterval(racingSpawnInterval);
+    if (engineAudio) engineAudio.pause();
+    try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "heavy"}); } catch(e){}
+    const gameOverTitle = document.getElementById('racing-game-over').querySelector('h2');
+    if (hitType === 'rock') {
+        playSound('audio/crash_rock.wav'); 
+        gameOverTitle.innerText = 'БАМ! 💥'; gameOverTitle.style.color = '#F44336';
+    } else {
+        playSound('audio/splash.wav'); 
+        gameOverTitle.innerText = 'БУЛЬК! 💦'; gameOverTitle.style.color = '#2196F3'; 
+    }
+    document.getElementById('racing-final-score').innerText = racingScore + ' км';
+    document.getElementById('racing-game-over').style.display = 'block';
+    const area = document.getElementById('racing-game-area');
+    area.style.transform = 'translateX(-10px)'; setTimeout(() => { area.style.transform = 'translateX(10px)'; }, 50);
+    setTimeout(() => { area.style.transform = 'translateX(-10px)'; }, 100); setTimeout(() => { area.style.transform = 'translateX(0px)'; }, 150);
+}
+
+// ==========================================
+//        БРЕЙН-ФИТНЕС: ЗЕРКАЛКИ
+// ==========================================
+let mirrorCurrentLevel = 0;
+let mirrorLeftCanvas, mirrorRightCanvas, mirrorLeftCtx, mirrorRightCtx;
+let mirrorIsDrawingLeft = false, mirrorIsDrawingRight = false;
+
+const genVLine = () => [[{x:0.5, y:0.1}, {x:0.5, y:0.9}]];
+const genHLine = () => [[{x:0.2, y:0.5}, {x:0.8, y:0.5}]];
+const genSlash = () => [[{x:0.2, y:0.8}, {x:0.8, y:0.2}]];
+const genBackslash = () => [[{x:0.2, y:0.2}, {x:0.8, y:0.8}]];
+const genSquare = () => [[{x:0.2,y:0.2}, {x:0.8,y:0.2}, {x:0.8,y:0.8}, {x:0.2,y:0.8}, {x:0.2,y:0.2}]];
+const genTriangle = () => [[{x:0.5,y:0.2}, {x:0.8,y:0.8}, {x:0.2,y:0.8}, {x:0.5,y:0.2}]];
+const genRhombus = () => [[{x:0.5,y:0.1}, {x:0.9,y:0.5}, {x:0.5,y:0.9}, {x:0.1,y:0.5}, {x:0.5,y:0.1}]];
+const genZ = () => [[{x:0.2,y:0.2}, {x:0.8,y:0.2}, {x:0.2,y:0.8}, {x:0.8,y:0.8}]];
+const genM = () => [[{x:0.2,y:0.8}, {x:0.2,y:0.2}, {x:0.5,y:0.5}, {x:0.8,y:0.2}, {x:0.8,y:0.8}]];
+const genZigzag = () => [[{x:0.2,y:0.1}, {x:0.8,y:0.3}, {x:0.2,y:0.5}, {x:0.8,y:0.7}, {x:0.2,y:0.9}]];
+const genCircle = () => { let p=[]; for(let i=0; i<=20; i++) p.push({x: 0.5+0.35*Math.cos(i*Math.PI*2/20), y: 0.5+0.35*Math.sin(i*Math.PI*2/20)}); return [p]; };
+const genVWave = () => { let p=[]; for(let i=0; i<=30; i++) p.push({x: 0.5 + 0.3*Math.sin(i*Math.PI*2/10), y: 0.1 + 0.8*(i/30)}); return [p]; };
+const genStar = () => { let p=[]; for(let i=0; i<=5; i++){ let a = i * 4 * Math.PI / 5 - Math.PI/2; p.push({x: 0.5 + 0.4*Math.cos(a), y: 0.5 + 0.4*Math.sin(a)}); } return [p]; };
+const genInfinity = () => { let p=[]; for(let i=0; i<=40; i++){ let t = i * 2 * Math.PI / 40; let scale = 2 / (3 - Math.cos(2*t)); p.push({x: 0.5 + 0.3 * scale * Math.sin(2*t), y: 0.5 + 0.4 * scale * Math.cos(t)}); } return [p]; };
+const genSpiral = () => { let p=[]; for(let i=0; i<=40; i++){ let t = i * 4 * Math.PI / 40; let r = 0.05 + 0.35 * (i/40); p.push({x: 0.5 + r*Math.cos(t), y: 0.5 + r*Math.sin(t)}); } return [p]; };
+
+const mirrorTemplates = [
+    { title: "Ур. 1: Линии ➖ |", leftPaths: genVLine(), rightPaths: genHLine() }, { title: "Ур. 2: Косые / \\", leftPaths: genSlash(), rightPaths: genBackslash() },
+    { title: "Ур. 3: Углы Z и M", leftPaths: genZ(), rightPaths: genM() }, { title: "Ур. 4: Квадрат и Треугольник", leftPaths: genSquare(), rightPaths: genTriangle() },
+    { title: "Ур. 5: Круг и Ромб", leftPaths: genCircle(), rightPaths: genRhombus() }, { title: "Ур. 6: Зигзаг и Волна", leftPaths: genZigzag(), rightPaths: genVWave() },
+    { title: "Ур. 7: Спираль и Восьмёрка", leftPaths: genSpiral(), rightPaths: genInfinity() }, { title: "Ур. 8: Звезда и Круг", leftPaths: genStar(), rightPaths: genCircle() },
+    { title: "Ур. 9: Квадрат и Зигзаг", leftPaths: genSquare(), rightPaths: genZigzag() }, { title: "Ур. 10: Треугольник и Волна", leftPaths: genTriangle(), rightPaths: genVWave() },
+    { title: "Ур. 11: Ромб и Спираль", leftPaths: genRhombus(), rightPaths: genSpiral() }, { title: "Ур. 12: Восьмёрка и Звезда", leftPaths: genInfinity(), rightPaths: genStar() },
+    { title: "Ур. 13: Круг и Квадрат", leftPaths: genCircle(), rightPaths: genSquare() }, { title: "Ур. 14: Волна и Зигзаг", leftPaths: genVWave(), rightPaths: genZigzag() },
+    { title: "Ур. 15: Спираль и Треугольник", leftPaths: genSpiral(), rightPaths: genTriangle() }, { title: "Ур. 16: Звезда и Ромб", leftPaths: genStar(), rightPaths: genRhombus() },
+    { title: "Ур. 17: Зигзаг и Восьмёрка", leftPaths: genZigzag(), rightPaths: genInfinity() }, { title: "Ур. 18: Волна и Круг", leftPaths: genVWave(), rightPaths: genCircle() },
+    { title: "Ур. 19: Квадрат и Спираль", leftPaths: genSquare(), rightPaths: genSpiral() }, { title: "Ур. 20: Босс! Звезда и Восьмёрка", leftPaths: genStar(), rightPaths: genInfinity() }
+];
+
+function openBrainMirrorDraw() {
+    try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(e){}
+    document.getElementById('screen-brain-fitness-menu').classList.remove('active');
+    document.getElementById('screen-brain-mirror-draw').classList.add('active');
+    if (!mirrorLeftCanvas) {
+        mirrorLeftCanvas = document.getElementById('mirror-canvas-left'); mirrorRightCanvas = document.getElementById('mirror-canvas-right');
+        mirrorLeftCtx = mirrorLeftCanvas.getContext('2d'); mirrorRightCtx = mirrorRightCanvas.getContext('2d');
+        setupMirrorTouchEvents();
+    }
+    mirrorCurrentLevel = 0; initMirrorLevel();
+}
+
+// Возврат в меню Брэйн-Фитнеса
+function goBackToBrainFitnessFromMirror() {
+    try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(e){}
+    document.getElementById('screen-brain-mirror-draw').classList.remove('active');
+    document.getElementById('screen-brain-fitness-menu').classList.add('active');
+}
+
+function initMirrorLevel() {
+    const template = mirrorTemplates[mirrorCurrentLevel];
+    document.getElementById('mirror-level-title').innerText = template.title;
+    mirrorLeftCtx.clearRect(0, 0, mirrorLeftCanvas.width, mirrorLeftCanvas.height);
+    mirrorRightCtx.clearRect(0, 0, mirrorRightCanvas.width, mirrorRightCanvas.height);
+    drawTemplateGuide(mirrorLeftCtx, template.leftPaths, mirrorLeftCanvas.width, mirrorLeftCanvas.height);
+    drawTemplateGuide(mirrorRightCtx, template.rightPaths, mirrorRightCanvas.width, mirrorRightCanvas.height);
+}
+
+function drawTemplateGuide(ctx, paths, w, h) {
+    ctx.save(); ctx.strokeStyle = 'rgba(160, 170, 180, 0.4)'; ctx.lineWidth = 6; ctx.setLineDash([6, 6]); ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+    paths.forEach(path => {
+        ctx.beginPath();
+        path.forEach((pt, idx) => {
+            let realX = pt.x * w; let realY = pt.y * h;
+            if (idx === 0) ctx.moveTo(realX, realY); else ctx.lineTo(realX, realY);
+        });
+        ctx.stroke();
+    });
+    ctx.restore();
+}
+
+function setupMirrorTouchEvents() {
+    mirrorLeftCanvas.addEventListener('pointerdown', (e) => {
+        e.preventDefault(); mirrorLeftCanvas.setPointerCapture(e.pointerId); mirrorIsDrawingLeft = true;
+        const rect = mirrorLeftCanvas.getBoundingClientRect(); mirrorLeftCtx.beginPath(); mirrorLeftCtx.moveTo(e.clientX - rect.left, e.clientY - rect.top);
+    });
+    mirrorLeftCanvas.addEventListener('pointermove', (e) => {
+        if (!mirrorIsDrawingLeft) return; const rect = mirrorLeftCanvas.getBoundingClientRect();
+        mirrorLeftCtx.lineTo(e.clientX - rect.left, e.clientY - rect.top);
+        mirrorLeftCtx.strokeStyle = '#2196F3'; mirrorLeftCtx.lineWidth = 5; mirrorLeftCtx.lineCap = 'round'; mirrorLeftCtx.lineJoin = 'round'; mirrorLeftCtx.stroke();
+    });
+    mirrorLeftCanvas.addEventListener('pointerup', (e) => { mirrorIsDrawingLeft = false; mirrorLeftCanvas.releasePointerCapture(e.pointerId); });
+
+    mirrorRightCanvas.addEventListener('pointerdown', (e) => {
+        e.preventDefault(); mirrorRightCanvas.setPointerCapture(e.pointerId); mirrorIsDrawingRight = true;
+        const rect = mirrorRightCanvas.getBoundingClientRect(); mirrorRightCtx.beginPath(); mirrorRightCtx.moveTo(e.clientX - rect.left, e.clientY - rect.top);
+    });
+    mirrorRightCanvas.addEventListener('pointermove', (e) => {
+        if (!mirrorIsDrawingRight) return; const rect = mirrorRightCanvas.getBoundingClientRect();
+        mirrorRightCtx.lineTo(e.clientX - rect.left, e.clientY - rect.top);
+        mirrorRightCtx.strokeStyle = '#E91E63'; mirrorRightCtx.lineWidth = 5; mirrorRightCtx.lineCap = 'round'; mirrorRightCtx.lineJoin = 'round'; mirrorRightCtx.stroke();
+    });
+    mirrorRightCanvas.addEventListener('pointerup', (e) => { mirrorIsDrawingRight = false; mirrorRightCanvas.releasePointerCapture(e.pointerId); });
+}
+
+function changeMirrorLevel(direction) {
+    try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(e){}
+    try { new Audio('audio/click.wav').play(); } catch(e) {}
+    mirrorCurrentLevel += direction;
+    if (mirrorCurrentLevel < 0) mirrorCurrentLevel = mirrorTemplates.length - 1;
+    if (mirrorCurrentLevel >= mirrorTemplates.length) mirrorCurrentLevel = 0;
+    initMirrorLevel();
+}
+
+function clearMirrorCanvas() {
+    try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "medium"}); } catch(e){}
+    try { new Audio('audio/click.wav').play(); } catch(e) {}
+    initMirrorLevel(); 
+}
+
 // ==========================================
 //        БРЕЙН-ФИТНЕС: ПИНГВИН-СЛЕДОПЫТ
 // ==========================================
@@ -1733,7 +2090,7 @@ function generatePathfinderRoute() {
     }
     pathfinderTargetIndex = currentPos;
     const cmdBox = document.getElementById('pathfinder-commands'); cmdBox.innerHTML = '';
-    
+
     let delay = 0;
     pathVisuals.forEach(moveValue => {
         setTimeout(() => {
@@ -1778,6 +2135,23 @@ function getWordForm(num, word1, word2, word5) {
 // ==========================================
 //        БРЕЙН-ФИТНЕС: НЕЙРО-ЖЕСТЫ
 // ==========================================
+let gesturesTimerInterval = null;
+let gesturesTimeLeft = 100;
+let isGesturesActive = false;
+
+const gesturesList = [
+    { id: 'fist', name: 'Кулак', img: 'img/g_fist.png' },
+    { id: 'palm', name: 'Ладонь', img: 'img/g_palm.png' },
+    { id: 'victory', name: 'Заяц ✌️', img: 'img/g_victory.png' },
+    { id: 'thumb', name: 'Класс 👍', img: 'img/g_thumb.png' },
+    { id: 'ok', name: 'Окей 👌', img: 'img/g_ok.png' },
+    { id: 'horns', name: 'Рожки 🤘', img: 'img/g_horns.png' }
+];
+
+const gesturesSpeeds = [3000, 2300, 1600, 1000];
+const gesturesSpeedTitles = ["Новичок 🐢", "Обычная ⏰", "Быстро 🚀", "Турбо 🔥"];
+let currentGesturesSpeedIndex = 1; 
+
 function openBrainGestures() {
     try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(e){}
     document.getElementById('screen-brain-fitness-menu').classList.remove('active');
@@ -1833,7 +2207,7 @@ function nextGesturesPair() {
 
     gesturesTimeLeft = 100; const bar = document.getElementById('gestures-timer-bar'); bar.style.background = '#4CAF50';
     const msInterval = gesturesSpeeds[currentGesturesSpeedIndex] / 50;
-    
+
     gesturesTimerInterval = setInterval(() => {
         if (!isGesturesActive) return;
         gesturesTimeLeft -= 2; bar.style.width = gesturesTimeLeft + '%';
@@ -1843,149 +2217,192 @@ function nextGesturesPair() {
     }, msInterval);
 }
 
-function createObstacleDom(laneIndex) {
-    const container = document.getElementById('racing-obstacles');
-    const obs = document.createElement('img');
-    const isRock = Math.random() > 0.5; const obstacleType = isRock ? 'rock' : 'puddle'; 
-    obs.src = isRock ? 'img/rock.png' : 'img/puddle.png';
-    obs.onerror = function() { this.src = 'img/garden_item_5.png'; }; 
-    obs.style.position = 'absolute'; obs.style.width = '45px'; obs.style.height = '45px';
-    obs.style.left = racingLanes[laneIndex] + '%'; obs.style.transform = 'translateX(-50%)'; obs.style.top = '-50px';
-    container.appendChild(obs);
-    obstaclesArray.push({ el: obs, lane: laneIndex, y: -50, type: obstacleType });
-}
-
-function updateRacingFrame() {
-    if (!isRacingActive) return;
-    const screenHeight = window.innerHeight;
-    const carBottomPx = screenHeight * 0.10; const carTopPx = carBottomPx + 90; 
-    const hitZoneTop = screenHeight - carTopPx - 20; const hitZoneBottom = screenHeight - carBottomPx;
-    for (let i = obstaclesArray.length - 1; i >= 0; i--) {
-        let obs = obstaclesArray[i];
-        obs.y += racingSpeed; obs.el.style.top = obs.y + 'px';
-        if (obs.y + 40 > hitZoneTop && obs.y < hitZoneBottom) {
-            if (obs.lane === carLanes.left || obs.lane === carLanes.right) { crashGame(obs.type); return; }
-        }
-        if (obs.y > screenHeight) {
-            obs.el.remove(); obstaclesArray.splice(i, 1);
-            racingScore += 5; document.getElementById('racing-score-display').innerText = racingScore + ' км';
-            if (racingScore % 50 === 0 && racingSpeed < 18) racingSpeed += 1; 
-        }
-    }
-}
-
-function crashGame(hitType) {
-    isRacingActive = false; clearInterval(racingLoopInterval); clearInterval(racingSpawnInterval);
-    if (engineAudio) engineAudio.pause();
-    try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "heavy"}); } catch(e){}
-    const gameOverTitle = document.getElementById('racing-game-over').querySelector('h2');
-    if (hitType === 'rock') {
-        playSound('audio/crash_rock.wav'); 
-        gameOverTitle.innerText = 'БАМ! 💥'; gameOverTitle.style.color = '#F44336';
-    } else {
-        playSound('audio/splash.wav'); 
-        gameOverTitle.innerText = 'БУЛЬК! 💦'; gameOverTitle.style.color = '#2196F3'; 
-    }
-    document.getElementById('racing-final-score').innerText = racingScore + ' км';
-    document.getElementById('racing-game-over').style.display = 'block';
-    const area = document.getElementById('racing-game-area');
-    area.style.transform = 'translateX(-10px)'; setTimeout(() => { area.style.transform = 'translateX(10px)'; }, 50);
-    setTimeout(() => { area.style.transform = 'translateX(-10px)'; }, 100); setTimeout(() => { area.style.transform = 'translateX(0px)'; }, 150);
-}
-
 // ==========================================
-//        БРЕЙН-ФИТНЕС: ЗЕРКАЛКИ
+//        УЧИМ КИТАЙСКИЙ (КАТЕГОРИИ) 🐼
 // ==========================================
-function changeMirrorLevel(direction) {
-    try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(e){}
-    try { new Audio('audio/click.wav').play(); } catch(e) {}
-    mirrorCurrentLevel += direction;
-    if (mirrorCurrentLevel < 0) mirrorCurrentLevel = mirrorTemplates.length - 1;
-    if (mirrorCurrentLevel >= mirrorTemplates.length) mirrorCurrentLevel = 0;
-    initMirrorLevel();
-}
 
-function clearMirrorCanvas() {
-    try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "medium"}); } catch(e){}
-    try { new Audio('audio/click.wav').play(); } catch(e) {}
-    initMirrorLevel(); 
-}
+// Наша База Данных (По 5 карточек в каждой категории!)
+const chineseDatabase = {
+    'food': [
+        { id: 'apple', img: 'img/ch_apple.jpg', ru: 'Яблоко', char: '苹果', pinyin: 'píngguǒ', ru_trans: 'пин-гуо', audio: 'audio/ch_apple.mp3', ru_audio: 'audio/ru_apple.mp3' },
+        { id: 'water', img: 'img/ch_water.jpg', ru: 'Вода', char: '水', pinyin: 'shuǐ', ru_trans: 'шуэй', audio: 'audio/ch_water.mp3', ru_audio: 'audio/ru_water.mp3' },
+        { id: 'bread', img: 'img/ch_bread.jpg', ru: 'Хлеб', char: '面包', pinyin: 'miànbāo', ru_trans: 'мьен-бао', audio: 'audio/ch_bread.mp3', ru_audio: 'audio/ru_bread.mp3' },
+        { id: 'milk', img: 'img/ch_milk.jpg', ru: 'Молоко', char: '牛奶', pinyin: 'niúnǎi', ru_trans: 'ню-най', audio: 'audio/ch_milk.mp3', ru_audio: 'audio/ru_milk.mp3' },
+        { id: 'banana', img: 'img/ch_banana.jpg', ru: 'Банан', char: '香蕉', pinyin: 'xiāngjiāo', ru_trans: 'сян-дзяо', audio: 'audio/ch_banana.mp3', ru_audio: 'audio/ru_banana.mp3' }
+    ],
+    'animals': [
+        { id: 'dog', img: 'img/ch_dog.jpg', ru: 'Собака', char: '狗', pinyin: 'gǒu', ru_trans: 'гоу', audio: 'audio/ch_dog.mp3', ru_audio: 'audio/ru_dog.mp3' },
+        { id: 'cat', img: 'img/ch_cat.jpg', ru: 'Кошка', char: '猫', pinyin: 'māo', ru_trans: 'мао', audio: 'audio/ch_cat.mp3', ru_audio: 'audio/ru_cat.mp3' },
+        { id: 'elephant', img: 'img/ch_elephant.jpg', ru: 'Слон', char: '大象', pinyin: 'dàxiàng', ru_trans: 'да-сян', audio: 'audio/ch_elephant.mp3', ru_audio: 'audio/ru_elephant.mp3' },
+        { id: 'tiger', img: 'img/ch_tiger.jpg', ru: 'Тигр', char: '老虎', pinyin: 'lǎohǔ', ru_trans: 'лао-ху', audio: 'audio/ch_tiger.mp3', ru_audio: 'audio/ru_tiger.mp3' },
+        { id: 'bird', img: 'img/ch_bird.jpg', ru: 'Птичка', char: '小鸟', pinyin: 'xiǎoniǎo', ru_trans: 'сяо-няо', audio: 'audio/ch_bird.mp3', ru_audio: 'audio/ru_bird.mp3' }
+    ],
+    'family': [
+        { id: 'mama', img: 'img/ch_mama.jpg', ru: 'Мама', char: '妈妈', pinyin: 'māma', ru_trans: 'ма-ма', audio: 'audio/ch_mama.mp3', ru_audio: 'audio/ru_mama.mp3' },
+        { id: 'papa', img: 'img/ch_papa.jpg', ru: 'Папа', char: '爸爸', pinyin: 'bàba', ru_trans: 'ба-ба', audio: 'audio/ch_papa.mp3', ru_audio: 'audio/ru_papa.mp3' },
+        { id: 'grandpa', img: 'img/ch_grandpa.jpg', ru: 'Дедушка', char: '爷爷', pinyin: 'yéye', ru_trans: 'е-е', audio: 'audio/ch_grandpa.mp3', ru_audio: 'audio/ru_grandpa.mp3' },
+        { id: 'grandma', img: 'img/ch_grandma.jpg', ru: 'Бабушка', char: '奶奶', pinyin: 'nǎinai', ru_trans: 'най-най', audio: 'audio/ch_grandma.mp3', ru_audio: 'audio/ru_grandma.mp3' },
+        { id: 'baby', img: 'img/ch_baby.jpg', ru: 'Малыш', char: '宝宝', pinyin: 'bǎobao', ru_trans: 'бао-бао', audio: 'audio/ch_baby.mp3', ru_audio: 'audio/ru_baby.mp3' }
+    ],
+    'transport': [
+        { id: 'car', img: 'img/ch_car.jpg', ru: 'Машина', char: '汽车', pinyin: 'qìchē', ru_trans: 'ци-чхы', audio: 'audio/ch_car.mp3', ru_audio: 'audio/ru_car.mp3' },
+        { id: 'train', img: 'img/ch_train.jpg', ru: 'Поезд', char: '火车', pinyin: 'huǒchē', ru_trans: 'хуо-чхы', audio: 'audio/ch_train.mp3', ru_audio: 'audio/ru_train.mp3' },
+        { id: 'plane', img: 'img/ch_plane.jpg', ru: 'Самолёт', char: '飞机', pinyin: 'fēijī', ru_trans: 'фэй-дзи', audio: 'audio/ch_plane.mp3', ru_audio: 'audio/ru_plane.mp3' },
+        { id: 'boat', img: 'img/ch_boat.jpg', ru: 'Лодка', char: '船', pinyin: 'chuán', ru_trans: 'чуань', audio: 'audio/ch_boat.mp3', ru_audio: 'audio/ru_boat.mp3' },
+        { id: 'bus', img: 'img/ch_bus.jpg', ru: 'Автобус', char: '巴士', pinyin: 'bāshì', ru_trans: 'ба-шы', audio: 'audio/ch_bus.mp3', ru_audio: 'audio/ru_bus.mp3' }
+    ],
+    'body': [
+        { id: 'eye', img: 'img/ch_eye.jpg', ru: 'Глаз', char: '眼睛', pinyin: 'yǎnjing', ru_trans: 'йен-дзин', audio: 'audio/ch_eye.mp3', ru_audio: 'audio/ru_eye.mp3' },
+        { id: 'nose', img: 'img/ch_nose.jpg', ru: 'Нос', char: '鼻子', pinyin: 'bízi', ru_trans: 'би-дзы', audio: 'audio/ch_nose.mp3', ru_audio: 'audio/ru_nose.mp3' },
+        { id: 'ear', img: 'img/ch_ear.jpg', ru: 'Ухо', char: '耳朵', pinyin: 'ěrduo', ru_trans: 'эр-дуо', audio: 'audio/ch_ear.mp3', ru_audio: 'audio/ru_ear.mp3' },
+        { id: 'mouth', img: 'img/ch_mouth.jpg', ru: 'Рот', char: '嘴巴', pinyin: 'zuǐba', ru_trans: 'цзуй-ба', audio: 'audio/ch_mouth.mp3', ru_audio: 'audio/ru_mouth.mp3' },
+        { id: 'hand', img: 'img/ch_hand.jpg', ru: 'Рука', char: '手', pinyin: 'shǒu', ru_trans: 'шоу', audio: 'audio/ch_hand.mp3', ru_audio: 'audio/ru_hand.mp3' }
+    ],
+    // === РАЗДЕЛ ФРАЗ ===
+    'ph_manners': [
+        { id: 'hello', img: 'img/ph_hello.jpg', ru: 'Привет!', char: '你好', pinyin: 'Nǐ hǎo', ru_trans: 'Ни хао', audio: 'audio/ch_ph_hello.mp3', ru_audio: 'audio/ru_ph_hello.mp3' },
+        { id: 'thanks', img: 'img/ph_thanks.jpg', ru: 'Спасибо!', char: '谢谢', pinyin: 'Xièxiè', ru_trans: 'Сье-сье', audio: 'audio/ch_ph_thanks.mp3', ru_audio: 'audio/ru_ph_thanks.mp3' },
+        { id: 'morning', img: 'img/ph_morning.jpg', ru: 'Доброе утро!', char: '早上好', pinyin: 'Zǎoshang hǎo', ru_trans: 'Цзао-шан хао', audio: 'audio/ch_ph_morning.mp3', ru_audio: 'audio/ru_ph_morning.mp3' },
+        { id: 'how', img: 'img/ph_how.jpg', ru: 'Как дела?', char: '你好吗?', pinyin: 'Nǐ hǎo ma?', ru_trans: 'Ни хао ма?', audio: 'audio/ch_ph_how.mp3', ru_audio: 'audio/ru_ph_how.mp3' },
+        { id: 'bye', img: 'img/ph_bye.jpg', ru: 'До свидания!', char: '再见', pinyin: 'Zàijiàn', ru_trans: 'Цзай-цзьень', audio: 'audio/ch_ph_bye.mp3', ru_audio: 'audio/ru_ph_bye.mp3' }
+    ],
+    'ph_needs': [
+        { id: 'hungry', img: 'img/ph_hungry.jpg', ru: 'Я хочу есть', char: '我饿了', pinyin: 'Wǒ è le', ru_trans: 'Во э ле', audio: 'audio/ch_ph_hungry.mp3', ru_audio: 'audio/ru_ph_hungry.mp3' },
+        { id: 'water', img: 'img/ph_thirsty.jpg', ru: 'Я хочу пить', char: '我想喝水', pinyin: 'Wǒ xiǎng hē shuǐ', ru_trans: 'Во сян хэ шуэй', audio: 'audio/ch_ph_thirsty.mp3', ru_audio: 'audio/ru_ph_thirsty.mp3' },
+        { id: 'tired', img: 'img/ph_tired.jpg', ru: 'Я устал', char: '我累了', pinyin: 'Wǒ lèi le', ru_trans: 'Во лэй ле', audio: 'audio/ch_ph_tired.mp3', ru_audio: 'audio/ru_ph_tired.mp3' },
+        { id: 'love', img: 'img/ph_love.jpg', ru: 'Я тебя люблю', char: '我爱你', pinyin: 'Wǒ ài nǐ', ru_trans: 'Во ай ни', audio: 'audio/ch_ph_love.mp3', ru_audio: 'audio/ru_ph_love.mp3' },
+        { id: 'happy', img: 'img/ph_happy.jpg', ru: 'Я очень рад!', char: '我很高兴', pinyin: 'Wǒ hěn gāoxìng', ru_trans: 'Во хэнь гао-син', audio: 'audio/ch_ph_happy.mp3', ru_audio: 'audio/ru_ph_happy.mp3' }
+    ],
+    'ph_play': [
+        { id: 'play', img: 'img/ph_play.jpg', ru: 'Давай играть!', char: '我们玩儿吧', pinyin: 'Wǒmen wánr ba', ru_trans: 'Во-мэнь вань-эр ба', audio: 'audio/ch_ph_play.mp3', ru_audio: 'audio/ru_ph_play.mp3' },
+        { id: 'turn', img: 'img/ph_turn.jpg', ru: 'Моя очередь', char: '该我了', pinyin: 'Gāi wǒ le', ru_trans: 'Гай во ле', audio: 'audio/ch_ph_turn.mp3', ru_audio: 'audio/ru_ph_turn.mp3' },
+        { id: 'win', img: 'img/ph_win.jpg', ru: 'Я выиграл!', char: '我赢了', pinyin: 'Wǒ yíng le', ru_trans: 'Во ин ле', audio: 'audio/ch_ph_win.mp3', ru_audio: 'audio/ru_ph_win.mp3' },
+        { id: 'catch', img: 'img/ph_catch.jpg', ru: 'Догони меня!', char: '快来追我吧', pinyin: 'Kuài lái zhuī wǒ ba', ru_trans: 'Куай лай чжуй во ба', audio: 'audio/ch_ph_catch.mp3', ru_audio: 'audio/ru_ph_catch.mp3' },
+        { id: 'fun', img: 'img/ph_fun.jpg', ru: 'Это весело!', char: '这很有趣', pinyin: 'Zhè hěn yǒuqù', ru_trans: 'Чжэ хэнь ю-цюй', audio: 'audio/ch_ph_fun.mp3', ru_audio: 'audio/ru_ph_fun.mp3' }
+    ],
+    'ph_shop': [
+        { id: 'cost', img: 'img/ph_cost.jpg', ru: 'Сколько это стоит?', char: '这个多少钱?', pinyin: 'Zhège duōshǎo qián?', ru_trans: 'Чжэ-гэ до-шао цень?', audio: 'audio/ch_ph_cost.mp3', ru_audio: 'audio/ru_ph_cost.mp3' },
+        { id: 'expensive', img: 'img/ph_expensive.jpg', ru: 'Слишком дорого!', char: '太贵了', pinyin: 'Tài guì le', ru_trans: 'Тай гуэй ле', audio: 'audio/ch_ph_expensive.mp3', ru_audio: 'audio/ru_ph_expensive.mp3' },
+        { id: 'want', img: 'img/ph_want.jpg', ru: 'Я хочу это', char: '我要这个', pinyin: 'Wǒ yào zhège', ru_trans: 'Во яо чжэ-гэ', audio: 'audio/ch_ph_want.mp3', ru_audio: 'audio/ru_ph_want.mp3' },
+        { id: 'discount', img: 'img/ph_discount.jpg', ru: 'Сделайте скидку', char: '便宜一点儿吧', pinyin: 'Piányí yīdiǎnr ba', ru_trans: 'Пень-и и-дьер ба', audio: 'audio/ch_ph_discount.mp3', ru_audio: 'audio/ru_ph_discount.mp3' },
+        { id: 'cheap', img: 'img/ph_cheap.jpg', ru: 'Это дешево', char: '很便宜', pinyin: 'Hěn piányí', ru_trans: 'Хэнь пень-и', audio: 'audio/ch_ph_cheap.mp3', ru_audio: 'audio/ru_ph_cheap.mp3' }
+    ],
+    'ph_way': [
+        { id: 'where', img: 'img/ph_where.jpg', ru: 'Где находится...?', char: '... 在哪儿?', pinyin: '... zài nǎr?', ru_trans: '... цзай на-эр?', audio: 'audio/ch_ph_where.mp3', ru_audio: 'audio/ru_ph_where.mp3' },
+        { id: 'help', img: 'img/ph_help.jpg', ru: 'Помогите мне', char: '请帮帮我', pinyin: 'Qǐng bāng bāng wǒ', ru_trans: 'Цин бан-бан во', audio: 'audio/ch_ph_help.mp3', ru_audio: 'audio/ru_ph_help.mp3' },
+        { id: 'lost', img: 'img/ph_lost.jpg', ru: 'Я потерялся', char: '我迷路了', pinyin: 'Wǒ mílù le', ru_trans: 'Во ми-лу ле', audio: 'audio/ch_ph_lost.mp3', ru_audio: 'audio/ru_ph_lost.mp3' },
+        { id: 'straight', img: 'img/ph_straight.jpg', ru: 'Иди прямо', char: '向前走', pinyin: 'Xiàng qián zǒu', ru_trans: 'Сян цень цзоу', audio: 'audio/ch_ph_straight.mp3', ru_audio: 'audio/ru_ph_straight.mp3' },
+        { id: 'right', img: 'img/ph_right.jpg', ru: 'Поверни направо', char: '向右转', pinyin: 'Xiàng yòu zhuǎn', ru_trans: 'Сян ю чжуань', audio: 'audio/ch_ph_right.mp3', ru_audio: 'audio/ru_ph_right.mp3' }
+    ]
+};
 
 // ==========================================
 //        ЛОГИКА КИТАЙСКОГО МЕНЮ И КАРТОЧЕК
 // ==========================================
+
+// Переменные состояния (один раз!)
+let currentChineseCategory = 'food'; 
+let currentChineseIndex = 0;
+let isCardFlipped = false;
+
+// 1. Вход в главное меню Китайского
 function openChineseMenu() {
     try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(e){}
     document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
     document.getElementById('screen-chinese-main-menu').classList.add('active');
 }
 
+// 2. Выход из Китайского в главное меню приложения
 function goMainFromChinese() {
     try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(e){}
     document.getElementById('screen-chinese-main-menu').classList.remove('active');
     document.getElementById('screen-menu').classList.add('active');
 }
 
+// 3. Открываем подменю "Слова"
 function openChineseWordsMenu() {
     try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(e){}
     document.getElementById('screen-chinese-main-menu').classList.remove('active');
     document.getElementById('screen-chinese-words-menu').classList.add('active');
 }
 
+// 4. Открываем подменю "Фразы"
 function openChinesePhrasesMenu() {
     try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(e){}
     document.getElementById('screen-chinese-main-menu').classList.remove('active');
     document.getElementById('screen-chinese-phrases-menu').classList.add('active');
 }
 
+// 5. Возврат из Слова/Фразы обратно в Главное меню Китайского
 function goBackToChineseMain(fromScreenId) {
     try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(e){}
     document.getElementById(fromScreenId).classList.remove('active');
     document.getElementById('screen-chinese-main-menu').classList.add('active');
 }
 
+// 6. Запускаем выбранную категорию карточек!
 function openChineseCategory(categoryName) {
     try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(e){}
+
     currentChineseCategory = categoryName; 
     currentChineseIndex = 0;               
     isCardFlipped = false;
+
     document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
     document.getElementById('screen-chinese-cards').classList.add('active');
+
     updateChineseCard();
 }
 
+// 7. Возврат с экрана карточек в нужное подменю!
 function goBackToChineseMenuFromCards() {
     try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(e){}
     document.getElementById('screen-chinese-cards').classList.remove('active');
+
     if (currentAudio) { currentAudio.pause(); currentAudio.currentTime = 0; }
+
+    // Если категория начиналась на "ph_" (фразы), возвращаемся в меню фраз
     if (currentChineseCategory.startsWith('ph_')) {
         document.getElementById('screen-chinese-phrases-menu').classList.add('active');
     } else {
+        // Иначе возвращаемся в меню слов
         document.getElementById('screen-chinese-words-menu').classList.add('active');
     }
 }
 
+// 8. Обновление (отрисовка) карточки на экране
 function updateChineseCard() {
     const currentArray = chineseDatabase[currentChineseCategory];
     const cardData = currentArray[currentChineseIndex];
     const cardEl = document.getElementById('chinese-card');
+
     isCardFlipped = false;
     cardEl.classList.remove('flipped');
+
+    // 🔥 Просто меняем источник картинки! 🔥
     document.getElementById('ch-card-img').src = cardData.img;
+
     document.getElementById('ch-card-char').innerText = cardData.char;
     document.getElementById('ch-card-pinyin').innerHTML = `${cardData.pinyin} <br><span style="color: #9e9e9e; font-size: 14px;">[ ${cardData.ru_trans} ]</span>`;
     document.getElementById('ch-card-ru').innerText = cardData.ru;
+
     document.getElementById('btn-ch-prev').style.opacity = currentChineseIndex === 0 ? '0.3' : '1';
     document.getElementById('btn-ch-next').style.opacity = currentChineseIndex === currentArray.length - 1 ? '0.3' : '1';
-    if (cardData.ru_audio) { playSound(cardData.ru_audio); }
+
+    if (cardData.ru_audio) {
+        playSound(cardData.ru_audio);
+    }
 }
 
+// 9. Переворот карточки
 function flipChineseCard() {
     try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "medium"}); } catch(e){}
     const cardEl = document.getElementById('chinese-card');
     const currentArray = chineseDatabase[currentChineseCategory];
     const cardData = currentArray[currentChineseIndex];
+
     isCardFlipped = !isCardFlipped;
+
     if (isCardFlipped) {
         cardEl.classList.add('flipped');
         if (cardData.audio) playSound(cardData.audio); 
@@ -1995,11 +2412,15 @@ function flipChineseCard() {
     }
 }
 
+// 10. Переключение на следующую/предыдущую карточку
 function changeChineseCard(direction) {
     const currentArray = chineseDatabase[currentChineseCategory];
     const newIndex = currentChineseIndex + direction;
+
     if (newIndex < 0 || newIndex >= currentArray.length) return;
+
     try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(e){}
+
     if (isCardFlipped) {
         document.getElementById('chinese-card').classList.remove('flipped');
         setTimeout(() => {
@@ -2012,6 +2433,9 @@ function changeChineseCard(direction) {
     }
 }
 
+// ==========================================
+//        ЛОГИКА КИТАЙСКИХ ЛАЙФХАКОВ 💡
+// ==========================================
 function openChineseHacks() {
     currentHackIndex = 0;
     updateHackCard();
@@ -2021,7 +2445,13 @@ function openChineseHacks() {
 
 function closeChineseHacks() {
     document.getElementById('hacks-modal').style.display = 'none';
-    if (currentAudio) { currentAudio.pause(); currentAudio.currentTime = 0; }
+    
+    // Ставим на паузу аудио, если оно играет при закрытии окна
+    if (currentAudio) { 
+        currentAudio.pause(); 
+        currentAudio.currentTime = 0; 
+    }
+    
     try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(e){}
 }
 
@@ -2030,9 +2460,17 @@ function updateHackCard() {
     document.getElementById('hack-title').innerText = hack.title;
     document.getElementById('hack-text').innerText = hack.text;
     document.getElementById('hack-img').src = hack.img;
-    if (hack.audio) { playSound(hack.audio); }
+
+    // Включаем озвучку карточки! 🎤
+    if (hack.audio) {
+        playSound(hack.audio);
+    }
+    
+    // Активность стрелок переключения
     document.getElementById('hack-prev-btn').classList.toggle('disabled', currentHackIndex === 0);
     document.getElementById('hack-next-btn').classList.toggle('disabled', currentHackIndex === chineseHacksData.length - 1);
+
+    // Генерируем круглые точки (dots)
     const dotsContainer = document.getElementById('hack-dots');
     dotsContainer.innerHTML = '';
     chineseHacksData.forEach((_, idx) => {
