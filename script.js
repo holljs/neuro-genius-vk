@@ -4,7 +4,7 @@
 let userVkId = 0;
 let vkSignParams = "";
 let vkPlatform = "";
-let hasPremiumAccess = true; // РЕЖИМ ПРОВЕРКИ: Открываем всё бесплатно для модераторов!
+let hasPremiumAccess = true; // 🔥 РЕЖИМ ПРОВЕРКИ ВК: Открываем всё бесплатно для модераторов!
 
 // 🔥🔥🔥 ВАЖНО: ВПИШИ СВОИ ДАННЫЕ СЮДА 🔥🔥🔥
 const BACKEND_URL = "https://neuro-master.online"; 
@@ -14,13 +14,10 @@ try {
     vkBridge.send('VKWebAppInit').then(() => {
         const urlParams = new URLSearchParams(window.location.search);
         userVkId = urlParams.get('vk_user_id');
-        vkPlatform = urlParams.get('vk_platform'); 
+        vkPlatform = urlParams.get('vk_platform'); // Получаем платформу
         vkSignParams = window.location.search.replace('?', '');
         
-        hidePaymentsOnMobile(); 
-        
-        // Автоматически и мгновенно убираем верстку замочков
-        document.querySelectorAll('.locked-card').forEach(el => el.classList.remove('locked-card'));
+        hidePaymentsOnMobile(); // Проверяем и прячем оплату, если нужно
         
         fetch(`${BACKEND_URL}/api/user_geniy/${userVkId}`, {
             method: "GET",
@@ -28,15 +25,27 @@ try {
         })
         .then(res => res.json())
         .then(data => {
-            // Для модерации игнорируем ответ сервера, чтобы случайно не закрыть комнаты
+            // Для модерации игнорируем ответ бэкенда, чтобы принудительно держать Premium открытым
+            if (data.success && !hasPremiumAccess) {
+                hasPremiumAccess = data.has_premium;
+            }
+            if (hasPremiumAccess) {
+                document.querySelectorAll('.locked-card').forEach(el => el.classList.remove('locked-card'));
+            }
         }).catch(err => console.log("Ошибка доступа:", err));
     });
 } catch(e) { console.log("VK Bridge Error", e); }
 
+// Прячем ЮKassa для модераторов и пользователей в мобильных приложениях
 function hidePaymentsOnMobile() {
     const ua = navigator.userAgent.toLowerCase();
-    if (vkPlatform === 'desktop_web' || vkPlatform === 'mobile_web') return; 
+    
+    // Если это обычный браузер (с ПК или мобильного), ничего не делаем
+    if (vkPlatform === 'desktop_web' || vkPlatform === 'mobile_web') {
+        return; 
+    }
 
+    // Вычисляем именно НАТИВНЫЕ мобильные приложения
     const isVkNative = vkPlatform === 'mobile_android' || vkPlatform === 'mobile_iphone' || vkPlatform === 'mobile_ipad' || ua.includes('vkandroidapp') || ua.includes('vkclient');
 
     if (isVkNative) {
@@ -63,17 +72,22 @@ function closeAboutModal() {
 function openSupport() {
     try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "medium"}); } catch(e){}
     try {
+        // Открываем диалог с группой напрямую (ID 78549529)
         vkBridge.send("VKWebAppOpenURL", {"url": "https://vk.com/im?sel=-78549529"});
     } catch(e) {
         window.open("https://vk.com/im?sel=-78549529", "_blank");
     }
 }
 
-// Прямой пропуск модератора во все комнаты без ограничений
 function checkAccessAndOpen(roomType) {
-    if (roomType === 'soroban') openSorobanMenu();
-    if (roomType === 'memorika') openMemorikaMenu();
-    if (roomType === 'brain') openBrainFitnessMenu();
+    if (hasPremiumAccess) {
+        if (roomType === 'soroban') openSorobanMenu();
+        if (roomType === 'memorika') openMemorikaMenu();
+        if (roomType === 'brain') openBrainFitnessMenu();
+    } else {
+        try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "heavy"}); } catch(e){}
+        document.getElementById('vip-modal').style.display = 'flex';
+    }
 }
 
 function getFreeVip() {
@@ -86,6 +100,7 @@ function getFreeVip() {
                 headers: { "Content-Type": "application/json", "x-vk-sign": vkSignParams },
                 body: JSON.stringify({ user_id: parseInt(userVkId) })
             }).then(() => {
+                // ПУНКТ 1: Избавились от alert() - меняем текст в интерфейсе модалки
                 const modalText = document.getElementById('vip-modal').querySelector('p');
                 if (modalText) {
                     modalText.innerHTML = "<b style='color:#4CAF50; font-size:16px;'>Ура! Бот отправил вам сообщение. <br>Пожалуйста, перезапустите игру! 🚀</b>";
@@ -136,11 +151,36 @@ let currentSlidesAudioArray = [];
 
 // Данные и состояние для Китайских Лайфхаков
 const chineseHacksData = [
-    { title: "🧩 Язык-Конструктор", text: "В китайском языке нет букв! Вместо них — маленькие детальки-кубики (они называются ключи). Их всего 214, и из них, как из конструктора, собираются все-все слова в мире!", img: "img/hack_lego.png", audio: "audio/hack_lego.wav" },
-    { title: "🗣️ Поющие слова", text: "Китайцы не просто говорят, они... поют! Одно и то же слово 'МА', сказанное разным голосом, полностью меняет смысл. Можно нежно сказать 'Мама', а можно случайно назвать её 'Лошадкой' 🐴!", img: "img/hack_tones.png", audio: "audio/hack_tones.wav" },
-    { title: "🌳 Иероглифы-рисунки", text: "Древние китайцы просто рисовали то, что видели! Знак Человек (人) — это шагающие ножки. Знак Дерево (木) — ствол и ветки. Поставишь два дерева рядом (林) — получится роща, а три (森) — дремучий лес!", img: "img/hack_draw.png", audio: "audio/hack_draw.wav" },
-    { title: "🤫 Секретный счёт", text: "Китайцы умеют считать от 1 до 10 на одной руке! Пока мы загибаем пальцы на двух руках, они показывают тайные жесты. Например, 'круто' 👍 — это 5, 'коза' 🤘 — это 6, а 'пистолетик' 👈 — это 8!", img: "img/hack_numbers.png", audio: "audio/hack_numbers.wav" },
-    { title: "📜 Сто тысяч знаков", text: "Всего в китайском языке больше 85 000 иероглифов! Но даже сами китайцы их все не знают. Для жизни хватает 3000, а чтобы играть в наши игры — достаточно выучить всего несколько десятков!", img: "img/hack_wisdom.png", audio: "audio/hack_wisdom.wav" }
+    {
+        title: "🧩 Язык-Конструктор",
+        text: "В китайском языке нет букв! Вместо них — маленькие детальки-кубики (они называются ключи). Их всего 214, и из них, как из конструктора, собираются все-все слова в мире!",
+        img: "img/hack_lego.png",
+        audio: "audio/hack_lego.wav"
+    },
+    {
+        title: "🗣️ Поющие слова",
+        text: "Китайцы не просто говорят, они... поют! Одно и то же слово 'МА', сказанное разным голосом, полностью меняет смысл. Можно нежно сказать 'Мама', а можно случайно назвать её 'Лошадкой' 🐴!",
+        img: "img/hack_tones.png",
+        audio: "audio/hack_tones.wav"
+    },
+    {
+        title: "🌳 Иероглифы-рисунки",
+        text: "Древние китайцы просто рисовали то, что видели! Знак Человек (人) — это шагающие ножки. Знак Дерево (木) — ствол и ветки. Поставишь два дерева рядом (林) — получится роща, а три (森) — дремучий лес!",
+        img: "img/hack_draw.png",
+        audio: "audio/hack_draw.wav"
+    },
+    {
+        title: "🤫 Секретный счёт",
+        text: "Китайцы умеют считать от 1 до 10 на одной руке! Пока мы загибаем пальцы на двух руках, они показывают тайные жесты. Например, 'круто' 👍 — это 5, 'коза' 🤘 — это 6, а 'пистолетик' 👈 — это 8!",
+        img: "img/hack_numbers.png",
+        audio: "audio/hack_numbers.wav"
+    },
+    {
+        title: "📜 Сто тысяч знаков",
+        text: "Всего в китайском языке больше 85 000 иероглифов! Но даже сами китайцы их все не знают. Для жизни хватает 3000, а чтобы играть в наши игры — достаточно выучить всего несколько десятков!",
+        img: "img/hack_wisdom.png",
+        audio: "audio/hack_wisdom.wav"
+    }
 ];
 let currentHackIndex = 0;
 
@@ -160,7 +200,7 @@ const roomsData = {
         { id: 'krysha', text: 'Крыша', image: 'img/p_opt_krisha.png', sound: 'audio/w_krysha.wav', syllables: ['кры', 'ша'], audioSyllables: ['audio/sl_kry.wav', 'audio/sl_sha.wav'] },
         { id: 'limon', text: 'Лимон', image: 'img/p_opt_limon.png', sound: 'audio/w_limon.wav', syllables: ['ли', 'мон'], audioSyllables: ['audio/sl_li.wav', 'audio/sl_mon.wav'] },
         { id: 'lodka', text: 'Лодка', image: 'img/p_opt_lodka.png', sound: 'audio/w_lodka.wav', syllables: ['лод', 'ка'], audioSyllables: ['audio/sl_lod.wav', 'audio/sl_ka.wav'] },
-        { id: 'myachik', src: 'img/p_opt_myachik.png', text: 'Мячик', image: 'img/p_opt_myachik.png', sound: 'audio/w_myachik.wav', syllables: ['мя', 'чик'], audioSyllables: ['audio/sl_mya.wav', 'audio/sl_chik.wav'] },
+        { id: 'myachik', text: 'Мячик', image: 'img/p_opt_myachik.png', sound: 'audio/w_myachik.wav', syllables: ['мя', 'чик'], audioSyllables: ['audio/sl_mya.wav', 'audio/sl_chik.wav'] },
         { id: 'okno', text: 'Окно', image: 'img/p_opt_okno.png', sound: 'audio/w_okno.wav', syllables: ['ок', 'но'], audioSyllables: ['audio/sl_ok.wav', 'audio/sl_no.wav'] },
         { id: 'poezd', text: 'Поезд', image: 'img/p_opt_poezd.png', sound: 'audio/w_poezd.wav', syllables: ['по', 'езд'], audioSyllables: ['audio/sl_po.wav', 'audio/sl_ezd.wav'] },
         { id: 'zholud', text: 'Жёлудь', image: 'img/food_acorn.png', sound: 'audio/w_zholud.wav', syllables: ['жё', 'лудь'], audioSyllables: ['audio/sl_zho.wav', 'audio/sl_lud.wav'] },
@@ -192,244 +232,690 @@ const roomsData = {
         { id: 'lokomotiv', text: 'Локомотив', image: 'img/p_opt_poezd.png', sound: 'audio/w_lokomotiv.wav', syllables: ['ло', 'ко', 'мо', 'тив'], audioSyllables: ['audio/sl_lo.wav', 'audio/sl_ko.wav', 'audio/sl_mo.wav', 'audio/sl_tiv.wav'] },
         { id: 'medvezhonok', text: 'Медвежонок', image: 'img/bs_bear.png', sound: 'audio/w_medvezhonok.wav', syllables: ['мед', 'ве', 'жо', 'нок'], audioSyllables: ['audio/sl_med.wav', 'audio/sl_ve.wav', 'audio/sl_zho.wav', 'audio/sl_nok.wav'] },
         { id: 'zemlyanika', text: 'Земляника', image: 'img/zemlyanika.png', sound: 'audio/w_zemlyanika.wav', syllables: ['зем', 'ля', 'ни', 'ка'], audioSyllables: ['audio/sl_zem.wav', 'audio/sl_lya.wav', 'audio/sl_ni.wav', 'audio/sl_ka.wav'] }
+    ],
+    'learn_units': [
+        { taskText: "Знакомься, красные бусинки — это единички. Сдвинь одну бусинку вверх.", target: 1, hint: "img/card_1.png", taskAudio: "audio/learn_units_1.wav" },
+        { taskText: "Отлично! Подними вторую бусинку вверх, получим два.", target: 2, hint: "img/card_2.png", taskAudio: "audio/learn_units_2.wav" },
+        { taskText: "Поднимаем третью бусинку, получаем... правильно... три.", target: 3, hint: "img/card_3.png", taskAudio: "audio/learn_units_3.wav" },
+        { taskText: "Супер! А теперь подними все четыре нижние бусинки. Это цифра четыре.", target: 4, hint: "img/card_4.png", taskAudio: "audio/learn_units_4.wav" },
+        { taskText: "Сбрось малышей вниз. Видишь бусинку наверху? Это Королева Пять! Опусти бусинку вниз.", target: 5, hint: "img/card_5.png", taskAudio: "audio/learn_units_5.wav" },
+        { taskText: "Королева Пять любит гулять с малышами. Опусти Королеву вниз и подними одного малыша вверх. Получится шесть!", target: 6, hint: "img/card_6.png", taskAudio: "audio/learn_units_6.wav" },
+        { taskText: "А если Королева Пять и два малыша? Сделай цифру семь.", target: 7, hint: "img/card_7.png", taskAudio: "audio/learn_units_7.wav" },
+        { taskText: "Почти все в сборе! Королева Пять сверху и три малыша снизу — это восемь.", target: 8, hint: "img/card_8.png", taskAudio: "audio/learn_units_8.wav" },
+        { taskText: "Собери все красные бусинки у планки! Королева Пять и четыре малыша дадут самую большую цифру — девять.", target: 9, hint: "img/card_9.png", taskAudio: "audio/learn_units_9.wav" }
+    ],
+    'learn_tens': [
+        { taskText: "Знакомься, синие бусинки — это ученики-десятки. Сдвинь одну бусинку вверх. Это 10.", target: 10, taskAudio: "audio/learn_tens_1.wav" },
+        { taskText: "Отлично! Подними вторую синюю бусинку вверх, получим 20.", target: 20, taskAudio: "audio/learn_tens_2.wav" },
+        { taskText: "Поднимаем третью бусинку, получаем... 30.", target: 30, taskAudio: "audio/learn_tens_3.wav" },
+        { taskText: "А теперь подними все четыре нижние бусинки. Это 40.", target: 40, taskAudio: "audio/learn_tens_4.wav" },
+        { taskText: "Сбрось бусинки вниз. Видишь синюю бусинку наверху? Это Учитель Пятьдесят! Опусти его вниз.", target: 50, taskAudio: "audio/learn_tens_5.wav" },
+        { taskText: "Учитель Пятьдесят любит гулять с учениками. Опусти Учителя вниз и подними одного ученика вверх. Получится 60!", target: 60, taskAudio: "audio/learn_tens_6.wav" },
+        { taskText: "А если Учитель Пятьдесят и два ученика? Сделай число 70.", target: 70, taskAudio: "audio/learn_tens_7.wav" },
+        { taskText: "Учитель Пятьдесят сверху и три ученика снизу — это 80.", target: 80, taskAudio: "audio/learn_tens_8.wav" },
+        { taskText: "Учитель Пятьдесят и четыре ученика дадут число 90.", target: 90, taskAudio: "audio/learn_tens_9.wav" }
+    ],
+    'learn_hundreds': [
+        { taskText: "Переходим к сотням! Зеленые бусинки — это сотни, здесь живут смелые ниндзя. Подними одну нижнюю бусинку вверх. Это 100.", target: 100, taskAudio: "audio/learn_hun_1.wav" },
+        { taskText: "Подними вторую бусинку, получим 200.", target: 200, taskAudio: "audio/learn_hun_2.wav" },
+        { taskText: "А теперь подними все четыре нижние бусинки. Это 400.", target: 400, taskAudio: "audio/learn_hun_4.wav" },
+        { taskText: "Сбрось бусинки вниз. Видишь бусинку наверху? Это Сэнсэй Пятьсот! Опусти его вниз.", target: 500, taskAudio: "audio/learn_hun_5.wav" },
+        { taskText: "Сэнсэй Пятьсот выходит на тренировку с одним ниндзя. Это 600!", target: 600, taskAudio: "audio/learn_hun_6.wav" },
+        { taskText: "А если Сэнсэй Пятьсот и два ниндзя? Сделай число 700.", target: 700, taskAudio: "audio/learn_hun_7.wav" },
+        { taskText: "Сэнсэй Пятьсот сверху и три ниндзя снизу — это 800.", target: 800, taskAudio: "audio/learn_hun_8.wav" },
+        { taskText: "Сэнсэй Пятьсот и четыре ниндзя дадут самое большое число на этой спице — 900.", target: 900, taskAudio: "audio/learn_hun_9.wav" }
+    ],
+    'learn_friends': [
+        { taskText: "Прибавляем 9: тут нужен учитель Десять (+10) и попрощайся с другом девятки — один (-1).", initialValue: 2, target: 11, taskAudio: "audio/friend9_task.wav", slides: ["img/friend_cover_academy.jpg", "img/friend_cover_friends.jpg", "img/friend9_step1.jpg", "img/friend9_step2.jpg", "img/friend9_step3.jpg"], audioSlides: ["audio/anime_intro_academy.wav", "audio/anime_friends_9_1.wav", "audio/anime_friend9_step1.wav", "audio/anime_friend9_step2.wav", "audio/anime_friend9_step3.wav"] },
+        { taskText: "Прибавляем 8: тут нужен учитель Десять (+10) и попрощайся с другом восьми — два (-2).", initialValue: 3, target: 11, taskAudio: "audio/friend8_task.wav", slides: ["img/friend_cover_8_2.jpg"], audioSlides: ["audio/anime_friends_8_2.wav"] },
+        { taskText: "Прибавляем 7: тут нужен учитель Десять (+10) and попрощайся с другом семи — три (-3).", initialValue: 4, target: 11, taskAudio: "audio/friend7_task.wav", slides: ["img/friend_cover_7_3.jpg"], audioSlides: ["audio/anime_friends_7_3.wav"] },
+        { taskText: "Прибавляем 6: тут нужен учитель Десять (+10) и попрощайся с другом шести — четыре (-4).", initialValue: 4, target: 10, taskAudio: "audio/friend6_task.wav", slides: ["img/friend_cover_6_4.jpg"], audioSlides: ["audio/anime_friends_6_4.wav"] },
+        { taskText: "Прибавляем 5: тут нужен учитель Десять (+10) и попрощайся с другом пяти — пять (-5).", initialValue: 6, target: 11, taskAudio: "audio/friend5_task.wav", slides: ["img/friend_cover_5_5.jpg"], audioSlides: ["audio/anime_friends_5_5.wav"] }
+    ],
+    'learn_friends_5': [
+        { taskText: "Прибавляем четыре: опусти Королеву Пять (+5) и попрощайся с братом четверки — один (-1).", initialValue: 2, target: 6, taskAudio: "audio/brother4_task.wav", slides: ["img/brother_cover_academy.jpg", "img/brother_cover_4_1.jpg", "img/brother4_step1.jpg", "img/brother4_step2.jpg", "img/brother4_step3.jpg"], audioSlides: ["audio/anime_intro_five.wav", "audio/anime_brothers_4_1.wav", "audio/anime_brother4_step1.wav", "audio/anime_brother4_step2.wav", "audio/anime_brother4_step3.wav"] },
+        { taskText: "Прибавляем три: опусти Королеву Пять (+5) и попрощайся с братом тройки — два (-2).", initialValue: 3, target: 6, taskAudio: "audio/brother3_task.wav", slides: ["img/brother_cover_3_2.jpg"], audioSlides: ["audio/anime_brothers_3_2.wav"] }
+    ],
+    'learn_add': [
+        { taskText: "На спице уже есть два малыша. Прибавь к ним ещё двух. Стало 4!", initialValue: 2, target: 4, taskAudio: "audio/learn_add_1.wav" },
+        { taskText: "На спице три малыша. Прибавь к ним Королеву Пять, опусти её вниз. Получится 8.", initialValue: 3, target: 8, taskAudio: "audio/learn_add_2.wav" },
+        { taskText: "На синей спице один ученик. Прибавь к нему ещё две синие бусинки. Стало 30.", initialValue: 10, target: 30, taskAudio: "audio/learn_add_3.wav" },
+        { taskText: "Попробуем сразу две спицы! У нас число 12. Прибавь Коровелу Пять. Стало 17.", initialValue: 12, target: 17, taskAudio: "audio/learn_add_4.wav" },
+        { taskText: "А теперь сотни! Сэнсэй Пятьсот уже здесь. Прибавь к нему четыре бусинки снизу. Получится 900!", initialValue: 500, target: 900, taskAudio: "audio/learn_add_5.wav" }
+    ],
+    'learn_sub': [
+        { taskText: "На спице четыре малыша. Опусти двух вниз. Останется 2.", initialValue: 4, target: 2, taskAudio: "audio/learn_sub_1.wav" },
+        { taskText: "На спице число 8. Королева Пять уходит наверх. Останется 3.", initialValue: 8, target: 3, taskAudio: "audio/learn_sub_2.wav" },
+        { taskText: "У нас 40. Опусти вниз три синие бусинки. Останется 10.", initialValue: 40, target: 10, taskAudio: "audio/learn_sub_3.wav" },
+        { taskText: "Число 27. Королева Пять уходит наверх. Останется 22.", initialValue: 27, target: 22, taskAudio: "audio/learn_sub_4.wav" },
+        { taskText: "Было 900, опусти четыре бусины вниз, и останется только Сэнсэй Пятьсот.", initialValue: 900, target: 500, taskAudio: "audio/learn_sub_5.wav" }
+    ],
+    'learn_mult': [
+        { taskText: "Секретная техника! Пример мы держим в уме, а на счётах собираем только ответ. 2 умножить на 3 будет 6. Сделай цифру 6!", initialValue: 0, target: 6, taskAudio: "audio/learn_mult_1.wav", slides: ["img/mult_cover_1.jpg", "img/mult_cover_2.jpg"], audioSlides: ["audio/anime_mult_slide1.wav", "audio/anime_mult_slide2.wav"] },
+        { taskText: "Умножим 12 на 3. Сначала умножаем десятки: 10 на 3 будет 30. Подними 30.", initialValue: 0, target: 30, taskAudio: "audio/learn_mult_2.wav" },
+        { taskText: "Теперь единицы: 2 умножить на 3 будет 6. Прибавь 6 к нашим десяткам. Получилось 36!", initialValue: 30, target: 36, taskAudio: "audio/learn_mult_3.wav" }
+    ],
+    'learn_div': [
+        { taskText: "Деление — это раздача поровну! Разделим 6 яблок на двоих ниндзя. Каждому достанется 3. Покажи ответ 3!", initialValue: 0, target: 3, taskAudio: "audio/learn_div_1.wav", slides: ["img/div_cover_1.jpg"], audioSlides: ["audio/anime_div_slide1.wav"] },
+        { taskText: "Разделим 42 на 2. Сначала раздадим десятки: 40 пополам будет 20. Подними 20.", initialValue: 0, target: 20, taskAudio: "audio/learn_div_2.wav" },
+        { taskText: "Теперь раздадим единицы: 2 пополам будет 1. Прибавь 1 к десяткам. Наш ответ: 21!", initialValue: 20, target: 21, taskAudio: "audio/learn_div_3.wav" }
+    ],
+    'play_numbers': [
+        { taskText: "Набери цифру 5", target: 5, taskAudio: "audio/play_num_5.wav" },
+        { taskText: "Набери цифру 9", target: 9, taskAudio: "audio/play_num_9.wav" },
+        { taskText: "Сделай число 12", target: 12, taskAudio: "audio/play_num_12.wav" },
+        { taskText: "Сделай число 20", target: 20, taskAudio: "audio/play_num_20.wav" },
+        { taskText: "Набери число 37", target: 37, taskAudio: "audio/play_num_37.wav" },
+        { taskText: "Набери число 46", target: 46, taskAudio: "audio/play_num_46.wav" },
+        { taskText: "Сделай число 50", target: 50, taskAudio: "audio/play_num_50.wav" },
+        { taskText: "Набери число 64", target: 64, taskAudio: "audio/play_num_64.wav" },
+        { taskText: "Набери число 71", target: 71, taskAudio: "audio/play_num_71.wav" },
+        { taskText: "Сделай число 85", target: 85, taskAudio: "audio/play_num_85.wav" },
+        { taskText: "Набери число 93", target: 93, taskAudio: "audio/play_num_93.wav" },
+        { taskText: "Сделай число 100", target: 100, taskAudio: "audio/play_num_100.wav" },
+        { taskText: "Набери число 105", target: 105, taskAudio: "audio/play_num_105.wav" },
+        { taskText: "Сделай число 115", target: 115, taskAudio: "audio/play_num_115.wav" },
+        { taskText: "Набери число 123", target: 123, taskAudio: "audio/play_num_123.wav" },
+        { taskText: "Сделай число 240", target: 240, taskAudio: "audio/play_num_240.wav" },
+        { taskText: "Набери число 302", target: 302, taskAudio: "audio/play_num_302.wav" },
+        { taskText: "Набери число 456", target: 456, taskAudio: "audio/play_num_456.wav" },
+        { taskText: "Сделай число 500", target: 500, taskAudio: "audio/play_num_500.wav" },
+        { taskText: "Набери число 518", target: 518, taskAudio: "audio/play_num_518.wav" },
+        { taskText: "Набери число 607", target: 607, taskAudio: "audio/play_num_607.wav" },
+        { taskText: "Сделай число 731", target: 731, taskAudio: "audio/play_num_731.wav" },
+        { taskText: "Набери число 842", target: 842, taskAudio: "audio/play_num_842.wav" },
+        { taskText: "Сделай число 900", target: 900, taskAudio: "audio/play_num_900.wav" },
+        { taskText: "Набери число 950", target: 950, taskAudio: "audio/play_num_950.wav" },
+        { taskText: "А теперь самое большое: 999!", target: 999, taskAudio: "audio/play_num_999.wav" }
+    ],
+    'play_add': [], 'play_sub': [], 'play_mult': [], 'play_div': []
+}; 
+
+// ==========================================
+//        УЧИМ КИТАЙСКИЙ (КАТЕГОРИИ) 🐼
+// ==========================================
+const chineseDatabase = {
+    'food': [
+        { id: 'apple', img: 'img/ch_apple.jpg', ru: 'Яблоко', char: '苹果', pinyin: 'píngguǒ', ru_trans: 'пин-гуо', audio: 'audio/ch_apple.mp3', ru_audio: 'audio/ru_apple.mp3' },
+        { id: 'water', img: 'img/ch_water.jpg', ru: 'Вода', char: '水', pinyin: 'shuǐ', ru_trans: 'шуэй', audio: 'audio/ch_water.mp3', ru_audio: 'audio/ru_water.mp3' },
+        { id: 'bread', img: 'img/ch_bread.jpg', ru: 'Хлеб', char: '面包', pinyin: 'miànbāo', ru_trans: 'мьен-бао', audio: 'audio/ch_bread.mp3', ru_audio: 'audio/ru_bread.mp3' },
+        { id: 'milk', img: 'img/ch_milk.jpg', ru: 'Молоко', char: '牛奶', pinyin: 'niúnǎi', ru_trans: 'ню-най', audio: 'audio/ch_milk.mp3', ru_audio: 'audio/ru_milk.mp3' },
+        { id: 'banana', img: 'img/ch_banana.jpg', ru: 'Банан', char: '香蕉', pinyin: 'xiāngjiāo', ru_trans: 'сян-дзяо', audio: 'audio/ch_banana.mp3', ru_audio: 'audio/ru_banana.mp3' }
+    ],
+    'animals': [
+        { id: 'dog', img: 'img/ch_dog.jpg', ru: 'Собака', char: '狗', pinyin: 'gǒu', ru_trans: 'гоу', audio: 'audio/ch_dog.mp3', ru_audio: 'audio/ru_dog.mp3' },
+        { id: 'cat', img: 'img/ch_cat.jpg', ru: 'Кошка', char: '猫', pinyin: 'māo', ru_trans: 'мао', audio: 'audio/ch_cat.mp3', ru_audio: 'audio/ru_cat.mp3' },
+        { id: 'elephant', img: 'img/ch_elephant.jpg', ru: 'Слон', char: '大象', pinyin: 'dàxiàng', ru_trans: 'да-сян', audio: 'audio/ch_elephant.mp3', ru_audio: 'audio/ru_elephant.mp3' },
+        { id: 'tiger', img: 'img/ch_tiger.jpg', ru: 'Тигр', char: '老虎', pinyin: 'lǎohǔ', ru_trans: 'лао-ху', audio: 'audio/ch_tiger.mp3', ru_audio: 'audio/ru_tiger.mp3' },
+        { id: 'bird', img: 'img/ch_bird.jpg', ru: 'Птичка', char: '小鸟', pinyin: 'xiǎoniǎo', ru_trans: 'сяо-няо', audio: 'audio/ch_bird.mp3', ru_audio: 'audio/ru_bird.mp3' }
+    ],
+    'family': [
+        { id: 'mama', img: 'img/ch_mama.jpg', ru: 'Мама', char: '妈妈', pinyin: 'māma', ru_trans: 'ма-ма', audio: 'audio/ch_mama.mp3', ru_audio: 'audio/ru_mama.mp3' },
+        { id: 'papa', img: 'img/ch_papa.jpg', ru: 'Папа', char: '爸爸', pinyin: 'bàba', ru_trans: 'ба-ба', audio: 'audio/ch_papa.mp3', ru_audio: 'audio/ru_papa.mp3' },
+        { id: 'grandpa', img: 'img/ch_grandpa.jpg', ru: 'Дедушка', char: '爷爷', pinyin: 'yéye', ru_trans: 'е-е', audio: 'audio/ch_grandpa.mp3', ru_audio: 'audio/ru_grandpa.mp3' },
+        { id: 'grandma', img: 'img/ch_grandma.jpg', ru: 'Бабушка', char: '奶奶', pinyin: 'nǎinai', ru_trans: 'най-най', audio: 'audio/ch_grandma.mp3', ru_audio: 'audio/ru_grandma.mp3' },
+        { id: 'baby', img: 'img/ch_baby.jpg', ru: 'Малыш', char: '宝宝', pinyin: 'bǎobao', ru_trans: 'бао-бао', audio: 'audio/ch_baby.mp3', ru_audio: 'audio/ru_baby.mp3' }
+    ],
+    'transport': [
+        { id: 'car', img: 'img/ch_car.jpg', ru: 'Машина', char: '汽车', pinyin: 'qìchē', ru_trans: 'ци-чхы', audio: 'audio/ch_car.mp3', ru_audio: 'audio/ru_car.mp3' },
+        { id: 'train', img: 'img/ch_train.jpg', ru: 'Поезд', char: '火车', pinyin: 'huǒchē', ru_trans: 'хуо-чхы', audio: 'audio/ch_train.mp3', ru_audio: 'audio/ru_train.mp3' },
+        { id: 'plane', img: 'img/ch_plane.jpg', ru: 'Самолёт', char: '飞机', pinyin: 'fēijī', ru_trans: 'фэй-дзи', audio: 'audio/ch_plane.mp3', ru_audio: 'audio/ru_plane.mp3' },
+        { id: 'boat', img: 'img/ch_boat.jpg', ru: 'Лодка', char: '船', pinyin: 'chuán', ru_trans: 'чуань', audio: 'audio/ch_boat.mp3', ru_audio: 'audio/ru_boat.mp3' },
+        { id: 'bus', img: 'img/ch_bus.jpg', ru: 'Автобус', char: '巴士', pinyin: 'bāshì', ru_trans: 'ба-шы', audio: 'audio/ch_bus.mp3', ru_audio: 'audio/ru_bus.mp3' }
+    ],
+    'body': [
+        { id: 'eye', img: 'img/ch_eye.jpg', ru: 'Глаз', char: '眼睛', pinyin: 'yǎnjing', ru_trans: 'йен-дзин', audio: 'audio/ch_eye.mp3', ru_audio: 'audio/ru_eye.mp3' },
+        { id: 'nose', img: 'img/ch_nose.jpg', ru: 'Нос', char: '鼻子', pinyin: 'bízi', ru_trans: 'би-дзы', audio: 'audio/ch_nose.mp3', ru_audio: 'audio/ru_nose.mp3' },
+        { id: 'ear', img: 'img/ch_ear.jpg', ru: 'Ухо', char: '耳朵', pinyin: 'ěrduo', ru_trans: 'эр-дуо', audio: 'audio/ch_ear.mp3', ru_audio: 'audio/ru_ear.mp3' },
+        { id: 'mouth', img: 'img/ch_mouth.jpg', ru: 'Рот', char: '嘴巴', pinyin: 'zuǐba', ru_trans: 'цзуй-ба', audio: 'audio/ch_mouth.mp3', ru_audio: 'audio/ru_mouth.mp3' },
+        { id: 'hand', img: 'img/ch_hand.jpg', ru: 'Рука', char: '手', pinyin: 'shǒu', ru_trans: 'шоу', audio: 'audio/ch_hand.mp3', ru_audio: 'audio/ru_hand.mp3' }
+    ],
+    'ph_manners': [
+        { id: 'hello', img: 'img/ph_hello.jpg', ru: 'Привет!', char: '你好', pinyin: 'Nǐ hǎo', ru_trans: 'Ни хао', audio: 'audio/ch_ph_hello.mp3', ru_audio: 'audio/ru_ph_hello.mp3' },
+        { id: 'thanks', img: 'img/ph_thanks.jpg', ru: 'Спасибо!', char: '谢谢', pinyin: 'Xièxiè', ru_trans: 'Сье-сье', audio: 'audio/ch_ph_thanks.mp3', ru_audio: 'audio/ru_ph_thanks.mp3' },
+        { id: 'morning', img: 'img/ph_morning.jpg', ru: 'Доброе утро!', char: '早上好', pinyin: 'Zǎoshang hǎo', ru_trans: 'Цзао-шан хао', audio: 'audio/ch_ph_morning.mp3', ru_audio: 'audio/ru_ph_morning.mp3' },
+        { id: 'how', img: 'img/ph_how.jpg', ru: 'Как дела?', char: '你好吗?', pinyin: 'Nǐ hǎo ma?', ru_trans: 'Ни хао ма?', audio: 'audio/ch_ph_how.mp3', ru_audio: 'audio/ru_ph_how.mp3' },
+        { id: 'bye', img: 'img/ph_bye.jpg', ru: 'До свидания!', char: '再见', pinyin: 'Zàijiàn', ru_trans: 'Цзай-цзьень', audio: 'audio/ch_ph_bye.mp3', ru_audio: 'audio/ru_ph_bye.mp3' }
+    ],
+    'ph_needs': [
+        { id: 'hungry', img: 'img/ph_hungry.jpg', ru: 'Я хочу есть', char: '我饿了', pinyin: 'Wǒ è le', ru_trans: 'Во э ле', audio: 'audio/ch_ph_hungry.mp3', ru_audio: 'audio/ru_ph_hungry.mp3' },
+        { id: 'water', img: 'img/ph_thirsty.jpg', ru: 'Я хочу пить', char: '我想喝水', pinyin: 'Wǒ xiǎng hē shuǐ', ru_trans: 'Во сян хэ шуэй', audio: 'audio/ch_ph_thirsty.mp3', ru_audio: 'audio/ru_ph_thirsty.mp3' },
+        { id: 'tired', img: 'img/ph_tired.jpg', ru: 'Я устал', char: '我累了', pinyin: 'Wǒ lèi le', ru_trans: 'Во лэй ле', audio: 'audio/ch_ph_tired.mp3', ru_audio: 'audio/ru_ph_tired.mp3' },
+        { id: 'love', img: 'img/ph_love.jpg', ru: 'Я тебя люблю', char: '我爱你', pinyin: 'Wǒ ài nǐ', ru_trans: 'Во ай ни', audio: 'audio/ch_ph_love.mp3', ru_audio: 'audio/ru_ph_love.mp3' },
+        { id: 'happy', img: 'img/ph_happy.jpg', ru: 'Я очень рад!', char: '我很高兴', pinyin: 'Wǒ hěn gāoxìng', ru_trans: 'Во хэнь гао-син', audio: 'audio/ch_ph_happy.mp3', ru_audio: 'audio/ru_ph_happy.mp3' }
+    ],
+    'ph_play': [
+        { id: 'play', img: 'img/ph_play.jpg', ru: 'Давай играть!', char: '我们玩儿吧', pinyin: 'Wǒmen wánr ba', ru_trans: 'Во-мэнь вань-эр ба', audio: 'audio/ch_ph_play.mp3', ru_audio: 'audio/ru_ph_play.mp3' },
+        { id: 'turn', img: 'img/ph_turn.jpg', ru: 'Моя очередь', char: '该我了', pinyin: 'Gāi wǒ le', ru_trans: 'Гай во ле', audio: 'audio/ch_ph_turn.mp3', ru_audio: 'audio/ru_ph_turn.mp3' },
+        { id: 'win', img: 'img/ph_win.jpg', ru: 'Я выиграл!', char: '我赢了', pinyin: 'Wǒ yíng le', ru_trans: 'Во ин ле', audio: 'audio/ch_ph_win.mp3', ru_audio: 'audio/ru_ph_win.mp3' },
+        { id: 'catch', img: 'img/ph_catch.jpg', ru: 'Догони меня!', char: '快来追我吧', pinyin: 'Kuài lái zhuī wǒ ba', ru_trans: 'Куай лай чжуй во ба', audio: 'audio/ch_ph_catch.mp3', ru_audio: 'audio/ru_ph_catch.mp3' },
+        { id: 'fun', img: 'img/ph_fun.jpg', ru: 'Это весело!', char: '这很有趣', pinyin: 'Zhè hěn yǒuqù', ru_trans: 'Чжэ хэнь ю-цюй', audio: 'audio/ch_ph_fun.mp3', ru_audio: 'audio/ru_ph_fun.mp3' }
+    ],
+    'ph_shop': [
+        { id: 'cost', img: 'img/ph_cost.jpg', ru: 'Сколько это стоит?', char: '这个多少钱?', pinyin: 'Zhège duōshǎo qián?', ru_trans: 'Чжэ-гэ до-шао цень?', audio: 'audio/ch_ph_cost.mp3', ru_audio: 'audio/ru_ph_cost.mp3' },
+        { id: 'expensive', img: 'img/ph_expensive.jpg', ru: 'Слишком дорого!', char: '太贵了', pinyin: 'Tài guì le', ru_trans: 'Тай гуэй ле', audio: 'audio/ch_ph_expensive.mp3', ru_audio: 'audio/ru_ph_expensive.mp3' },
+        { id: 'want', img: 'img/ph_want.jpg', ru: 'Я хочу это', char: '我要 этот', pinyin: 'Wǒ yào zhège', ru_trans: 'Во яо чжэ-гэ', audio: 'audio/ch_ph_want.mp3', ru_audio: 'audio/ru_ph_want.mp3' },
+        { id: 'discount', img: 'img/ph_discount.jpg', ru: 'Сделайте скидку', char: '便宜一点儿吧', pinyin: 'Piányí yīdiǎnr ba', ru_trans: 'Пень-и и-дьер ба', audio: 'audio/ch_ph_discount.mp3', ru_audio: 'audio/ru_ph_discount.mp3' },
+        { id: 'cheap', img: 'img/ph_cheap.jpg', ru: 'Это дешево', char: '很便宜', pinyin: 'Hěn piányí', ru_trans: 'Хэнь пень-и', audio: 'audio/ch_ph_cheap.mp3', ru_audio: 'audio/ru_ph_cheap.mp3' }
+    ],
+    'ph_way': [
+        { id: 'where', img: 'img/ph_where.jpg', ru: 'Где находится...?', char: '... 在哪儿?', pinyin: '... zài nǎr?', ru_trans: '... цзай на-эр?', audio: 'audio/ch_ph_where.mp3', ru_audio: 'audio/ru_ph_where.mp3' },
+        { id: 'help', img: 'img/ph_help.jpg', ru: 'Помогите мне', char: '请帮帮我', pinyin: 'Qǐng bāng bāng wǒ', ru_trans: 'Цин бан-бан во', audio: 'audio/ch_ph_help.mp3', ru_audio: 'audio/ru_ph_help.mp3' },
+        { id: 'lost', img: 'img/ph_lost.jpg', ru: 'Я потерялся', char: '我迷路了', pinyin: 'Wǒ mílù le', ru_trans: 'Во ми-лу ле', audio: 'audio/ch_ph_lost.mp3', ru_audio: 'audio/ru_ph_lost.mp3' },
+        { id: 'straight', img: 'img/ph_straight.jpg', ru: 'Иди прямо', char: '向前走', pinyin: 'Xiàng qián zǒu', ru_trans: 'Сян цень цзоу', audio: 'audio/ch_ph_straight.mp3', ru_audio: 'audio/ru_ph_straight.mp3' },
+        { id: 'right', img: 'img/ph_right.jpg', ru: 'Поверни направо', char: '向右转', pinyin: 'Xiàng yòu zhuǎn', ru_trans: 'Сян ю чжуань', audio: 'audio/ch_ph_right.mp3', ru_audio: 'audio/ru_ph_right.mp3' }
     ]
 };
 
 // ==========================================
-//        ЛАЙТБОКС И НАВИГАЦИЯ (НАВИГАЦИЯ ВОССТАНОВЛЕНА)
+//        ГЕНЕРАТОР ПРИМЕРОВ СОРОБАН И ИГРЫ
 // ==========================================
-function openLightbox(src) {
-    const lb = document.getElementById('image-lightbox');
-    document.getElementById('lightbox-img').src = src;
-    lb.style.display = 'flex';
-    setTimeout(() => lb.style.opacity = '1', 10);
-}
+let sorobanState = [
+    { upper: false, lower: 0 }, { upper: false, lower: 0 }, { upper: false, lower: 0 }
+];
+let globalLowerBeadsRefs = [];
+let globalUpperBeadsRefs = [];
 
-function closeLightbox() {
-    const lb = document.getElementById('image-lightbox');
-    lb.style.opacity = '0';
-    setTimeout(() => lb.style.display = 'none', 200);
-}        
-
-function goMainFromSubmenu() { document.getElementById('screen-soroban-menu').classList.remove('active'); document.getElementById('screen-menu').classList.add('active'); }
-function goMainFromColoring() { document.getElementById('screen-coloring-menu').classList.remove('active'); document.getElementById('screen-menu').classList.add('active'); }
-function goMainFromMemorika() { document.getElementById('screen-memorika-menu').classList.remove('active'); document.getElementById('screen-menu').classList.add('active'); }
-function goMainFromWordsMenu() { document.getElementById('screen-words-menu').classList.remove('active'); document.getElementById('screen-menu').classList.add('active'); }
-function openWordsMenu() { document.getElementById('screen-menu').classList.remove('active'); document.getElementById('screen-words-menu').classList.add('active'); }
-function openSorobanMenu() { document.getElementById('screen-menu').classList.remove('active'); document.getElementById('screen-soroban-menu').classList.add('active'); }
-function openMemorikaMenu() { document.getElementById('screen-menu').classList.remove('active'); document.getElementById('screen-memorika-menu').classList.add('active'); }
-function openSorobanLearnMenu() { document.getElementById('screen-soroban-menu').classList.remove('active'); document.getElementById('screen-soroban-learn-menu').classList.add('active'); }
-function openSorobanPlayMenu() { document.getElementById('screen-soroban-menu').classList.remove('active'); document.getElementById('screen-soroban-play-menu').classList.add('active'); }
-function goBackToSorobanMenuFromLearn() { document.getElementById('screen-soroban-learn-menu').classList.remove('active'); document.getElementById('screen-soroban-menu').classList.add('active'); }
-function goBackToSorobanMenuFromPlay() { document.getElementById('screen-soroban-play-menu').classList.remove('active'); document.getElementById('screen-soroban-menu').classList.add('active'); }
-
-function goBackFromGame() {
-    try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(e){}
-    if (currentAudio) { currentAudio.pause(); currentAudio.currentTime = 0; }
-    document.getElementById('screen-room').classList.remove('active');
-    document.getElementById('game-area').classList.remove('active');
-
-    if (currentRoom.startsWith('words')) {
-        document.getElementById('screen-words-menu').classList.add('active');
-    } else if (currentRoom === 'soroban') {
-        if (sorobanMode === 'free') document.getElementById('screen-soroban-menu').classList.add('active');
-        else if (sorobanMode === 'learn') document.getElementById('screen-soroban-learn-menu').classList.add('active');
-        else if (sorobanMode === 'play') document.getElementById('screen-soroban-play-menu').classList.add('active');
-    }
-}
-
-function openRoom(roomId, title) {
-    try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(e){}
-    currentRoom = roomId;
-    document.getElementById('game-room-title').innerText = title;
-    document.getElementById('screen-menu').classList.remove('active');
-    document.getElementById('screen-words-menu').classList.remove('active');
-    document.getElementById('screen-room').classList.add('active');
-    document.getElementById('game-area').classList.add('active');
-    document.getElementById('btn-back-to-menu').onclick = goBackFromGame;
-
-    if (roomId.startsWith('words')) {
-        currentWordIndex = 0;
-        document.getElementById('word-image-container').style.display = 'flex';
-        document.getElementById('soroban-controls').style.display = 'none';
-        document.getElementById('soroban-score').style.display = 'none';
-        document.getElementById('target-zone').style.display = 'flex';
-        document.getElementById('drag-zone').style.display = 'flex';
-        setupWordsGame();
-    }
-}
-
-// ==========================================
-//        ИГРА СЛОГИ
-// ==========================================
-function setupWordsGame() {
-    const dragZone = document.getElementById('drag-zone');
-    const targetZone = document.getElementById('target-zone');
-    dragZone.innerHTML = ''; targetZone.innerHTML = '';
-    matchedCount = 0;
-
-    const wordData = roomsData[currentRoom][currentWordIndex];
-    document.getElementById('word-3d-image').src = wordData.image;
-    if (currentWordIndex === 0) { playSound('audio/words_intro.wav'); } else { playSound(wordData.sound); }
-
-    document.getElementById('btn-prev-word').classList.toggle('disabled', currentWordIndex === 0);
-    document.getElementById('btn-next-word').classList.toggle('disabled', currentWordIndex === roomsData[currentRoom].length - 1);
-
-    wordData.syllables.forEach((syl, index) => {
-        const slot = document.createElement('div');
-        slot.className = 'target-item';
-        slot.style.backgroundImage = "url('img/slot_bg.png?v=2')";
-        slot.innerText = syl;
-        slot.setAttribute('data-syl', syl);
-        slot.setAttribute('data-index', index);
-        targetZone.appendChild(slot);
-    });
-
-    wordData.syllables.forEach((syl, i) => {
-        const brick = document.createElement('div');
-        brick.className = 'draggable-item';
-        brick.style.backgroundImage = "url('img/brick_bg.png')";
-        brick.style.touchAction = 'none'; 
-        brick.innerText = syl;
-        brick.setAttribute('data-syl', syl);
-        brick.setAttribute('data-audio', wordData.audioSyllables[i]);
-        brick.addEventListener('pointerdown', handlePointerStart);
-        dragZone.appendChild(brick);
-    });
+function setupSorobanGame() {
+    const gameArea = document.getElementById('game-area');
+    const oldAbacus = document.getElementById('abacus-body-container');
+    if (oldAbacus) oldAbacus.remove();
     
-    let bricks = Array.from(dragZone.children);
-    shuffleArray(bricks);
-    dragZone.innerHTML = '';
-    bricks.forEach(b => dragZone.appendChild(b));
-}
+    globalLowerBeadsRefs = [];
+    globalUpperBeadsRefs = [];
 
-function changeWord(direction) {
-    try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(e){}
-    currentWordIndex += direction;
-    if (currentWordIndex < 0) currentWordIndex = 0;
-    if (currentWordIndex >= roomsData[currentRoom].length) currentWordIndex = roomsData[currentRoom].length - 1;
-    setupWordsGame();
-}
+    const abacusContainer = document.createElement('div');
+    abacusContainer.id = 'abacus-body-container';
+    const abacusBody = document.createElement('div');
+    abacusBody.style.position = "relative";
+    abacusBody.style.width = "360px";
+    abacusBody.style.height = "450px";
 
-function handlePointerStart(e) {
-    if (activeItem) return; 
-    if (e.target.classList.contains('matched')) return;
-    
-    activeItem = e.target;
-    activeItem.setPointerCapture(e.pointerId);
+    const beam = document.createElement('div');
+    beam.className = "soroban-beam";
+    abacusBody.appendChild(beam);
 
-    const rect = activeItem.getBoundingClientRect();
-    const offsetX = e.clientX - rect.left;
-    const offsetY = e.clientY - rect.top;
+    const rodLabels = ["Сотни", "Десятки", "Единицы"];
+    const rodColors = ["bead-green", "bead-blue", "bead-red"];
 
-    activeItem._dragOffsetX = offsetX;
-    activeItem._dragOffsetY = offsetY;
+    for (let s = 0; s < 3; s++) {
+        const rod = document.createElement('div');
+        rod.className = "soroban-rod";
+        rod.style.left = (85 + s * 95) + "px";
+        
+        const label = document.createElement('div');
+        label.innerText = rodLabels[s];
+        label.style.position = "absolute"; label.style.bottom = "-35px";
+        label.style.left = "50%"; label.style.transform = "translateX(-50%)";
+        label.style.fontSize = "15px"; label.style.fontWeight = "bold"; label.style.color = "#7A90A4";
+        rod.appendChild(label);
 
-    activeItem.style.width = rect.width + 'px';
-    activeItem.style.height = rect.height + 'px';
-    activeItem.style.transform = 'none';
+        const upperBead = document.createElement('div');
+        upperBead.className = `bead-3d ${rodColors[s]}`;
+        upperBead.style.top = "5px";
+        globalUpperBeadsRefs.push({ img: upperBead, rodIndex: s });
+        
+        upperBead.onclick = () => {
+            if (isTaskLock && sorobanMode !== 'free') return;
+            try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(e){}
+            sorobanState[s].upper = !sorobanState[s].upper;
+            upperBead.style.top = (sorobanState[s].upper ? "52px" : "5px");
+            updateSorobanScore();
+        };
+        rod.appendChild(upperBead);
 
-    playSound(activeItem.getAttribute('data-audio'));
-
-    activeItem.classList.add('dragging');
-    activeItem.style.position = 'fixed';
-    activeItem.style.margin = '0';
-    activeItem.style.zIndex = '1000';
-    activeItem.style.left = (e.clientX - offsetX) + 'px';
-    activeItem.style.top = (e.clientY - offsetY) + 'px';
-
-    activeItem.addEventListener('pointermove', handlePointerMove);
-    activeItem.addEventListener('pointerup', handlePointerEnd);
-    activeItem.addEventListener('pointercancel', handlePointerEnd); 
-}
-
-function handlePointerMove(e) {
-    if (!activeItem) return;
-    const offsetX = activeItem._dragOffsetX;
-    const offsetY = activeItem._dragOffsetY;
-    activeItem.style.left = (e.clientX - offsetX) + 'px';
-    activeItem.style.top = (e.clientY - offsetY) + 'px';
-}
-
-function handlePointerEnd(e) {
-    if (!activeItem) return;
-    
-    activeItem.releasePointerCapture(e.pointerId);
-    activeItem.classList.remove('dragging');
-    activeItem.removeEventListener('pointermove', handlePointerMove);
-    activeItem.removeEventListener('pointerup', handlePointerEnd);
-    activeItem.removeEventListener('pointercancel', handlePointerEnd); 
-
-    const itemSyl = activeItem.getAttribute('data-syl');
-    const clientX = e.clientX;
-    const clientY = e.clientY;
-
-    activeItem.style.display = 'none';
-
-    let targets = document.querySelectorAll('.target-item');
-    let matchedTarget = null;
-
-    targets.forEach(t => {
-        const rect = t.getBoundingClientRect();
-        const tolerance = 30;
-        if (clientX >= (rect.left - tolerance) && clientX <= (rect.right + tolerance) && 
-            clientY >= (rect.top - tolerance) && clientY <= (rect.bottom + tolerance)) {
-            if (t.getAttribute('data-syl') === itemSyl && !t.classList.contains('matched')) {
-                matchedTarget = t;
-            }
-        }
-    });
-
-    activeItem.style.display = 'flex';
-
-    if (matchedTarget) {
-        try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "medium"}); } catch(err) {}
-        activeItem.classList.add('matched');
-        matchedTarget.classList.add('matched');
-        activeItem.style.display = 'none';
-        matchedTarget.style.backgroundImage = "url('img/brick_bg.png')";
-        matchedCount++;
-        if (matchedCount === roomsData[currentRoom][currentWordIndex].syllables.length) {
-            setTimeout(() => {
-                currentWordIndex++;
-                if (currentWordIndex < roomsData[currentRoom].length) {
-                    setupWordsGame();
+        const lowerBeads = [];
+        for (let b = 0; b < 4; b++) {
+            const lowerBead = document.createElement('div');
+            lowerBead.className = `bead-3d ${rodColors[s]}`;
+            lowerBead.style.top = (360 - (3 - b) * 34) + "px";
+            
+            lowerBead.onclick = () => {
+                if (isTaskLock && sorobanMode !== 'free') return;
+                try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(e){}
+                let clickedValue = b + 1;
+                if (sorobanState[s].lower === clickedValue) {
+                    sorobanState[s].lower = clickedValue - 1;
                 } else {
-                    playSound('audio/words_win.wav');
-                    setTimeout(goBackFromGame, 3000); 
+                    sorobanState[s].lower = clickedValue;
                 }
-            }, 1200);
+                lowerBeads.forEach((bead, idx) => {
+                    if (idx < sorobanState[s].lower) bead.style.top = (112 + idx * 34) + "px";
+                    else bead.style.top = (360 - (3 - idx) * 34) + "px";
+                });
+                updateSorobanScore();
+            };
+            lowerBeads.push(lowerBead);
+            rod.appendChild(lowerBead);
         }
-    } else {
-        try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(err) {}
-        playSound('audio/wrong.wav');
-        activeItem.style.transition = 'all 0.3s ease';
-        activeItem.style.position = 'relative';
-        activeItem.style.left = '0px';
-        activeItem.style.top = '0px';
-        activeItem.style.width = '';
-        activeItem.style.height = '';
-        activeItem.style.zIndex = '';
-        activeItem.style.transform = ''; 
-        setTimeout(() => { if(activeItem) activeItem.style.transition = 'none'; }, 300);
+        globalLowerBeadsRefs.push({ beads: lowerBeads, rodIndex: s });
+        abacusBody.appendChild(rod);
     }
-    
-    delete activeItem._dragOffsetX;
-    delete activeItem._dragOffsetY;
-    activeItem = null;
+    abacusContainer.appendChild(abacusBody);
+    gameArea.appendChild(abacusContainer);
 }
 
-function playSound(soundFile) {
-    if (soundFile) {
-        if (currentAudio) { currentAudio.pause(); currentAudio.currentTime = 0; }
-        currentAudio = new Audio(soundFile);
-        currentAudio.play().catch(err => console.log("Ошибка аудио:", err));
+function resetAbacusBeads() {
+    let startVal = 0;
+    if (sorobanMode === 'learn') {
+        const tasks = roomsData[sorobanCategory];
+        if (tasks && tasks[currentLessonIndex] && tasks[currentLessonIndex].initialValue !== undefined) {
+            startVal = tasks[currentLessonIndex].initialValue;
+        }
     }
+    let hundreds = Math.floor(startVal / 100) % 10;
+    let tens = Math.floor(startVal / 10) % 10;
+    let units = startVal % 10;
+
+    sorobanState = [
+        { upper: hundreds >= 5, lower: hundreds % 5 },
+        { upper: tens >= 5, lower: tens % 5 },
+        { upper: units >= 5, lower: units % 5 }
+    ];
+    document.getElementById('soroban-score').innerText = startVal;
+
+    if (globalUpperBeadsRefs.length === 0) setupSorobanGame();
+
+    for (let s = 0; s < 3; s++) {
+        globalUpperBeadsRefs[s].img.style.top = (sorobanState[s].upper ? "52px" : "5px");
+        const lowerBeads = globalLowerBeadsRefs[s].beads;
+        lowerBeads.forEach((bead, idx) => {
+            if (idx < sorobanState[s].lower) bead.style.top = (112 + idx * 34) + "px"; 
+            else bead.style.top = (360 - (3 - idx) * 34) + "px"; 
+        });
+    }
+}
+
+function changeSorobanTask(direction) {
+    try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(e){}
+    const tasks = roomsData[sorobanCategory];
+    if (!tasks || tasks.length === 0) return;
+    currentLessonIndex += direction;
+    if (currentLessonIndex < 0) currentLessonIndex = 0;
+    if (currentLessonIndex >= tasks.length) currentLessonIndex = tasks.length - 1;
+    resetAbacusBeads();
+    nextSorobanTask();
+}
+
+function nextSorobanTask() {
+    if (sorobanMode === 'free') return;
+    const tasks = roomsData[sorobanCategory];
+    if (!tasks || tasks.length === 0) return;
+
+    const hintContainer = document.getElementById('soroban-hint-container');
+    document.getElementById('btn-prev-soroban').classList.toggle('disabled', currentLessonIndex === 0);
+    document.getElementById('btn-next-soroban').classList.toggle('disabled', currentLessonIndex === tasks.length - 1);
+
+    const currentTask = tasks[currentLessonIndex];
+    if (sorobanMode === 'play') document.getElementById('soroban-task-text').innerHTML = currentTask.taskText;
+    else document.getElementById('soroban-task-text').innerHTML = `${currentTask.taskText} <span class="target-highlight">(${currentTask.target})</span>`;
+    
+    if (currentTask.slides && currentTask.slides.length > 0 && !currentTask._comicShown) {
+        openComicSlider(currentTask.slides, currentTask.audioSlides);
+        currentTask._comicShown = true;
+    } else {
+        if (currentTask.taskAudio) playSound(currentTask.taskAudio);
+    }
+
+    const hintCard = document.getElementById('soroban-hint-card');
+    if (currentTask.hint && sorobanMode === 'learn') {
+        hintCard.onerror = function() { hintContainer.style.display = 'none'; };
+        hintCard.src = currentTask.hint;
+        hintContainer.style.display = 'flex';
+    } else { hintContainer.style.display = 'none'; }
+    
+    isTaskLock = false;
+    const scrollBtn = document.getElementById('scroll-btn');
+    if (scrollBtn) scrollBtn.style.display = (sorobanMode === 'play' && (sorobanCategory === 'play_mult' || sorobanCategory === 'play_div')) ? 'block' : 'none';
+}
+
+function updateSorobanScore() {
+    try { new Audio('audio/click.wav').play(); } catch(e) {}
+    let total = 0;
+    total += (sorobanState[0].upper ? 5 : 0) * 100 + sorobanState[0].lower * 100;
+    total += (sorobanState[1].upper ? 5 : 0) * 10 + sorobanState[1].lower * 10;
+    total += (sorobanState[2].upper ? 5 : 0) * 1 + sorobanState[2].lower * 1;
+    
+    const scoreDisplay = document.getElementById('soroban-score');
+    scoreDisplay.innerText = total;
+
+    if (sorobanMode === 'free') return;
+
+    const tasks = roomsData[sorobanCategory];
+    if (!tasks || tasks.length === 0) return;
+    const currentTask = tasks[currentLessonIndex];
+
+    if (currentTask && total === currentTask.target && !isTaskLock) {
+        isTaskLock = true;
+        scoreDisplay.classList.add('correct-flash');
+        document.getElementById('abacus-body-container').classList.add('success-lock');
+        try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "heavy"}); } catch(e){}
+
+        setTimeout(() => {
+            scoreDisplay.classList.remove('correct-flash');
+            document.getElementById('abacus-body-container').classList.remove('success-lock');
+            
+            if (currentLessonIndex < tasks.length - 1) {
+                currentLessonIndex++;
+                resetAbacusBeads();
+                nextSorobanTask();
+            } else {
+                document.getElementById('soroban-task-text').innerText = "Отличная работа!";
+                document.getElementById('soroban-hint-container').style.display = 'none';
+                document.getElementById('soroban-nav-arrows').style.display = 'none';
+                playSound('audio/soroban_win.wav');
+                setTimeout(goBackFromGame, 2500);
+            }
+        }, 1500);
+    }
+}
+
+function openComicSlider(slides, audioSlides) {
+    currentSlidesArray = slides;
+    currentSlidesAudioArray = audioSlides || [];
+    currentSlideIndex = 0;
+    document.getElementById('comic-slider-modal').style.display = 'flex';
+    updateSliderContent();
+}
+
+function updateSliderContent() {
+    document.getElementById('comic-slider-img').src = currentSlidesArray[currentSlideIndex];
+    document.getElementById('btn-comic-prev').classList.toggle('disabled', currentSlideIndex === 0);
+    const isLast = currentSlideIndex === currentSlidesArray.length - 1;
+    document.getElementById('btn-comic-next').style.visibility = isLast ? 'hidden' : 'visible';
+    document.getElementById('btn-comic-start').style.display = isLast ? 'block' : 'none';
+
+    const dotsContainer = document.getElementById('comic-slider-dots');
+    dotsContainer.innerHTML = '';
+    currentSlidesArray.forEach((_, idx) => {
+        const dot = document.createElement('div');
+        dot.className = `comic-dot ${idx === currentSlideIndex ? 'active' : ''}`;
+        dotsContainer.appendChild(dot);
+    });
+
+    if (currentSlidesAudioArray && currentSlidesAudioArray[currentSlideIndex]) playSound(currentSlidesAudioArray[currentSlideIndex]);
+}
+
+function moveSlide(direction) {
+    try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(e){}
+    currentSlideIndex += direction;
+    if (currentSlideIndex < 0) currentSlideIndex = 0;
+    if (currentSlideIndex >= currentSlidesArray.length) currentSlideIndex = currentSlidesArray.length - 1;
+    updateSliderContent();
+}
+
+function closeComicSlider() {
+    try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "medium"}); } catch(e){}
+    document.getElementById('comic-slider-modal').style.display = 'none';
+    const tasks = roomsData[sorobanCategory];
+    if (tasks && tasks[currentLessonIndex] && tasks[currentLessonIndex].taskAudio) playSound(tasks[currentLessonIndex].taskAudio);
+}
+
+// ==========================================
+//        МЕМОРИКА: ЛАЙФХАКИ (МАГИЯ НА 9)
+// ==========================================
+let currentMagicFinger = 0; 
+
+function openMultiplicationMenu() {
+    try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(e){}
+    document.getElementById('screen-memorika-menu').classList.remove('active');
+    document.getElementById('screen-multiplication-menu').classList.add('active');
+}
+
+function goBackToMemorikaFromMult() {
+    try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(e){}
+    document.getElementById('screen-multiplication-menu').classList.remove('active');
+    document.getElementById('screen-memorika-menu').classList.add('active');
+}
+
+function openMagic9() {
+    try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(e){}
+    document.getElementById('screen-multiplication-menu').classList.remove('active');
+    document.getElementById('screen-magic-9').classList.add('active');
+    
+    currentMagicFinger = 0;
+    document.getElementById('hands-image').src = 'img/hands_0.jpg';
+    document.getElementById('magic-9-result').innerHTML = "Нажми стрелочку вправо ☝️";
+    document.getElementById('btn-prev-magic').classList.add('disabled');
+    document.getElementById('btn-next-magic').classList.remove('disabled');
+}
+
+function goBackToMultFromMagic9() {
+    try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(e){}
+    document.getElementById('screen-magic-9').classList.remove('active');
+    document.getElementById('screen-multiplication-menu').classList.add('active');
+    if (currentAudio) { currentAudio.pause(); currentAudio.currentTime = 0; }
+}
+
+function changeMagicFinger(direction) {
+    try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(e){}
+    currentMagicFinger += direction;
+    if (currentMagicFinger < 1) currentMagicFinger = 1;
+    if (currentMagicFinger > 10) currentMagicFinger = 10;
+
+    document.getElementById('btn-prev-magic').classList.toggle('disabled', currentMagicFinger === 1);
+    document.getElementById('btn-next-magic').classList.toggle('disabled', currentMagicFinger === 10);
+    document.getElementById('hands-image').src = `img/hands_${currentMagicFinger}.jpg`;
+    
+    let tens = currentMagicFinger - 1;
+    let units = 10 - currentMagicFinger;
+    let result = tens * 10 + units;
+    
+    document.getElementById('magic-9-result').innerHTML = 
+        `9 × ${currentMagicFinger} = <span style="font-size:42px; color:#E91E63;">${result}</span><br>
+         <span style="font-size:16px; color:#777; font-weight: normal;">(Слева десятков: <b>${tens}</b>, Справа единиц: <b>${units}</b>)</span>`;
+         
+    playSound(`audio/magic9_${currentMagicFinger}.wav`);
+}
+
+// ==========================================
+//        МЕМОРИКА: СТИХИ-АССОЦИАЦИИ
+// ==========================================
+const poemsData = [
+    { math: "2 × 2 = <span style='color:#E91E63'>4</span>", image: "img/poem_4.jpg", text: "Два атлета взяли гири.<br>Это: дважды два — четыре!", audio: "audio/poem_4.wav" },
+    { math: "2 × 4 = <span style='color:#E91E63'>8</span>", image: "img/poem_8.jpg", text: "В пирог вонзилась пара вилок:<br>Два на четыре — восемь дырок!", audio: "audio/poem_8.wav" },
+    { math: "5 × 5 = <span style='color:#E91E63'>25</span>", image: "img/poem_25.jpg", text: "Вышли зайцы погулять:<br>Пятью пять — двадцать пять!", audio: "audio/poem_25.wav" },
+    { math: "5 × 6 = <span style='color:#E91E63'>30</span>", image: "img/poem_30.jpg", text: "Забежала в лес лисица:<br>Пятью шесть — выходит тридцать!", audio: "audio/poem_30.wav" },
+    { math: "6 × 7 = <span style='color:#E91E63'>42</span>", image: "img/poem_42.jpg", text: "Шесть на семь — сорок два,<br>На дворе растёт трава!", audio: "audio/poem_42.wav" },
+    { math: "6 × 8 = <span style='color:#E91E63'>48</span>", image: "img/poem_48.jpg", text: "Шесть на восемь — сорок восемь,<br>Мы бегемота кушать просим!", audio: "audio/poem_48.wav" },
+    { math: "7 × 8 = <span style='color:#E91E63'>56</span>", image: "img/poem_56.jpg", text: "Семь на восемь — пятьдесят шесть,<br>У лося рога-то есть!", audio: "audio/poem_56.wav" }
+];
+
+let currentPoemIndex = 0;
+
+function openPoems() {
+    try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(e){}
+    document.getElementById('screen-multiplication-menu').classList.remove('active');
+    document.getElementById('screen-poems').classList.add('active');
+    currentPoemIndex = 0;
+    updatePoemCard();
+}
+
+function goBackToMultFromPoems() {
+    try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(e){}
+    document.getElementById('screen-poems').classList.remove('active');
+    document.getElementById('screen-multiplication-menu').classList.add('active');
+    if (currentAudio) { currentAudio.pause(); currentAudio.currentTime = 0; }
+}
+
+function updatePoemCard() {
+    const poem = poemsData[currentPoemIndex];
+    document.getElementById('poem-math').innerHTML = poem.math;
+    document.getElementById('poem-img').src = poem.image;
+    document.getElementById('poem-text').innerHTML = poem.text;
+    document.getElementById('btn-prev-poem').classList.toggle('disabled', currentPoemIndex === 0);
+    document.getElementById('btn-next-poem').classList.toggle('disabled', currentPoemIndex === poemsData.length - 1);
+    playSound(poem.audio);
+}
+
+// ТРЕЕНАЖЁР УМНОЖЕНИЯ (ТЕСТ)
+let multTestScoreCorrect = 0;
+let multTestScoreTotal = 0;
+let multTestCurrentTarget = 0;
+
+function openMultTest() {
+    try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(e){}
+    document.getElementById('screen-multiplication-menu').classList.remove('active');
+    document.getElementById('screen-mult-test').classList.add('active');
+    multTestScoreCorrect = 0;
+    multTestScoreTotal = 0;
+    document.getElementById('mult-test-score').innerText = "0 / 0";
+    generateMultTestQuestion();
+}
+
+function goBackToMultFromTest() {
+    try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(e){}
+    document.getElementById('screen-mult-test').classList.remove('active');
+    document.getElementById('screen-multiplication-menu').classList.add('active');
+}
+
+function generateMultTestQuestion() {
+    let pick = poemsData[Math.floor(Math.random() * poemsData.length)];
+    let rawMath = pick.math.split('=')[0].replace('×', '').trim();
+    let num1 = parseInt(rawMath[0]);
+    let num2 = parseInt(rawMath[rawMath.length - 1]);
+    multTestCurrentTarget = num1 * num2;
+
+    document.getElementById('mult-test-question').innerHTML = `${num1} × ${num2} = ?`;
+
+    let answers = [multTestCurrentTarget];
+    while(answers.length < 4) {
+        let fake = (Math.floor(Math.random() * 8) + 2) * (Math.floor(Math.random() * 8) + 2);
+        if(!answers.includes(fake)) answers.push(fake);
+    }
+    shuffleArray(answers);
+
+    const opts = document.getElementById('mult-test-options');
+    opts.innerHTML = '';
+    answers.forEach(ans => {
+        const btn = document.createElement('button');
+        btn.style.cssText = "padding: 15px; font-size: 22px; font-weight: bold; border-radius: 15px; border: 2px solid #ccc; background: white; cursor: pointer; transition: 0.1s;";
+        btn.innerText = ans;
+        btn.onclick = () => checkMultTestAnswer(btn, ans);
+        opts.appendChild(btn);
+    });
+}
+
+function checkMultTestAnswer(btn, chosen) {
+    multTestScoreTotal++;
+    if(chosen === multTestCurrentTarget) {
+        multTestScoreCorrect++;
+        try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "medium"}); } catch(e){}
+        playSound('audio/correct.wav');
+        btn.style.background = '#e8f5e9'; btn.style.borderColor = '#4CAF50';
+    } else {
+        try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "heavy"}); } catch(e){}
+        playSound('audio/wrong.wav');
+        btn.style.background = '#ffebee'; btn.style.borderColor = '#F44336';
+    }
+    document.getElementById('mult-test-score').innerText = `${multTestScoreCorrect} / ${multTestScoreTotal}`;
+    setTimeout(generateMultTestQuestion, 1200);
+}
+
+function changePoem(direction) {
+    try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(e){}
+    currentPoemIndex += direction;
+    if (currentPoemIndex < 0) currentPoemIndex = 0;
+    if (currentPoemIndex >= poemsData.length) currentPoemIndex = poemsData.length - 1;
+    updatePoemCard();
+}
+
+// ==========================================
+//        МЕМОРИКА: МАГИЯ НА 5
+// ==========================================
+const magic5Data = [
+    { math: "2 × 5 = <span style='color:#E91E63'>10</span>", image: "img/magic5_2.jpg", text: "Добавляем нолик: <b>20</b>.<br>Делим пополам — будет <b>10</b>!", audio: "audio/magic5_2.wav" },
+    { math: "3 × 5 = <span style='color:#E91E63'>15</span>", image: "img/magic5_3.jpg", text: "Добавляем нолик: <b>30</b>.<br>Делим пополам — будет <b>15</b>!", audio: "audio/magic5_3.wav" },
+    { math: "4 × 5 = <span style='color:#E91E63'>20</span>", image: "img/magic5_4.jpg", text: "Добавляем нолик: <b>40</b>.<br>Делим пополам — будет <b>20</b>!", audio: "audio/magic5_4.wav" },
+    { math: "5 × 5 = <span style='color:#E91E63'>25</span>", image: "img/magic5_5.jpg", text: "Добавляем нолик: <b>50</b>.<br>Делим пополам — будет <b>25</b>!", audio: "audio/magic5_5.wav" },
+    { math: "6 × 5 = <span style='color:#E91E63'>30</span>", image: "img/magic5_6.jpg", text: "Добавляем нолик: <b>60</b>.<br>Делим пополам — будет <b>30</b>!", audio: "audio/magic5_6.wav" },
+    { math: "7 × 5 = <span style='color:#E91E63'>35</span>", image: "img/magic5_7.jpg", text: "Добавляем нолик: <b>70</b>.<br>Делим пополам — будет <b>35</b>!", audio: "audio/magic5_7.wav" },
+    { math: "8 × 5 = <span style='color:#E91E63'>40</span>", image: "img/magic5_8.jpg", text: "Добавляем нолик: <b>80</b>.<br>Делим пополам — будет <b>40</b>!", audio: "audio/magic5_8.wav" },
+    { math: "9 × 5 = <span style='color:#E91E63'>45</span>", image: "img/magic5_9.jpg", text: "Добавляем нолик: <b>90</b>.<br>Делим пополам — будет <b>45</b>!", audio: "audio/magic5_9.wav" },
+    { math: "10 × 5 = <span style='color:#E91E63'>50</span>", image: "img/magic5_10.jpg", text: "Добавляем нолик: <b>100</b>.<br>Делим пополам — будет <b>50</b>!", audio: "audio/magic5_10.wav" }
+];
+
+let currentMagic5Index = 0;
+
+function openMagic5() {
+    try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(e){}
+    document.getElementById('screen-multiplication-menu').classList.remove('active');
+    document.getElementById('screen-magic-5').classList.add('active');
+    currentMagic5Index = 0;
+    updateMagic5Card();
+}
+
+function goBackToMultFromMagic5() {
+    try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(e){}
+    document.getElementById('screen-magic-5').classList.remove('active');
+    document.getElementById('screen-multiplication-menu').classList.add('active');
+    if (currentAudio) { currentAudio.pause(); currentAudio.currentTime = 0; }
+}
+
+function updateMagic5Card() {
+    const card = magic5Data[currentMagic5Index];
+    document.getElementById('magic5-math').innerHTML = card.math;
+    document.getElementById('magic5-img').src = card.image;
+    document.getElementById('magic5-text').innerHTML = card.text;
+    document.getElementById('btn-prev-magic5').classList.toggle('disabled', currentMagic5Index === 0);
+    document.getElementById('btn-next-magic5').classList.toggle('disabled', currentMagic5Index === magic5Data.length - 1);
+    playSound(card.audio);
+}
+
+function changeMagic5(direction) {
+    try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(e){}
+    currentMagic5Index += direction;
+    if (currentMagic5Index < 0) currentMagic5Index = 0;
+    if (currentMagic5Index >= magic5Data.length) currentMagic5Index = magic5Data.length - 1;
+    updateMagic5Card();
+}
+
+// ==========================================
+//        МЕМОРИКА: ЦЕПОЧКА ПО РАССКАЗУ
+// ==========================================
+const chainItemsPool = [
+    { id: 'dog', name: 'Собака', image: 'img/bs_dog.png' }, { id: 'bear', name: 'Медведь', image: 'img/bs_bear.png' },
+    { id: 'bunny', name: 'Зайчик', image: 'img/bs_bunny.png' }, { id: 'elephant', name: 'Слон', image: 'img/bs_elephant.png' },
+    { id: 'mouse', name: 'Мышка', image: 'img/bs_mouse.png' }, { id: 'banana', name: 'Банан', image: 'img/p_opt_banan.png' },
+    { id: 'tea', name: 'Чай', image: 'img/p_opt_chay.png' }, { id: 'house', name: 'Домик', image: 'img/p_opt_domik.png' },
+    { id: 'door', name: 'Дверь', image: 'img/p_opt_dver.png' }, { id: 'mushroom', name: 'Гриб', image: 'img/p_opt_grib.png' },
+    { id: 'cabbage', name: 'Капуста', image: 'img/p_opt_kapusta.png' }, { id: 'roof', name: 'Крыша', image: 'img/p_opt_krisha.png' },
+    { id: 'lemon', name: 'Лимон', image: 'img/p_opt_limon.png' }, { id: 'boat2', name: 'Лодка', image: 'img/p_opt_lodka.png' },
+    { id: 'car2', name: 'Машина', image: 'img/p_opt_mashina.png' }, { id: 'honey2', name: 'Мёд', image: 'img/p_opt_med.png' },
+    { id: 'milk', name: 'Молоко', image: 'img/p_opt_moloko.png' }, { id: 'carrot', name: 'Морковка', image: 'img/p_opt_morkovka.png' },
+    { id: 'ball2', name: 'Мячик', image: 'img/p_opt_myachik.png' }, { id: 'cucumber', name: 'Огурец', image: 'img/p_opt_ogurec.png' },
+    { id: 'window', name: 'Окно', image: 'img/p_opt_okno.png' }, { id: 'train', name: 'Поезд', image: 'img/p_opt_poezd.png' },
+    { id: 'cheese', name: 'Сыр', image: 'img/p_opt_sir.png' }, { id: 'juice', name: 'Сок', image: 'img/p_opt_sok.png' },
+    { id: 'cake', name: 'Торт', image: 'img/p_opt_tort.png' }, { id: 'apple', name: 'Яблоко', image: 'img/p_opt_yabloko.png' },
+    { id: 'berry', name: 'Ягода', image: 'img/p_opt_yagoda.png' }, { id: 'box', name: 'Коробка', image: 'img/box.png' },
+    { id: 'acorn', name: 'Жёлудь', image: 'img/food_acorn.png' }, { id: 'bone', name: 'Косточка', image: 'img/food_bone.png' },
+    { id: 'fox', name: 'Лиса', image: 'img/3d_lisa.png' }, { id: 'carrot2', name: 'Морковка', image: 'img/garden_item_1.png' },
+    { id: 'watermelon', name: 'Арбуз', image: 'img/garden_item_2.png' }, { id: 'cabbage2', name: 'Капуста', image: 'img/garden_item_3.png' },
+    { id: 'mushroom2', name: 'Гриб', image: 'img/garden_item_4.png' }, { id: 'nut', name: 'Орех', image: 'img/garden_item_5.png' },
+    { id: 'pumpkin', name: 'Тыква', image: 'img/garden_item_6.png' }, { id: 'radish', name: 'Редиска', image: 'img/garden_item_7.png' },
+    { id: 'corn', name: 'Кукуруза', image: 'img/garden_item_8.png' }, { id: 'strawberry', name: 'Клубника', image: 'img/garden_item_9.png' }
+];
+
+let currentChainStage = 'observe'; 
+let learningSequence = [];
+let currentChainTargetCount = 0; 
+let currentChainSequence = [];   
+
+function openChainMenu() {
+    try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(e){}
+    document.getElementById('screen-memorika-menu').classList.remove('active');
+    document.getElementById('screen-chain-menu').classList.add('active');
+}
+
+function goBackToMemorikaFromChain() {
+    try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(e){}
+    document.getElementById('screen-chain-menu').classList.remove('active');
+    document.getElementById('screen-memorika-menu').classList.add('active');
 }
 
 function startChainTraining(count) {
     try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(e){}
-    if (count > chainItemsPool.length) { return; }
+    if (count > chainItemsPool.length) return;
     
     document.getElementById('screen-chain-menu').classList.remove('active');
     document.getElementById('screen-chain-game').classList.add('active');
@@ -579,8 +1065,7 @@ function setupChainGame() {
     gameCards.forEach(card => {
         const item = document.createElement('div');
         item.style.backgroundImage = "url('img/brick_bg.png')";
-        item.style.width = '70px'; item.style.height = '70px';
-        item.style.backgroundSize = '100% 100%';
+        item.style.width = '70px'; item.style.height = '70px'; item.style.backgroundSize = '100% 100%';
         item.style.display = 'flex'; item.style.alignItems = 'center'; item.style.justifyContent = 'center';
         item.style.borderRadius = '10px'; item.style.cursor = 'pointer'; item.style.transition = 'transform 0.1s ease'; 
         item.setAttribute('data-id', card.id);
@@ -638,6 +1123,36 @@ function goBackToChainMenu() {
     try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(e){}
     document.getElementById('screen-chain-game').classList.remove('active');
     document.getElementById('screen-chain-menu').classList.add('active');
+}
+
+// ==========================================
+//        МЕМОРИКА: СТИХИ И РИСОВАНИЕ
+// ==========================================
+let drawingPoem = []; 
+let currentDrawIndex = 0;
+// Избавились от alert() - ПУНКТ 1
+let userDrawings = [];
+let canvas, ctx;
+let isDrawing = false;
+
+function openPoemInput() {
+    try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(e){}
+    document.getElementById('screen-memorika-menu').classList.remove('active');
+    document.getElementById('screen-poem-input').classList.add('active');
+}
+
+function goBackToMemorikaFromPoemInput() {
+    try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(e){}
+    document.getElementById('screen-poem-input').classList.remove('active');
+    document.getElementById('screen-memorika-menu').classList.add('active');
+}
+
+function loadPredefinedPoem(poemId) {
+    try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(e){}
+    const textarea = document.getElementById('custom-poem-text');
+    if (poemId === 'barto') textarea.value = "Идёт бычок, качается,\nВздыхает на ходу:\n— Ох, доска кончается,\nСейчас я упаду!";
+    else if (poemId === 'pushkin') textarea.value = "У лукоморья дуб зелёный;\nЗлатая цепь на дубе том:\nИ днём и ночью кот учёный\nВсё ходит по цепи кругом;";
+    else if (poemId === 'tanya') textarea.value = "Наша Таня громко плачет:\nУронила в речку мячик.\n— Тише, Танечка, не плачь:\nНе утонет в речке мяч.";
 }
 
 function startCustomPoemDrawing() {
@@ -1143,21 +1658,12 @@ function spawnObstacles() {
     if (spawnType === 1 || spawnType === 2) createObstacleDom(spawnRight);
 }
 
-function createObstacleDom(laneIndex) {
-    const container = document.getElementById('racing-obstacles');
-    const obs = document.createElement('img');
-    const isRock = Math.random() > 0.5; const obstacleType = isRock ? 'rock' : 'puddle'; 
-    obs.src = isRock ? 'img/rock.png' : 'img/puddle.png';
-    obs.onerror = function() { this.src = 'img/garden_item_5.png'; }; 
-    obs.style.position = 'absolute'; obs.style.width = '45px'; obs.style.height = '45px';
-    obs.style.left = racingLanes[laneIndex] + '%'; obs.style.transform = 'translateX(-50%)'; obs.style.top = '-50px';
-    container.appendChild(obs);
-    obstaclesArray.push({ el: obs, lane: laneIndex, y: -50, type: obstacleType });
-}
+// ==========================================
+//        БРЕЙН-ФИТНЕС: ПИНГВИН-СЛЕДОПЫТ
+// ==========================================
+let pathfinderTargetIndex = 12; let pathfinderCurrentSteps = 3; let pathfinderGridCoords = []; 
+const pathfinderArrowRotations = { '-5': '0deg', '5': '180deg', '-1': '-90deg', '1': '90deg' };
 
-// ==========================================
-//        БРЕЙН-ФИТНЕС: ПИНГВИН-СЛЕДОПЫТ (ВОССТАНОВЛЕНО)
-// ==========================================
 function openBrainPathfinder() {
     try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(e){}
     document.getElementById('screen-brain-fitness-menu').classList.remove('active');
@@ -1270,7 +1776,7 @@ function getWordForm(num, word1, word2, word5) {
 }
 
 // ==========================================
-//        БРЕЙН-ФИТНЕС: НЕЙРО-ЖЕСТЫ (ВОССТАНОВЛЕНО)
+//        БРЕЙН-ФИТНЕС: НЕЙРО-ЖЕСТЫ
 // ==========================================
 function openBrainGestures() {
     try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(e){}
@@ -1337,6 +1843,18 @@ function nextGesturesPair() {
     }, msInterval);
 }
 
+function createObstacleDom(laneIndex) {
+    const container = document.getElementById('racing-obstacles');
+    const obs = document.createElement('img');
+    const isRock = Math.random() > 0.5; const obstacleType = isRock ? 'rock' : 'puddle'; 
+    obs.src = isRock ? 'img/rock.png' : 'img/puddle.png';
+    obs.onerror = function() { this.src = 'img/garden_item_5.png'; }; 
+    obs.style.position = 'absolute'; obs.style.width = '45px'; obs.style.height = '45px';
+    obs.style.left = racingLanes[laneIndex] + '%'; obs.style.transform = 'translateX(-50%)'; obs.style.top = '-50px';
+    container.appendChild(obs);
+    obstaclesArray.push({ el: obs, lane: laneIndex, y: -50, type: obstacleType });
+}
+
 function updateRacingFrame() {
     if (!isRacingActive) return;
     const screenHeight = window.innerHeight;
@@ -1376,7 +1894,7 @@ function crashGame(hitType) {
 }
 
 // ==========================================
-//        БРЕЙН-ФИТНЕС: ЗЕРКАЛКИ (ВОССТАНОВЛЕНО)
+//        БРЕЙН-ФИТНЕС: ЗЕРКАЛКИ
 // ==========================================
 function changeMirrorLevel(direction) {
     try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(e){}
@@ -1394,7 +1912,7 @@ function clearMirrorCanvas() {
 }
 
 // ==========================================
-//        ЛОГИКА КИТАЙСКОГО МЕНЮ И КАРТОЧЕК (ВОССТАНОВЛЕНО)
+//        ЛОГИКА КИТАЙСКОГО МЕНЮ И КАРТОЧЕК
 // ==========================================
 function openChineseMenu() {
     try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(e){}
