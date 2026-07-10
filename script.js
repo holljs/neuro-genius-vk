@@ -4,7 +4,7 @@
 let userVkId = 0;
 let vkSignParams = "";
 let vkPlatform = "";
-let hasPremiumAccess = true;
+let hasPremiumAccess = false;
 
 // 🔥🔥🔥 ВАЖНО: ВПИШИ СВОИ ДАННЫЕ СЮДА 🔥🔥🔥
 const BACKEND_URL = "https://neuro-master.online"; 
@@ -80,13 +80,24 @@ function openSupport() {
 }
 
 function checkAccessAndOpen(roomType) {
-    if (hasPremiumAccess) {
-        if (roomType === 'soroban') openSorobanMenu();
-        if (roomType === 'memorika') openMemorikaMenu();
-        if (roomType === 'brain') openBrainFitnessMenu();
-    } else {
-        try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "heavy"}); } catch(e){}
-        document.getElementById('vip-modal').style.display = 'flex';
+    // 1. Меморика и Нейрогимнастика (brain) теперь БЕСПЛАТНЫ для всех!
+    if (roomType === 'memorika') {
+        openMemorikaMenu();
+        return;
+    }
+    if (roomType === 'brain') {
+        openBrainFitnessMenu();
+        return;
+    }
+
+    // 2. А вот для Ментальной математики (soroban) требуем подписку
+    if (roomType === 'soroban') {
+        if (hasPremiumAccess) {
+            openSorobanMenu();
+        } else {
+            try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "heavy"}); } catch(e){}
+            document.getElementById('vip-modal').style.display = 'flex';
+        }
     }
 }
 
