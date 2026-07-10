@@ -14,27 +14,29 @@ try {
     vkBridge.send('VKWebAppInit').then(() => {
         const urlParams = new URLSearchParams(window.location.search);
         userVkId = urlParams.get('vk_user_id');
-        vkPlatform = urlParams.get('vk_platform'); // Получаем платформу
+        vkPlatform = urlParams.get('vk_platform');
         vkSignParams = window.location.search.replace('?', '');
+        
+        hidePaymentsOnMobile();
 
-        hidePaymentsOnMobile(); // Проверяем и прячем оплату, если нужно
-
+        // Сначала убираем замочки СОВСЕМ со всех бесплатных разделов (чтобы они всегда сияли)
+        // Для этого в index.html оставь класс 'locked-card' ТОЛЬКО на карточках Математики и Китайского!
+        
         fetch(`${BACKEND_URL}/api/user_geniy/${userVkId}`, {
             method: "GET",
             headers: { "x-vk-sign": vkSignParams }
         })
         .then(res => res.json())
         .then(data => {
-            // Для модерации игнорируем false от бэкенда, чтобы случайно не закрыть комнаты
-            if (data.success && !hasPremiumAccess) {
+            if (data.success) {
                 hasPremiumAccess = data.has_premium;
             }
+            // Если у обычного юзера или у тебя активирован Premium на бэкенде — снимаем замочки и с платных карт
             if (hasPremiumAccess) {
                 document.querySelectorAll('.locked-card').forEach(el => el.classList.remove('locked-card'));
             }
         }).catch(err => console.log("Ошибка доступа:", err));
     });
-} catch(e) { console.log("VK Bridge Error", e); }
 
 // Прячем ЮKassa для модераторов и пользователей в мобильных приложениях
 function hidePaymentsOnMobile() {
