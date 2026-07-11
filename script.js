@@ -37,6 +37,7 @@ try {
             }
         }).catch(err => console.log("Ошибка доступа:", err));
     });
+} catch(e) { console.log("Ошибка инициализации VK:", e); } // <-- ДОБАВИЛИ ЗАКРЫВАЮЩИЙ CATCH
 
 // Прячем ЮKassa для модераторов и пользователей в мобильных приложениях
 function hidePaymentsOnMobile() {
@@ -2329,6 +2330,13 @@ let isCardFlipped = false;
 
 // 1. Вход в главное меню Китайского
 function openChineseMenu() {
+    // Если премиума нет — показываем окно оплаты
+    if (!hasPremiumAccess) {
+        try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "heavy"}); } catch(e){}
+        document.getElementById('vip-modal').style.display = 'flex';
+        return;
+    }
+    
     try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(e){}
     document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
     document.getElementById('screen-chinese-main-menu').classList.add('active');
