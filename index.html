@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Нейро-Гений</title>
     <script src="https://unpkg.com/@vkontakte/vk-bridge/dist/browser.min.js"></script>
-    <link rel="stylesheet" href="style.css?v=8889">
+    <link rel="stylesheet" href="style.css?v=8890">
     <style>
         /* Броня от случайных скроллов */
         .draggable-item, [id^='chain-drag-zone'] > div {
@@ -20,16 +20,25 @@
             box-shadow: 0 0 15px rgba(255, 152, 0, 0.6);
         }
 
-        /* 📊 НАША КРУТАЯ ДВУХКОЛОНОЧНАЯ СЕТКА */
-        .menu-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr; /* Бесплатные влево, платные вправо */
+        /* 📊 РАЗДЕЛЕНИЕ НА ДВЕ БОЛЬШИЕ КОЛОНКИ: ЛЕВАЯ И ПРАВАЯ */
+        .main-menu-container {
+            display: flex;
             gap: 20px;
             padding: 10px 20px;
-            max-width: 800px;
+            max-width: 900px;
             margin: 0 auto;
+            align-items: flex-start;
         }
 
+        /* Левая колонка (Бесплатные) и Правая колонка (Платные) */
+        .menu-column-left, .menu-column-right {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        /* Стилизация самих карточек */
         .menu-card {
             position: relative;
             background: #ffffff;
@@ -39,27 +48,24 @@
             box-shadow: 0 6px 20px rgba(0,0,0,0.05);
             transition: transform 0.2s, box-shadow 0.2s;
             cursor: pointer;
-            box-sizing: border-box; /* Защита от вылетов верстки */
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 140px;
         }
 
-        /* 🔥 СТРОГАЯ БРОНЯ ДЛЯ ИКОНОК, ЧТОБЫ ОНИ НЕ РАСТЯГИВАЛИСЬ */
-        .card-icon {
-            width: 70px !important;    /* Фиксированная ширина */
-            height: 70px !important;   /* Фиксированная высота */
+        /* 🎯 ЖЕСТКАЯ ЗАЩИТА РАЗМЕРОВ ДЛЯ ВСЕХ ИКОНОК КАРТОЧЕК */
+        .menu-card img, .card-icon {
+            width: 70px !important;
+            height: 70px !important;
             object-fit: contain !important;
             margin: 0 auto 10px auto !important;
             display: block !important;
         }
 
-        /* Растягиваем 5-ю карточку (Китайский язык) по центру внизу */
-        .menu-card:nth-child(5) {
-            grid-column: 1 / -1;
-            max-width: 390px;
-            width: 100%;
-            margin: 0 auto;
-        }
-
-        /* Стильные оранжевые замочки VIP */
+        /* Нарядные VIP-рамки */
         .locked-card {
             border: 2px dashed #ffb74d !important;
             background: #fffdf9 !important;
@@ -69,15 +75,14 @@
             position: absolute;
             top: 12px;
             right: 12px;
-            font-size: 16px;
-            background: rgba(255, 152, 0, 0.15);
+            font-size: 14px;
+            background: #fff;
+            border: 1px solid #ffb74d;
             color: #f57c00;
-            padding: 4px 10px;
-            border-radius: 12px;
+            padding: 4px 8px;
+            border-radius: 10px;
             font-weight: bold;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
             z-index: 5;
         }
 
@@ -107,15 +112,14 @@
         }
         .legal-footer a { color: #2196F3; text-decoration: none; font-weight: bold; }
 
-        /* Адаптив для мобилок */
-        @media (max-width: 480px) {
-            .menu-grid {
-                grid-template-columns: 1fr;
+        /* Мобильная адаптация: на смартфонах превращаем в одну красивую ленту */
+        @media (max-width: 600px) {
+            .main-menu-container {
+                flex-direction: column;
                 gap: 15px;
             }
-            .menu-card:nth-child(5) {
-                grid-column: auto;
-                max-width: 100%;
+            .menu-column-left, .menu-column-right {
+                width: 100%;
             }
         }
     </style>
@@ -138,48 +142,54 @@
         </div>
         <div class="hero-title">Интерактивное обучение:</div>
         
-        <!-- Контейнер главного меню -->
-        <div class="menu-grid">
+        <!-- Новая двухколоночная структура главного меню -->
+        <div class="main-menu-container">
             
-            <!-- ================= СЛЕВА: БЕСПЛАТНЫЕ КАРТОЧКИ ================= -->
-            
-            <!-- 1. Слоги -->
-            <div class="menu-card" onclick="openWordsMenu()">
-                <img src="img/3d_cubes.png" alt="Слоги" class="card-icon">
-                <h3>Слоги</h3>
-                <p>Составь слово</p>
+            <!-- ====== ЛЕВАЯ КОЛОНКА: 3 БЕСПЛАТНЫХ КУРСА ====== -->
+            <div class="menu-column-left">
+                
+                <!-- 1. Слоги -->
+                <div class="menu-card" onclick="openWordsMenu()">
+                    <img src="img/3d_cubes.png" alt="Слоги" class="card-icon">
+                    <h3>Слоги</h3>
+                    <p>Составь слово</p>
+                </div>
+
+                <!-- 2. Меморика -->
+                <div class="menu-card" onclick="checkAccessAndOpen('memorika')">
+                    <img src="img/box.png" alt="Меморика" class="card-icon">
+                    <h3>Меморика</h3>
+                    <p>Развитие супер-памяти</p>
+                </div>
+
+                <!-- 3. Нейрогимнастика -->
+                <div class="menu-card" onclick="checkAccessAndOpen('brain')">
+                    <img src="img/gears.png" alt="Нейрогимнастика" class="card-icon">
+                    <h3>Нейрогимнастика</h3>
+                    <p>Развитие когнитивных навыков</p>
+                </div>
+
             </div>
 
-            <!-- 2. Меморика -->
-            <div class="menu-card" onclick="checkAccessAndOpen('memorika')">
-                <img src="img/box.png" alt="Меморика" class="card-icon">
-                <h3>Меморика</h3>
-                <p>Развитие супер-памяти</p>
-            </div>
+            <!-- ====== ПРАВАЯ КОЛОНКА: 2 ПЛАТНЫХ VIP КУРСА ====== -->
+            <div class="menu-column-right">
+                
+                <!-- 4. Mentальная арифметика -->
+                <div class="menu-card locked-card" onclick="checkAccessAndOpen('soroban')">
+                    <div class="vip-lock-badge">🔒 VIP</div>
+                    <img src="img/abacus.png" alt="Ментальная арифметика" class="card-icon">
+                    <h3>Ментальная арифметика</h3>
+                    <p>Счёты Соробан</p>
+                </div>
 
-            <!-- 3. Нейрогимнастика -->
-            <div class="menu-card" onclick="checkAccessAndOpen('brain')">
-                <img src="img/gears.png" alt="Нейрогимнастика" class="card-icon">
-                <h3>Нейрогимнастика</h3>
-                <p>Развитие когнитивных навыков</p>
-            </div>
+                <!-- 5. Китайский язык -->
+                <div class="menu-card locked-card" onclick="openChineseMenu()">
+                    <div class="vip-lock-badge">🔒 VIP</div>
+                    <img src="img/ch_character.png" alt="Китайский язык" class="card-icon">
+                    <h3>Китайский язык</h3>
+                    <p>Пошаговое обучение</p>
+                </div>
 
-            <!-- ================= СПРАВА: ПЛАТНЫЕ КАРТОЧКИ (VIP) ================= -->
-            
-            <!-- 4. Ментальная арифметика -->
-            <div class="menu-card locked-card" onclick="checkAccessAndOpen('soroban')">
-                <div class="vip-lock-badge">🔒 VIP</div> 
-                <img src="img/abacus.png" alt="Ментальная арифметика" class="card-icon">
-                <h3>Ментальная арифметика</h3>
-                <p>Счёты Соробан</p>
-            </div>
-
-            <!-- 5. Китайский язык -->
-            <div class="menu-card locked-card" onclick="openChineseMenu()">
-                <div class="vip-lock-badge">🔒 VIP</div> 
-                <img src="img/ch_character.png" alt="Китайский язык" class="card-icon">
-                <h3>Китайский язык</h3>
-                <p>Пошаговое обучение</p>
             </div>
 
         </div>
@@ -197,11 +207,11 @@
             <div class="header-top"><div class="back-btn" onclick="goMainFromWordsMenu()">⬅ В главное меню</div></div>
         </div>
         <div class="hero-title">Выбери уровень:</div>
-        <div class="menu-grid sub-grid">
+        <div class="menu-grid">
             <div class="category-card sub-card" onclick="openRoom('words_2', 'Слоги: 2 кусочка')">
                 <div style="margin: 0 auto 10px auto; width: 60px; height: 60px;"><img src="img/icon_syl_2.png" alt="" style="width: 100%; height: 100%; object-fit: contain;"></div>
                 <div class="category-title sub-title">2 слога</div>
-                <div class="category-subtitle">Простые слова</div>
+                <div class="category-subtitle">Простые words</div>
             </div>
             <div class="category-card sub-card" onclick="openRoom('words_3', 'Слоги: 3 кусочка')">
                 <div style="margin: 0 auto 10px auto; width: 60px; height: 60px;"><img src="img/icon_syl_3.png" alt="" style="width: 100%; height: 100%; object-fit: contain;"></div>
@@ -211,7 +221,7 @@
             <div class="category-card sub-card" onclick="openRoom('words_4', 'Слоги: 4 кусочка')">
                 <div style="margin: 0 auto 10px auto; width: 60px; height: 60px;"><img src="img/icon_syl_4.png" alt="" style="width: 100%; height: 100%; object-fit: contain;"></div>
                 <div class="category-title sub-title">4 слога</div>
-                <div class="category-subtitle">Сложные слова</div>
+                <div class="category-subtitle">Сложные words</div>
             </div>
         </div>
     </div>
@@ -222,7 +232,7 @@
             <div class="header-top"><div class="back-btn" onclick="goMainFromMemorika()">⬅ В главное меню</div></div>
         </div>
         <div class="hero-title">Выберите технику:</div>
-        <div class="menu-grid sub-grid">
+        <div class="menu-grid">
             <div class="category-card sub-card" onclick="openWardrobeMenu()">
                 <div style="margin: 0 auto 10px auto; width: 60px; height: 60px;"><img src="img/icon_wardrobe.png" alt="" style="width: 100%; height: 100%; object-fit: contain;"></div>
                 <div class="category-title sub-title">Дворец Памяти</div><div class="category-subtitle">Метод Локи</div>
@@ -248,7 +258,7 @@
             <div class="header-top"><div class="back-btn" onclick="goBackToMemorikaFromChain()">⬅ Назад</div></div>
         </div>
         <div class="hero-title">Тренировка памяти</div>
-        <div class="menu-grid sub-grid">
+        <div class="menu-grid">
             <div class="category-card sub-card" style="background: #fff3e0; border-color: #c8e6c9;" onclick="startChainLearning()">
                 <div style="margin: 0 auto 10px auto; width: 50px; height: 50px;"><img src="img/icon_chain_learn.png" alt="" style="width: 100%; height: 100%; object-fit: contain;"></div>
                 <div class="category-title sub-title">Обучение (10 слов)</div><div class="category-subtitle">Как придумывать историю</div>
@@ -279,7 +289,7 @@
             <div class="header-top"><div class="back-btn" onclick="goBackToMemorikaFromMult()">⬅ Назад</div></div>
         </div>
         <div class="hero-title">Выбери фокус:</div>
-        <div class="menu-grid sub-grid">
+        <div class="menu-grid">
             <div class="category-card sub-card" onclick="openMagic9()">
                 <div style="margin: 0 auto 10px auto; width: 60px; height: 60px;"><img src="img/icon_hack_9.png" alt="" style="width: 100%; height: 100%; object-fit: contain;"></div>
                 <div class="category-title sub-title">Магия на 9</div><div class="category-subtitle">Считаем на пальцах</div>
@@ -548,7 +558,7 @@
             <div class="header-top"><div class="back-btn" onclick="goBackToMemorikaFromWardrobeMenu()">⬅ Назад</div></div>
         </div>
         <div class="hero-title">Выбери количество предметов:</div>
-        <div class="menu-grid sub-grid">
+        <div class="menu-grid">
             <div class="category-card sub-card" onclick="startWardrobeGame(5)">
                 <div style="margin: 0 auto 5px auto; width: 45px; height: 45px;"><img src="img/icon_chain_5.png" alt="" style="width: 100%; height: 100%; object-fit: contain;"></div>
                 <div class="category-title sub-title">Малыш</div><div class="category-subtitle">5 предметов</div>
@@ -595,7 +605,7 @@
             <div class="header-top"><div class="back-btn" onclick="goMainFromBrainFitness()">⬅ В главное меню</div></div>
         </div>
         <div class="hero-title">Выбери тренажёр:</div>
-        <div class="menu-grid sub-grid">
+        <div class="menu-grid">
             <div class="category-card sub-card" onclick="startBrainConfusion()">
                 <div style="margin: 0 auto 10px auto; width: 60px; height: 60px;"><img src="img/icon_confusion.png" onerror="this.src='img/icon_memo.png'" alt="" style="width: 100%; height: 100%; object-fit: contain;"></div>
                 <div class="category-title sub-title">Путаница</div><div class="category-subtitle">Слушай и смотри</div>
@@ -898,6 +908,6 @@
         </div>
     </div>
     
-    <script src="script.js?v=8889"></script>
+    <script src="script.js?v=8890"></script>
 </body>
 </html>
