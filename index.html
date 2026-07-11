@@ -39,10 +39,16 @@
             box-shadow: 0 6px 20px rgba(0,0,0,0.05);
             transition: transform 0.2s, box-shadow 0.2s;
             cursor: pointer;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
+            box-sizing: border-box; /* Защита от вылетов верстки */
+        }
+
+        /* 🔥 СТРОГАЯ БРОНЯ ДЛЯ ИКОНОК, ЧТОБЫ ОНИ НЕ РАСТЯГИВАЛИСЬ */
+        .card-icon {
+            width: 70px !important;    /* Фиксированная ширина */
+            height: 70px !important;   /* Фиксированная высота */
+            object-fit: contain !important;
+            margin: 0 auto 10px auto !important;
+            display: block !important;
         }
 
         /* Растягиваем 5-ю карточку (Китайский язык) по центру внизу */
