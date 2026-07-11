@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Нейро-Гений</title>
     <script src="https://unpkg.com/@vkontakte/vk-bridge/dist/browser.min.js"></script>
-    <link rel="stylesheet" href="style.css?v=8890">
+    <link rel="stylesheet" href="style.css?v=8891">
     <style>
         /* Броня от случайных скроллов */
         .draggable-item, [id^='chain-drag-zone'] > div {
@@ -28,6 +28,8 @@
             max-width: 900px;
             margin: 0 auto;
             align-items: flex-start;
+            box-sizing: border-box;
+            width: 100%;
         }
 
         /* Левая колонка (Бесплатные) и Правая колонка (Платные) */
@@ -38,14 +40,14 @@
             gap: 20px;
         }
 
-        /* Стилизация самих карточек */
+        /* Стилизация самих карточек главного меню */
         .menu-card {
             position: relative;
             background: #ffffff;
-            border-radius: 20px;
-            padding: 20px;
+            border-radius: 24px;
+            padding: 20px 10px;
             text-align: center;
-            box-shadow: 0 6px 20px rgba(0,0,0,0.05);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.03);
             transition: transform 0.2s, box-shadow 0.2s;
             cursor: pointer;
             box-sizing: border-box;
@@ -53,19 +55,22 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            min-height: 140px;
+            min-height: 150px;
+            width: 100%;
         }
+        .menu-card:active { transform: scale(0.96); opacity: 0.9; }
 
-        /* 🎯 ЖЕСТКАЯ ЗАЩИТА РАЗМЕРОВ ДЛЯ ВСЕХ ИКОНОК КАРТОЧЕК */
-        .menu-card img, .card-icon {
-            width: 70px !important;
-            height: 70px !important;
+        /* 🎯 ЖЕСТКАЯ ЗАЩИТА РАЗМЕРОВ ДЛЯ ВСЕХ ИКОНОК КАРТОЧЕК НА ГЛАВНОЙ */
+        .menu-card .card-icon {
+            width: 75px !important;
+            height: 75px !important;
             object-fit: contain !important;
             margin: 0 auto 10px auto !important;
             display: block !important;
+            opacity: 1 !important;
         }
 
-        /* Нарядные VIP-рамки */
+        /* Нарядные VIP-комнаты */
         .locked-card {
             border: 2px dashed #ffb74d !important;
             background: #fffdf9 !important;
@@ -75,7 +80,7 @@
             position: absolute;
             top: 12px;
             right: 12px;
-            font-size: 14px;
+            font-size: 13px;
             background: #fff;
             border: 1px solid #ffb74d;
             color: #f57c00;
@@ -142,7 +147,7 @@
         </div>
         <div class="hero-title">Интерактивное обучение:</div>
         
-        <!-- Новая двухколоночная структура главного меню -->
+        <!-- Наша нарядная двухколоночная структура главного меню -->
         <div class="main-menu-container">
             
             <!-- ====== ЛЕВАЯ КОЛОНКА: 3 БЕСПЛАТНЫХ КУРСА ====== -->
@@ -151,22 +156,22 @@
                 <!-- 1. Слоги -->
                 <div class="menu-card" onclick="openWordsMenu()">
                     <img src="img/3d_cubes.png" alt="Слоги" class="card-icon">
-                    <h3>Слоги</h3>
-                    <p>Составь слово</p>
+                    <div class="category-title">Слоги</div>
+                    <div class="category-subtitle">Составь слово</div>
                 </div>
 
                 <!-- 2. Меморика -->
                 <div class="menu-card" onclick="checkAccessAndOpen('memorika')">
                     <img src="img/box.png" alt="Меморика" class="card-icon">
-                    <h3>Меморика</h3>
-                    <p>Развитие супер-памяти</p>
+                    <div class="category-title">Меморика</div>
+                    <div class="category-subtitle">Развитие супер-памяти</div>
                 </div>
 
                 <!-- 3. Нейрогимнастика -->
                 <div class="menu-card" onclick="checkAccessAndOpen('brain')">
                     <img src="img/gears.png" alt="Нейрогимнастика" class="card-icon">
-                    <h3>Нейрогимнастика</h3>
-                    <p>Развитие когнитивных навыков</p>
+                    <div class="category-title">Нейрогимнастика</div>
+                    <div class="category-subtitle">Развитие когнитивных навыков</div>
                 </div>
 
             </div>
@@ -174,20 +179,20 @@
             <!-- ====== ПРАВАЯ КОЛОНКА: 2 ПЛАТНЫХ VIP КУРСА ====== -->
             <div class="menu-column-right">
                 
-                <!-- 4. Mentальная арифметика -->
+                <!-- 4. Ментальная арифметика -->
                 <div class="menu-card locked-card" onclick="checkAccessAndOpen('soroban')">
                     <div class="vip-lock-badge">🔒 VIP</div>
                     <img src="img/abacus.png" alt="Ментальная арифметика" class="card-icon">
-                    <h3>Ментальная арифметика</h3>
-                    <p>Счёты Соробан</p>
+                    <div class="category-title">Ментальная арифметика</div>
+                    <div class="category-subtitle">Счёты Соробан</div>
                 </div>
 
                 <!-- 5. Китайский язык -->
                 <div class="menu-card locked-card" onclick="openChineseMenu()">
                     <div class="vip-lock-badge">🔒 VIP</div>
                     <img src="img/ch_character.png" alt="Китайский язык" class="card-icon">
-                    <h3>Китайский язык</h3>
-                    <p>Пошаговое обучение</p>
+                    <div class="category-title">Китайский язык</div>
+                    <div class="category-subtitle">Пошаговое обучение</div>
                 </div>
 
             </div>
@@ -207,21 +212,21 @@
             <div class="header-top"><div class="back-btn" onclick="goMainFromWordsMenu()">⬅ В главное меню</div></div>
         </div>
         <div class="hero-title">Выбери уровень:</div>
-        <div class="menu-grid">
+        <div class="menu-grid sub-grid">
             <div class="category-card sub-card" onclick="openRoom('words_2', 'Слоги: 2 кусочка')">
-                <div style="margin: 0 auto 10px auto; width: 60px; height: 60px;"><img src="img/icon_syl_2.png" alt="" style="width: 100%; height: 100%; object-fit: contain;"></div>
+                <div class="category-icon-placeholder"><img src="img/icon_syl_2.png" alt=""></div>
                 <div class="category-title sub-title">2 слога</div>
-                <div class="category-subtitle">Простые words</div>
+                <div class="category-subtitle">Простые слова</div>
             </div>
             <div class="category-card sub-card" onclick="openRoom('words_3', 'Слоги: 3 кусочка')">
-                <div style="margin: 0 auto 10px auto; width: 60px; height: 60px;"><img src="img/icon_syl_3.png" alt="" style="width: 100%; height: 100%; object-fit: contain;"></div>
+                <div class="category-icon-placeholder"><img src="img/icon_syl_3.png" alt=""></div>
                 <div class="category-title sub-title">3 слога</div>
                 <div class="category-subtitle">Средний уровень</div>
             </div>
             <div class="category-card sub-card" onclick="openRoom('words_4', 'Слоги: 4 кусочка')">
-                <div style="margin: 0 auto 10px auto; width: 60px; height: 60px;"><img src="img/icon_syl_4.png" alt="" style="width: 100%; height: 100%; object-fit: contain;"></div>
+                <div class="category-icon-placeholder"><img src="img/icon_syl_4.png" alt=""></div>
                 <div class="category-title sub-title">4 слога</div>
-                <div class="category-subtitle">Сложные words</div>
+                <div class="category-subtitle">Сложные слова</div>
             </div>
         </div>
     </div>
@@ -232,21 +237,21 @@
             <div class="header-top"><div class="back-btn" onclick="goMainFromMemorika()">⬅ В главное меню</div></div>
         </div>
         <div class="hero-title">Выберите технику:</div>
-        <div class="menu-grid">
+        <div class="menu-grid sub-grid">
             <div class="category-card sub-card" onclick="openWardrobeMenu()">
-                <div style="margin: 0 auto 10px auto; width: 60px; height: 60px;"><img src="img/icon_wardrobe.png" alt="" style="width: 100%; height: 100%; object-fit: contain;"></div>
+                <div class="category-icon-placeholder"><img src="img/icon_wardrobe.png" alt=""></div>
                 <div class="category-title sub-title">Дворец Памяти</div><div class="category-subtitle">Метод Локи</div>
             </div>
             <div class="category-card sub-card" onclick="openChainMenu()">
-                <div style="margin: 0 auto 10px auto; width: 60px; height: 60px;"><img src="img/icon_chain.png" alt="" style="width: 100%; height: 100%; object-fit: contain;"></div>
+                <div class="category-icon-placeholder"><img src="img/icon_chain.png" alt=""></div>
                 <div class="category-title sub-title">Цепочка по рассказу</div><div class="category-subtitle">Связывание образов</div>
             </div>
             <div class="category-card sub-card" onclick="openPoemInput()">
-                <div style="margin: 0 auto 10px auto; width: 60px; height: 60px;"><img src="img/icon_poem.png" alt="" style="width: 100%; height: 100%; object-fit: contain;"></div>
+                <div class="category-icon-placeholder"><img src="img/icon_poem.png" alt=""></div>
                 <div class="category-title sub-title">Стихи и рисование</div><div class="category-subtitle">Рисуем и запоминаем</div>
             </div>
             <div class="category-card sub-card" onclick="openMultiplicationMenu()">
-                <div style="margin: 0 auto 10px auto; width: 60px; height: 60px;"><img src="img/icon_magicwand.png" alt="" style="width: 100%; height: 100%; object-fit: contain;"></div>
+                <div class="category-icon-placeholder"><img src="img/icon_magicwand.png" alt=""></div>
                 <div class="category-title sub-title">Лайфхаки умножения</div><div class="category-subtitle">Учим таблицу весело</div>
             </div>
         </div>
@@ -258,26 +263,26 @@
             <div class="header-top"><div class="back-btn" onclick="goBackToMemorikaFromChain()">⬅ Назад</div></div>
         </div>
         <div class="hero-title">Тренировка памяти</div>
-        <div class="menu-grid">
+        <div class="menu-grid sub-grid">
             <div class="category-card sub-card" style="background: #fff3e0; border-color: #c8e6c9;" onclick="startChainLearning()">
-                <div style="margin: 0 auto 10px auto; width: 50px; height: 50px;"><img src="img/icon_chain_learn.png" alt="" style="width: 100%; height: 100%; object-fit: contain;"></div>
+                <div class="category-icon-placeholder"><img src="img/icon_chain_learn.png" alt=""></div>
                 <div class="category-title sub-title">Обучение (10 слов)</div><div class="category-subtitle">Как придумывать историю</div>
             </div>
             <div class="sub-title-header" style="grid-column: 1 / -1; margin-top: 15px;">Выбери сложность:</div>
             <div class="category-card sub-card" onclick="startChainTraining(5)">
-                <div style="margin: 0 auto 5px auto; width: 45px; height: 45px;"><img src="img/icon_chain_5.png" alt="" style="width: 100%; height: 100%; object-fit: contain;"></div>
+                <div class="category-icon-placeholder"><img src="img/icon_chain_5.png" alt=""></div>
                 <div class="category-title sub-title">Новичок</div><div class="category-subtitle">5 предметов</div>
             </div>
             <div class="category-card sub-card" onclick="startChainTraining(10)">
-                <div style="margin: 0 auto 5px auto; width: 45px; height: 45px;"><img src="img/icon_chain_10.png" alt="" style="width: 100%; height: 100%; object-fit: contain;"></div>
+                <div class="category-icon-placeholder"><img src="img/icon_chain_10.png" alt=""></div>
                 <div class="category-title sub-title">Ученик</div><div class="category-subtitle">10 предметов</div>
             </div>
             <div class="category-card sub-card" onclick="startChainTraining(15)">
-                <div style="margin: 0 auto 5px auto; width: 45px; height: 45px;"><img src="img/icon_chain_15.png" alt="" style="width: 100%; height: 100%; object-fit: contain;"></div>
+                <div class="category-icon-placeholder"><img src="img/icon_chain_15.png" alt=""></div>
                 <div class="category-title sub-title">Мастер</div><div class="category-subtitle">15 предметов</div>
             </div>
             <div class="category-card sub-card" onclick="startChainTraining(20)">
-                <div style="margin: 0 auto 5px auto; width: 45px; height: 45px;"><img src="img/icon_chain_20.png" alt="" style="width: 100%; height: 100%; object-fit: contain;"></div>
+                <div class="category-icon-placeholder"><img src="img/icon_chain_20.png" alt=""></div>
                 <div class="category-title sub-title">Ниндзя</div><div class="category-subtitle">20 предметов</div>
             </div>
         </div>
@@ -289,21 +294,21 @@
             <div class="header-top"><div class="back-btn" onclick="goBackToMemorikaFromMult()">⬅ Назад</div></div>
         </div>
         <div class="hero-title">Выбери фокус:</div>
-        <div class="menu-grid">
+        <div class="menu-grid sub-grid">
             <div class="category-card sub-card" onclick="openMagic9()">
-                <div style="margin: 0 auto 10px auto; width: 60px; height: 60px;"><img src="img/icon_hack_9.png" alt="" style="width: 100%; height: 100%; object-fit: contain;"></div>
+                <div class="category-icon-placeholder"><img src="img/icon_hack_9.png" alt=""></div>
                 <div class="category-title sub-title">Магия на 9</div><div class="category-subtitle">Считаем на пальцах</div>
             </div>
             <div class="category-card sub-card" onclick="openPoems()">
-                <div style="margin: 0 auto 10px auto; width: 60px; height: 60px;"><img src="img/icon_hack_poem.png" alt="" style="width: 100%; height: 100%; object-fit: contain;"></div>
+                <div class="category-icon-placeholder"><img src="img/icon_hack_poem.png" alt=""></div>
                 <div class="category-title sub-title">Стихи-ассоциации</div><div class="category-subtitle">Трудные примеры</div>
             </div>
             <div class="category-card sub-card" onclick="openMagic5()">
-                <div style="margin: 0 auto 10px auto; width: 60px; height: 60px;"><img src="img/icon_hack_5.png" alt="" style="width: 100%; height: 100%; object-fit: contain;"></div>
+                <div class="category-icon-placeholder"><img src="img/icon_hack_5.png" alt=""></div>
                 <div class="category-title sub-title">Магия на 5</div><div class="category-subtitle">Секрет с половинкой</div>
             </div>
             <div class="category-card sub-card" onclick="openMultTest()" style="background: #e8f5e9; border-color: #c8e6c9;">
-                <div style="margin: 0 auto 10px auto; width: 60px; height: 60px;"><img src="img/icon_soroban_play.png" alt="" style="width: 100%; height: 100%; object-fit: contain;"></div>
+                <div class="category-icon-placeholder"><img src="img/icon_soroban_play.png" alt=""></div>
                 <div class="category-title sub-title">Проверка знаний</div><div class="category-subtitle">Решай примеры</div>
             </div>
         </div>
@@ -384,15 +389,15 @@
         <div class="hero-title">Выберите режим:</div>
         <div class="menu-grid">
             <div class="category-card" onclick="startSoroban('free', 'free', 'Свободный режим')">
-                <div style="margin: 0 auto 15px auto; width: 80px; height: 80px;"><img src="img/icon_soroban_free.png" alt="" style="width: 100%; height: 100%; object-fit: contain;"></div>
+                <div class="category-icon-placeholder"><img src="img/icon_soroban_free.png" alt=""></div>
                 <div class="category-title">Свободный режим</div><div class="category-subtitle">Изучайте косточки без заданий</div>
             </div>
             <div class="category-card" onclick="openSorobanLearnMenu()">
-                <div style="margin: 0 auto 15px auto; width: 80px; height: 80px;"><img src="img/icon_soroban_learn.png" alt="" style="width: 100%; height: 100%; object-fit: contain;"></div>
+                <div class="category-icon-placeholder"><img src="img/icon_soroban_learn.png" alt=""></div>
                 <div class="category-title">Обучение</div><div class="category-subtitle">Правила и разряды</div>
             </div>
             <div class="category-card" onclick="openSorobanPlayMenu()">
-                <div style="margin: 0 auto 15px auto; width: 80px; height: 80px;"><img src="img/icon_soroban_play.png" alt="" style="width: 100%; height: 100%; object-fit: contain;"></div>
+                <div class="category-icon-placeholder"><img src="img/icon_soroban_play.png" alt=""></div>
                 <div class="category-title">Тренировка</div><div class="category-subtitle">Решение примеров</div>
             </div>
         </div>
@@ -509,7 +514,7 @@
                 <h3 style="margin-top: 0; margin-bottom: 10px; color: #f57f17; text-align: center;">Секрет супер-памяти 💡</h3>
                 <p style="margin: 0 0 10px 0; font-size: 15px; color: #333; line-height: 1.4;">Чтобы быстро выучить стихотворение, мы превратим его в <b>пиктограммы</b> — твои собственные рисунки-ассоциации!</p>
                 <p style="margin: 0 0 10px 0; font-size: 15px; color: #333; line-height: 1.4;">Например, для строчки <i>«У лукоморья дуб зелёный»</i> нарисуй просто лук 🧅 и дерево 🌳. Не старайся рисовать красиво, подойдут самые простые каракули!</p>
-                <p style="margin: 0; font-size: 15px; color: #333; line-height: 1.4;">В конце игры ты посмотришь на свои рисунки и легко расскажешь весь стих! А если забудешь — всегда можно нажать кнопочку и подсмотреть в текст. 👀</p>
+                <p style="margin: 0; font-size: 15px; color: #333; line-height: 1.4;">В конце игры ты посмотришь на свои рисунки и легко расскажешь весь стих! А если забудешь — всегда можно нажать кнопочку и подсмотреть в text. 👀</p>
             </div>
             <div class="hero-title" style="font-size: 20px; margin-bottom: 15px;">Впиши стих или выбери готовый:</div>
             <div style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-bottom: 15px;">
@@ -560,15 +565,15 @@
         <div class="hero-title">Выбери количество предметов:</div>
         <div class="menu-grid">
             <div class="category-card sub-card" onclick="startWardrobeGame(5)">
-                <div style="margin: 0 auto 5px auto; width: 45px; height: 45px;"><img src="img/icon_chain_5.png" alt="" style="width: 100%; height: 100%; object-fit: contain;"></div>
+                <div class="category-icon-placeholder"><img src="img/icon_chain_5.png" alt=""></div>
                 <div class="category-title sub-title">Малыш</div><div class="category-subtitle">5 предметов</div>
             </div>
             <div class="category-card sub-card" onclick="startWardrobeGame(7)">
-                <div style="margin: 0 auto 5px auto; width: 45px; height: 45px;"><img src="img/icon_chain_7.png" onerror="this.src='img/icon_chain.png'" alt="" style="width: 100%; height: 100%; object-fit: contain;"></div>
+                <div class="category-icon-placeholder"><img src="img/icon_chain_7.png" onerror="this.src='img/icon_chain.png'" alt=""></div>
                 <div class="category-title sub-title">Исследователь</div><div class="category-subtitle">7 предметов</div>
             </div>
             <div class="category-card sub-card" onclick="startWardrobeGame(10)">
-                <div style="margin: 0 auto 5px auto; width: 45px; height: 45px;"><img src="img/icon_chain_10.png" alt="" style="width: 100%; height: 100%; object-fit: contain;"></div>
+                <div class="category-icon-placeholder"><img src="img/icon_chain_10.png" alt=""></div>
                 <div class="category-title sub-title">Гений</div><div class="category-subtitle">10 предметов</div>
             </div>
         </div>
@@ -607,23 +612,23 @@
         <div class="hero-title">Выбери тренажёр:</div>
         <div class="menu-grid">
             <div class="category-card sub-card" onclick="startBrainConfusion()">
-                <div style="margin: 0 auto 10px auto; width: 60px; height: 60px;"><img src="img/icon_confusion.png" onerror="this.src='img/icon_memo.png'" alt="" style="width: 100%; height: 100%; object-fit: contain;"></div>
+                <div class="category-icon-placeholder"><img src="img/icon_confusion.png" onerror="this.src='img/icon_memo.png'" alt=""></div>
                 <div class="category-title sub-title">Путаница</div><div class="category-subtitle">Слушай и смотри</div>
             </div>
             <div class="category-card sub-card" onclick="openBrainRacing()">
-                <div style="margin: 0 auto 10px auto; width: 60px; height: 60px;"><img src="img/icon_racing.png" onerror="this.src='img/icon_memo.png'" alt="" style="width: 100%; height: 100%; object-fit: contain;"></div>
+                <div class="category-icon-placeholder"><img src="img/icon_racing.png" onerror="this.src='img/icon_memo.png'" alt=""></div>
                 <div class="category-title sub-title">Нейро-гонки</div><div class="category-subtitle">Две руки сразу</div>
             </div>
             <div class="category-card sub-card" onclick="openBrainMirrorDraw()">
-                <div style="margin: 0 auto 10px auto; width: 60px; height: 60px;"><img src="img/icon_mirror.png" onerror="this.src='img/icon_memo.png'" alt="" style="width: 100%; height: 100%; object-fit: contain;"></div>
+                <div class="category-icon-placeholder"><img src="img/icon_mirror.png" onerror="this.src='img/icon_memo.png'" alt=""></div>
                 <div class="category-title sub-title">Зеркалки</div><div class="category-subtitle">Рисуй двумя руками</div>
             </div>
             <div class="category-card sub-card" onclick="openBrainPathfinder()">
-                <div style="margin: 0 auto 10px auto; width: 60px; height: 60px;"><img src="img/icon_penguin.png" onerror="this.src='img/icon_memo.png'" alt="" style="width: 100%; height: 100%; object-fit: contain;"></div>
+                <div class="category-icon-placeholder"><img src="img/icon_penguin.png" onerror="this.src='img/icon_memo.png'" alt=""></div>
                 <div class="category-title sub-title">Следопыт</div><div class="category-subtitle">Мысленный маршрут</div>
             </div>
             <div class="category-card sub-card" onclick="openBrainGestures()">
-                <div style="margin: 0 auto 10px auto; width: 60px; height: 60px;"><img src="img/icon_gestures.png" onerror="this.src='img/icon_brain.png'" alt="" style="width: 100%; height: 100%; object-fit: contain;"></div>
+                <div class="category-icon-placeholder"><img src="img/icon_gestures.png" onerror="this.src='img/icon_brain.png'" alt=""></div>
                 <div class="category-title sub-title">Нейро-жесты</div><div class="category-subtitle">Повторяй движения</div>
             </div>
         </div>
@@ -752,7 +757,7 @@
         <div class="hero-title">Выберите режим:</div>
         <div class="menu-grid">
             <div class="category-card" onclick="openChineseWordsMenu()">
-                <div style="margin: 0 auto 15px auto; width: 80px; height: 80px;">
+                <div class="category-icon-placeholder">
                     <img src="img/ch_icon_words.png" alt="" style="width: 100%; height: 100%; object-fit: contain;">
                 </div>
                 <div class="category-title">Слова</div>
@@ -760,7 +765,7 @@
             </div>
             
             <div class="category-card" onclick="openChinesePhrasesMenu()">
-                <div style="margin: 0 auto 15px auto; width: 80px; height: 80px;">
+                <div class="category-icon-placeholder">
                     <img src="img/ch_icon_phrases.png" alt="" style="width: 100%; height: 100%; object-fit: contain;">
                 </div>
                 <div class="category-title">Фразы</div>
@@ -768,7 +773,7 @@
             </div>
             
             <div class="category-card" onclick="openChineseHacks()">
-                <div style="margin: 0 auto 15px auto; width: 80px; height: 80px;">
+                <div class="category-icon-placeholder">
                     <img src="img/ch_icon_hacks.png" alt="" style="width: 100%; height: 100%; object-fit: contain;">
                 </div>
                 <div class="category-title">Лайфхаки</div>
@@ -776,7 +781,7 @@
             </div>
             
             <div class="category-card" onclick="this.querySelector('.category-subtitle').innerText='Уже создаём этот раздел! 🎨'">
-                <div style="margin: 0 auto 15px auto; width: 80px; height: 80px;">
+                <div class="category-icon-placeholder">
                     <img src="img/ch_icon_draw.png" alt="" style="width: 100%; height: 100%; object-fit: contain;">
                 </div>
                 <div class="category-title">Рисуем иероглифы</div>
@@ -908,6 +913,6 @@
         </div>
     </div>
     
-    <script src="script.js?v=8890"></script>
+    <script src="script.js?v=8891"></script>
 </body>
 </html>
