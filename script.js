@@ -200,6 +200,41 @@ const chineseHacksData = [
 let currentHackIndex = 0;
 
 // ==========================================
+//   БАЗА ДАННЫХ КИТАЙСКОГО LEGO-КОНСТРУКТОРА
+// ==========================================
+const chineseLegoData = [
+    {
+        id: 'yang',
+        task: 'Собери иероглиф "Океан" 🌊 из капель воды и барашка!',
+        finalImg: 'img/ch_part_sheep.png', // Сюда встанет собранный цельный иероглиф, когда ты его переименуешь (пока используем его)
+        parts: [
+            { id: 'water', img: 'img/ch_part_water.png', text: 'Вода 氵' },
+            { id: 'sheep', img: 'img/ch_part_sheep.png', text: 'Баран 羊' }
+        ]
+    },
+    {
+        id: 'zhu',
+        task: 'Соедини воду и хозяина, чтобы получилось слово "Лить" (Внимание)! 💧',
+        finalImg: 'img/ch_word_pour.png',
+        parts: [
+            { id: 'water', img: 'img/ch_part_water.png', text: 'Вода 氵' },
+            { id: 'master', img: 'img/ch_part_master.png', text: 'Хозяин 主' }
+        ]
+    },
+    {
+        id: 'hu',
+        task: 'Собери из деталек огромное "Озеро" 🏞️!',
+        finalImg: 'img/ch_word_lake.png',
+        parts: [
+            { id: 'water', img: 'img/ch_part_water.png', text: 'Вода 氵' },
+            { id: 'ancient', img: 'img/ch_part_ancient.png', text: 'Древний 古' }
+        ]
+    }
+];
+let currentLegoLevelIndex = 0;
+let legoMatchedCount = 0;
+
+// ==========================================
 //        БАЗА ДАННЫХ (ROOMS DATA)
 // ==========================================
 const roomsData = {
@@ -2512,9 +2547,27 @@ function updateHackCard() {
 
 function moveHack(direction) {
     const newIndex = currentHackIndex + direction;
-    if (newIndex >= 0 && newIndex < chineseHacksData.length) {
+   if (newIndex >= 0 && newIndex < chineseHacksData.length) {
         currentHackIndex = newIndex;
         updateHackCard();
         try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(e){}
     }
+}
+
+// ==========================================
+//     ФУНКЦИИ КИТАЙСКОГО LEGO-КОНСТРУКТОРА
+// ==========================================
+function openChineseLegoGame() {
+    try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(e){}
+    document.getElementById('screen-chinese-main-menu').classList.remove('active');
+    document.getElementById('screen-chinese-lego').classList.add('active');
+    currentLegoLevelIndex = 0;
+    setupLegoGame(); // Эту функцию мы напишем следующим шагом
+}
+
+function goBackFromChineseLego() {
+    try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(e){}
+    document.getElementById('screen-chinese-lego').classList.remove('active');
+    document.getElementById('screen-chinese-main-menu').classList.add('active');
+    if (currentAudio) { currentAudio.pause(); currentAudio.currentTime = 0; }
 }
