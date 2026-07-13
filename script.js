@@ -676,11 +676,11 @@ function handlePointerEnd(e) {
         activeItem.style.display = 'none';
         matchedTarget.style.backgroundImage = "url('img/brick_bg.png')";
         
-        // 🧩 ЕСЛИ ИГРАЕМ В ТАЙНЫ КЛЮЧЕЙ
+        // 1. ЕСЛИ ИГРАЕМ В ТАЙНЫ КЛЮЧЕЙ
         if (document.getElementById('screen-chinese-lego').classList.contains('active')) {
-            // Проявляем перенесённую детальку прямо на месте паза поверх тени
             matchedTarget.style.border = 'none';
-            matchedTarget.innerHTML = `<img src="${activeItem.querySelector('img').src}" style="width:100%; height:100%; object-fit:contain; animation: fadeIn 0.3s ease;">`;
+            // Растягиваем деталь на всю зону ловушки, чтобы она точно совпала с контуром тени
+            matchedTarget.innerHTML = `<img src="${activeItem.querySelector('img').src}" style="width:100%; height:100%; object-fit:contain; animation: fadeIn 0.2s ease;">`;
             
             legoMatchedCount++;
             // Строгая проверка: сработает только когда соберутся ВСЕ ключи!
@@ -2635,20 +2635,40 @@ function setupLegoGame() {
 
     // Создаём ТЕНЬ-СИЛУЭТ готового иероглифа в центре планшета
     resultZone.innerHTML = `
-        <div id="lego-silhouette-container" style="position: relative; width: 220px; height: 220px; display: flex; align-items: center; justify-content: center;">
+        <div id="lego-silhouette-container" style="position: relative; width: 200px; height: 200px;">
             <!-- Полупрозрачная тень-подсказка всего знака -->
-            <img src="${currentLevel.finalImg}" style="position: absolute; width: 100%; height: 100%; object-fit: contain; opacity: 0.15; filter: brightness(0) invert(1) blur(1px);">
-            <!-- Невидимый контейнер для фиксации попаданий деталек -->
-            <div id="lego-target-slots" style="position: absolute; top:0; left:0; width:100%; height:100%; display: flex; justify-content: space-around; align-items: center;"></div>
+            <img src="${currentLevel.finalImg}" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: contain; opacity: 0.15; filter: brightness(0) invert(1) blur(1px);">
+            <!-- Контейнер для фиксации попаданий деталек -->
+            <div id="lego-target-slots" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"></div>
         </div>
     `;
 
-    // Перепривязываем обновлённый targetZone
     const newTargetZone = document.getElementById('lego-target-slots');
 
-    // Раставляем невидимые круглые зоны-ловушки для деталей прямо поверх тени
+    // Расставляем зоны-ловушки строго на свои половины силуэта
     currentLevel.parts.forEach((part, index) => {
         const slot = document.createElement('div');
+        slot.className = 'target-item';
+        
+        // Разделяем силуэт на две точные половины: левую и правую
+        slot.style.position = 'absolute';
+        slot.style.top = '0';
+        slot.style.width = '50%';
+        slot.style.height = '100%';
+        slot.style.display = 'flex';
+        slot.style.alignItems = 'center';
+        slot.style.justifyContent = 'center';
+        
+        if (index === 0) {
+            slot.style.left = '0'; // Левая зона (например, для Воды)
+        } else {
+            slot.style.left = '50%'; // Правая зона (например, для Барана)
+        }
+
+        slot.setAttribute('data-id', part.id);
+        slot.setAttribute('data-index', index);
+        newTargetZone.appendChild(slot);
+    });
         slot.className = 'target-item'; 
         slot.style.width = '100px';
         slot.style.height = '100px';
