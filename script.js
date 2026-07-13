@@ -206,7 +206,7 @@ const chineseLegoData = [
     {
         id: 'yang',
         task: 'Собери иероглиф "Океан" 🌊 из капель воды и барашка!',
-        finalImg: 'img/ch_part_sheep.png', // Сюда встанет собранный цельный иероглиф, когда ты его переименуешь (пока используем его)
+        finalImg: 'img/ch_word_ocean.png', 
         parts: [
             { id: 'water', img: 'img/ch_part_water.png', text: 'Вода 氵' },
             { id: 'sheep', img: 'img/ch_part_sheep.png', text: 'Баран 羊' }
