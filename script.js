@@ -674,8 +674,9 @@ function handlePointerEnd(e) {
         activeItem.classList.add('matched');
         matchedTarget.classList.add('matched');
         activeItem.style.display = 'none';
+        matchedTarget.style.backgroundImage = "url('img/brick_bg.png')";
         
-        // 1. ЕСЛИ ИГРАЕМ В ТАЙНЫ КЛЮЧЕЙ
+        // 🧩 ЕСЛИ ИГРАЕМ В ТАЙНЫ КЛЮЧЕЙ
         if (document.getElementById('screen-chinese-lego').classList.contains('active')) {
             // Проявляем перенесённую детальку прямо на месте паза поверх тени
             matchedTarget.style.border = 'none';
@@ -699,19 +700,6 @@ function handlePointerEnd(e) {
                         }
                     }, 3500);
                 }, 400);
-            }
-        }
-                    
-                    setTimeout(() => {
-                        currentLegoLevelIndex++;
-                        if (currentLegoLevelIndex < chineseLegoData.length) {
-                            resultZone.innerHTML = `<div id="lego-target-slots" style="display: flex; gap: 20px; justify-content: center; min-height: 120px; align-items: center;"></div>`;
-                            setupLegoGame();
-                        } else {
-                            goBackFromChineseLego();
-                        }
-                    }, 3500);
-                }, 500);
             }
         } 
         // 🔤 ИНАЧЕ — ИГРАЕМ В СЛОГИ
