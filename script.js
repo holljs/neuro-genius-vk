@@ -657,7 +657,6 @@ function handlePointerEnd(e) {
         if (clientX >= (rect.left - tolerance) && clientX <= (rect.right + tolerance) && 
             clientY >= (rect.top - tolerance) && clientY <= (rect.bottom + tolerance)) {
             
-            // Находим ID универсально (data-syl для слогов или data-id для ключей)
             const targetId = t.getAttribute('data-syl') || t.getAttribute('data-id');
             const itemId = activeItem.getAttribute('data-syl') || activeItem.getAttribute('data-id');
 
@@ -674,25 +673,24 @@ function handlePointerEnd(e) {
         activeItem.classList.add('matched');
         matchedTarget.classList.add('matched');
         activeItem.style.display = 'none';
-        matchedTarget.style.backgroundImage = "url('img/brick_bg.png')";
         
-        // 1. ЕСЛИ ИГРАЕМ В ТАЙНЫ КЛЮЧЕЙ
+        // 🧩 ЕСЛИ ИГРАЕМ В ТАЙНЫ КЛЮЧЕЙ
         if (document.getElementById('screen-chinese-lego').classList.contains('active')) {
+            // Убираем рамку и вставляем ЧИСТУЮ детальку БЕЗ кирпичного фона brick_bg!
             matchedTarget.style.border = 'none';
-            // Растягиваем деталь на всю зону ловушки, чтобы она точно совпала с контуром тени
             matchedTarget.innerHTML = `<img src="${activeItem.querySelector('img').src}" style="width:100%; height:100%; object-fit:contain; animation: fadeIn 0.2s ease;">`;
             
             legoMatchedCount++;
-            // Строгая проверка: сработает только когда соберутся ВСЕ ключи!
+            
+            // Проверяем финал строго один раз, когда собраны все части текущего уровня
             if (legoMatchedCount === chineseLegoData[currentLegoLevelIndex].parts.length) {
                 setTimeout(() => {
                     const container = document.getElementById('lego-silhouette-container');
-                    // Эффектно зажигаем ЦЕЛЬНЫЙ цветной 3D-иероглиф на 100% яркости!
                     container.innerHTML = `<img src="${chineseLegoData[currentLegoLevelIndex].finalImg}" style="width:100%; height:100%; object-fit:contain; animation: scaleUpWin 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); filter: drop-shadow(0px 8px 20px rgba(0,0,0,0.5));">`;
                     playSound('audio/words_win.wav');
                     
                     setTimeout(() => {
-                        currentLegoLevelIndex++;
+                        currentLegoLevelIndex++; // Переходим на следующий уровень строго ОДИН раз
                         if (currentLegoLevelIndex < chineseLegoData.length) {
                             setupLegoGame();
                         } else {
@@ -704,6 +702,7 @@ function handlePointerEnd(e) {
         } 
         // 🔤 ИНАЧЕ — ИГРАЕМ В СЛОГИ
         else {
+            matchedTarget.style.backgroundImage = "url('img/brick_bg.png')"; // Оставляем плашку только для слогов!
             matchedCount++;
             if (matchedCount === roomsData[currentRoom][currentWordIndex].syllables.length) {
                 setTimeout(() => {
