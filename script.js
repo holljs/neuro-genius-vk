@@ -2660,31 +2660,17 @@ function setupLegoGame() {
         slot.style.justifyContent = 'center';
         
         if (index === 0) {
-            slot.style.left = '0'; // Левая зона (например, для Воды)
+            slot.style.left = '0'; // Левая половина (например, для Воды)
         } else {
-            slot.style.left = '50%'; // Правая зона (например, для Барана)
+            slot.style.left = '50%'; // Правая половина (например, для Барана)
         }
 
         slot.setAttribute('data-id', part.id);
         slot.setAttribute('data-index', index);
         newTargetZone.appendChild(slot);
     });
-        slot.className = 'target-item'; 
-        slot.style.width = '100px';
-        slot.style.height = '100px';
-        slot.style.display = 'flex';
-        slot.style.alignItems = 'center';
-        slot.style.justifyContent = 'center';
-        slot.style.borderRadius = '50%';
-        // Оставляем зоны невидимыми для магии, но даем им ID для проверки
-        slot.style.border = '1px dashed rgba(255,255,255,0.05)'; 
-        
-        slot.setAttribute('data-id', part.id);
-        slot.setAttribute('data-index', index);
-        newTargetZone.appendChild(slot);
-    });
 
-    // Высыпаем деревянные детальки-ключи вниз (без квадратиков!)
+    // Высыпаем деревянные детальки-ключи вниз (без лишних квадратиков!)
     currentLevel.parts.forEach((part) => {
         const brick = document.createElement('div');
         brick.className = 'draggable-item'; 
