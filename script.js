@@ -674,10 +674,13 @@ function handlePointerEnd(e) {
         activeItem.classList.add('matched');
         matchedTarget.classList.add('matched');
         activeItem.style.display = 'none';
-        matchedTarget.style.backgroundImage = "url('img/brick_bg.png')";
         
-        // 🧩 ЕСЛИ ИГРАЕМ В ТАЙНЫ КЛЮЧЕЙ
+        // 1. ЕСЛИ ИГРАЕМ В ТАЙНЫ КЛЮЧЕЙ
         if (document.getElementById('screen-chinese-lego').classList.contains('active')) {
+            matchedTarget.style.border = 'none'; // Убираем пунктирную линию паза
+            matchedTarget.innerHTML = `<img src="${activeItem.querySelector('img').src}" style="width:100%; height:100%; object-fit:contain; filter:drop-shadow(0px 4px 8px rgba(0,0,0,0.3));">`;
+            
+            legoMatchedCount++;
             legoMatchedCount++;
             if (legoMatchedCount === chineseLegoData[currentLegoLevelIndex].parts.length) {
                 setTimeout(() => {
@@ -2607,39 +2610,68 @@ function goBackFromChineseLego() {
 function setupLegoGame() {
     const dragZone = document.getElementById('lego-drag-zone');
     const targetZone = document.getElementById('lego-target-slots');
+    const resultZone = document.getElementById('lego-result-zone');
     
+    // Очищаем зоны и наводим красоту на центральном планшете
     dragZone.innerHTML = '';
     targetZone.innerHTML = '';
     legoMatchedCount = 0;
+    
+    // Делаем центральный контейнер красивой контрастной подложкой, чтобы светлое дерево сияло
+    resultZone.style.background = 'linear-gradient(135deg, #2c3e50 0%, #1a252f 100%)';
+    resultZone.style.borderRadius = '24px';
+    resultZone.style.padding = '20px';
+    resultZone.style.boxShadow = 'inset 0 4px 10px rgba(0,0,0,0.3), 0 8px 20px rgba(0,0,0,0.1)';
+    resultZone.style.width = '90%';
+    resultZone.style.maxWidth = '360px';
+    resultZone.style.margin = '0 auto 30px auto';
 
     const currentLevel = chineseLegoData[currentLegoLevelIndex];
     document.getElementById('lego-task-text').innerHTML = currentLevel.task;
 
-    // 1. Создаем серые слоты для иероглифа
+    // 1. Создаем прозрачные пазы-мишени для деталек (никаких картинок-рамок!)
     currentLevel.parts.forEach((part, index) => {
         const slot = document.createElement('div');
         slot.className = 'target-item'; 
-        slot.style.backgroundImage = "url('img/slot_bg.png?v=2')";
-        slot.innerText = part.text; 
+        slot.style.width = '90px';
+        slot.style.height = '90px';
+        slot.style.border = '2px dashed rgba(255, 255, 255, 0.2)';
+        slot.style.borderRadius = '16px';
+        slot.style.display = 'flex';
+        slot.style.alignItems = 'center';
+        slot.style.justifyContent = 'center';
+        slot.style.color = 'rgba(255, 255, 255, 0.4)';
+        slot.style.fontSize = '14px';
+        slot.style.fontWeight = 'bold';
+        slot.style.backgroundImage = 'none'; // Убираем slot_bg
+        
+        slot.innerText = part.text; // Легкая текстовая подсказка внутри паза
         slot.setAttribute('data-id', part.id);
         slot.setAttribute('data-index', index);
         targetZone.appendChild(slot);
     });
 
-    // 2. Высыпаем деревянные детальки-ключи
+    // 2. Высыпаем на нижнюю полку сами 3D-детали (чистые прозрачные картинки)
     currentLevel.parts.forEach((part) => {
         const brick = document.createElement('div');
         brick.className = 'draggable-item'; 
-        brick.style.backgroundImage = "url('img/brick_bg.png')";
+        brick.style.width = '90px';
+        brick.style.height = '90px';
+        brick.style.display = 'flex';
+        brick.style.alignItems = 'center';
+        brick.style.justifyContent = 'center';
+        brick.style.cursor = 'pointer';
+        brick.style.backgroundImage = 'none'; // Полностью убираем brick_bg!
         brick.style.touchAction = 'none';
         
+        // Сама деревянная деталька без дурацких квадратных подложек
         const img = document.createElement('img');
         img.src = part.img;
-        img.className = 'card-icon';
-        img.style.width = '55px';
-        img.style.height = '55px';
+        img.style.width = '100%';
+        img.style.height = '100%';
         img.style.objectFit = 'contain';
         img.style.pointerEvents = 'none';
+        img.style.filter = 'drop-shadow(0px 4px 6px rgba(0,0,0,0.15))'; // Добавляем сочности и объема
         
         brick.appendChild(img);
         brick.setAttribute('data-id', part.id);
@@ -2648,6 +2680,7 @@ function setupLegoGame() {
         dragZone.appendChild(brick);
     });
 
+    // Перемешиваем детальки на полке
     let bricks = Array.from(dragZone.children);
     shuffleArray(bricks);
     dragZone.innerHTML = '';
