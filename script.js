@@ -625,24 +625,6 @@ function handlePointerStart(e) {
     activeItem.addEventListener('pointercancel', handlePointerEnd); 
 }
 
-    activeItem.style.width = rect.width + 'px';
-    activeItem.style.height = rect.height + 'px';
-    activeItem.style.transform = 'none';
-
-    playSound(activeItem.getAttribute('data-audio'));
-
-    activeItem.classList.add('dragging');
-    activeItem.style.position = 'fixed';
-    activeItem.style.margin = '0';
-    activeItem.style.zIndex = '1000';
-    activeItem.style.left = (e.clientX - offsetX) + 'px';
-    activeItem.style.top = (e.clientY - offsetY) + 'px';
-
-    activeItem.addEventListener('pointermove', handlePointerMove);
-    activeItem.addEventListener('pointerup', handlePointerEnd);
-    activeItem.addEventListener('pointercancel', handlePointerEnd); 
-}
-
 function handlePointerMove(e) {
     if (!activeItem) return;
     activeItem.style.left = (e.clientX - activeItem._dragOffsetX) + 'px';
@@ -689,15 +671,14 @@ function handlePointerEnd(e) {
         matchedTarget.classList.add('matched');
         activeItem.style.display = 'none';
         
-        // 1. ЕСЛИ ИГРАЕМ В ТАЙНЫ КЛЮЧЕЙ
+        // 🧩 ЕСЛИ ИГРАЕМ В ТАЙНЫ КЛЮЧЕЙ
         if (document.getElementById('screen-chinese-lego').classList.contains('active')) {
             matchedTarget.style.border = 'none';
             
-            // Если деталь встала в левую ячейку (left: 0)
+            // Картинка становится размером с холст (200px), а отрицательный сдвиг компенсирует деление пополам
             if (matchedTarget.style.left === '0px' || matchedTarget.style.left === '0') {
                 matchedTarget.innerHTML = `<img src="${activeItem.querySelector('img').src}" style="width:200px; height:200px; object-fit:contain; position:absolute; left:0; top:0; animation: fadeIn 0.2s ease;">`;
             } else {
-                // Если деталь встала в правую ячейку (left: 50% - сдвигаем саму картинку влево на 100px)
                 matchedTarget.innerHTML = `<img src="${activeItem.querySelector('img').src}" style="width:200px; height:200px; object-fit:contain; position:absolute; left:-100px; top:0; animation: fadeIn 0.2s ease;">`;
             }
             
