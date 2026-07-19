@@ -674,16 +674,16 @@ function handlePointerEnd(e) {
         // 🧩 ЕСЛИ ИГРАЕМ В ТАЙНЫ КЛЮЧЕЙ
         if (document.getElementById('screen-chinese-lego').classList.contains('active')) {
             matchedTarget.style.border = 'none';
+            matchedTarget.innerText = ''; // 🌟 Очищаем текст подсказки ("Вода", "Баран"), чтобы он не сдвигал картинку!
             
-            // Проверяем точный индекс зоны: 0 — левая половина, 1 — правая половина
             const slotIndex = parseInt(matchedTarget.getAttribute('data-index'));
             
             if (slotIndex === 0) {
-                // Левая деталь (Вода) ложится ровно в левую часть силуэта
-                matchedTarget.innerHTML = `<img src="${activeItem.querySelector('img').src}" style="width:200px; height:200px; object-fit:contain; position:absolute; left:0; top:0; animation: fadeIn 0.2s ease; max-width: none;">`;
+                // Левая деталь: заставляем её занять честные 200px холста
+                matchedTarget.innerHTML = `<img src="${activeItem.querySelector('img').src}" style="position:absolute; left:0; top:0; width:200px !important; height:200px !important; min-width:200px !important; min-height:200px !important; object-fit:contain; animation: fadeIn 0.2s ease;">`;
             } else {
-                // Правая деталь (Баран) сдвигается на -100px влево, чтобы идеально перекрыть правую часть силуэта
-                matchedTarget.innerHTML = `<img src="${activeItem.querySelector('img').src}" style="width:200px; height:200px; object-fit:contain; position:absolute; left:-100px; top:0; animation: fadeIn 0.2s ease; max-width: none;">`;
+                // Правая деталь: заставляем занять 200px холста и сдвигаем влево на 100px (компенсируем left:50% у самой зоны)
+                matchedTarget.innerHTML = `<img src="${activeItem.querySelector('img').src}" style="position:absolute; left:-100px; top:0; width:200px !important; height:200px !important; min-width:200px !important; min-height:200px !important; object-fit:contain; animation: fadeIn 0.2s ease;">`;
             }
             
             legoMatchedCount++;
