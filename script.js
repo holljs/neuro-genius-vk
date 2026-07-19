@@ -2674,7 +2674,6 @@ function setupLegoGame() {
         slot.style.top = '0';
         slot.style.width = '50%';
         slot.style.height = '100%';
-        // Никаких флексов, которые ужимают картинку!
         
         if (index === 0) {
             slot.style.left = '0';
@@ -2687,7 +2686,7 @@ function setupLegoGame() {
         newTargetZone.appendChild(slot);
     });
 
-   // Высыпаем деревянные детальки-ключи вниз (без лишних квадратиков!)
+    // Высыпаем деревянные детальки-ключи вниз (без лишних квадратиков!)
     currentLevel.parts.forEach((part) => {
         const brick = document.createElement('div');
         brick.className = 'draggable-item'; 
@@ -2696,20 +2695,6 @@ function setupLegoGame() {
         const img = document.createElement('img');
         img.src = part.img;
         img.style.cssText = "width: 100%; height: 100%; object-fit: contain; pointer-events: none; filter: drop-shadow(0px 4px 6px rgba(0,0,0,0.2));"; 
-        
-        brick.appendChild(img);
-        brick.setAttribute('data-id', part.id);
-        brick.addEventListener('pointerdown', handlePointerStart);
-        dragZone.appendChild(brick);
-    });
-        
-        const img = document.createElement('img');
-        img.src = part.img;
-        img.style.width = '100%';
-        img.style.height = '100%';
-        img.style.objectFit = 'contain';
-        img.style.pointerEvents = 'none';
-        img.style.filter = 'drop-shadow(0px 4px 6px rgba(0,0,0,0.2))'; 
         
         brick.appendChild(img);
         brick.setAttribute('data-id', part.id);
