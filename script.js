@@ -596,7 +596,8 @@ function changeWord(direction) {
 
 function handlePointerStart(e) {
     if (activeItem) return; 
-    // Захватываем тач ТОЛЬКО если это реально перетаскиваемый элемент игры
+    
+    // 🔥 КРИТИЧЕСКИ ВАЖНО: проверяем, что тач пришёлся именно на игровую детальку!
     if (!e.target.classList.contains('draggable-item') || e.target.classList.contains('matched')) return;
 
     activeItem = e.target;
@@ -672,7 +673,7 @@ function handlePointerEnd(e) {
         matchedTarget.classList.add('matched');
         activeItem.style.display = 'none';
         
-        // 🧩 ЕСЛИ ИГРАЕМ В ТАЙНЫ КЛЮЧЕЙ
+       // 🧩 ЕСЛИ ИГРАЕМ В ТАЙНЫ КЛЮЧЕЙ
         if (document.getElementById('screen-chinese-lego').classList.contains('active')) {
             matchedTarget.style.border = 'none';
             
@@ -702,16 +703,18 @@ function handlePointerEnd(e) {
                 silhouetteContainer.appendChild(finalDetailImg);
             }
             
-            legoMatchedCount++; // Счётчик срабатывает строго один раз!
+            legoMatchedCount++; // Счётчик срабатывает строго ОДИН раз!
             
             if (legoMatchedCount === chineseLegoData[currentLegoLevelIndex].parts.length) {
                 setTimeout(() => {
-                    const container = document.getElementById('lego-silhouette-container');
-                    container.innerHTML = `<img src="${chineseLegoData[currentLegoLevelIndex].finalImg}" style="width:100%; height:100%; object-fit:contain; animation: scaleUpWin 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); filter: drop-shadow(0px 8px 20px rgba(0,0,0,0.5));">`;
+                    // Эффектно зажигаем ЦЕЛЬНЫЙ цветной 3D-иероглиф вместо половинок
+                    if (silhouetteContainer) {
+                        silhouetteContainer.innerHTML = `<img src="${chineseLegoData[currentLegoLevelIndex].finalImg}" style="width:100%; height:100%; object-fit:contain; animation: scaleUpWin 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); filter: drop-shadow(0px 8px 20px rgba(0,0,0,0.5));">`;
+                    }
                     playSound('audio/words_win.wav');
                     
                     setTimeout(() => {
-                        currentLegoLevelIndex++;
+                        currentLegoLevelIndex++; // Переходим на следующий уровень
                         if (currentLegoLevelIndex < chineseLegoData.length) {
                             setupLegoGame();
                         } else {
