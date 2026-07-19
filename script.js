@@ -596,7 +596,8 @@ function changeWord(direction) {
 
 function handlePointerStart(e) {
     if (activeItem) return; 
-    if (e.target.classList.contains('matched')) return;
+    // Захватываем тач ТОЛЬКО если это реально перетаскиваемый элемент игры
+    if (!e.target.classList.contains('draggable-item') || e.target.classList.contains('matched')) return;
 
     activeItem = e.target;
     activeItem.setPointerCapture(e.pointerId);
@@ -674,17 +675,20 @@ function handlePointerEnd(e) {
         // 🧩 ЕСЛИ ИГРАЕМ В ТАЙНЫ КЛЮЧЕЙ
         if (document.getElementById('screen-chinese-lego').classList.contains('active')) {
             matchedTarget.style.border = 'none';
-            matchedTarget.innerText = ''; // 🌟 Очищаем текст подсказки ("Вода", "Баран"), чтобы он не сдвигал картинку!
             
-            const slotIndex = parseInt(matchedTarget.getAttribute('data-index'));
+            // Находим главный контейнер силуэта
+            const silhouetteContainer = document.getElementById('lego-silhouette-container');
             
-            if (slotIndex === 0) {
-                // Левая деталь: заставляем её занять честные 200px холста
-                matchedTarget.innerHTML = `<img src="${activeItem.querySelector('img').src}" style="position:absolute; left:0; top:0; width:200px !important; height:200px !important; min-width:200px !important; min-height:200px !important; object-fit:contain; animation: fadeIn 0.2s ease;">`;
-            } else {
-                // Правая деталь: заставляем занять 200px холста и сдвигаем влево на 100px (компенсируем left:50% у самой зоны)
-                matchedTarget.innerHTML = `<img src="${activeItem.querySelector('img').src}" style="position:absolute; left:-100px; top:0; width:200px !important; height:200px !important; min-width:200px !important; min-height:200px !important; object-fit:contain; animation: fadeIn 0.2s ease;">`;
+            // Вставляем картинку детали прямо в контейнер силуэта размером 1-в-1 с тенью подсказки!
+            const finalDetailImg = document.createElement('img');
+            finalDetailImg.src = activeItem.querySelector('img').src;
+            finalDetailImg.style.cssText = "position:absolute; top:0; left:0; width:100%; height:100%; object-fit:contain; pointer-events:none; z-index:2; animation: fadeIn 0.2s ease;";
+            
+            if (silhouetteContainer) {
+                silhouetteContainer.appendChild(finalDetailImg);
             }
+            
+            legoMatchedCount++;
             
             legoMatchedCount++;
             
@@ -2655,19 +2659,16 @@ function setupLegoGame() {
         const slot = document.createElement('div');
         slot.className = 'target-item';
         
-        // Разделяем силуэт на две точные половины: левую и правую
         slot.style.position = 'absolute';
         slot.style.top = '0';
         slot.style.width = '50%';
         slot.style.height = '100%';
-        slot.style.display = 'flex';
-        slot.style.alignItems = 'center';
-        slot.style.justifyContent = 'center';
+        // Никаких флексов, которые ужимают картинку!
         
         if (index === 0) {
-            slot.style.left = '0'; // Левая половина (например, для Воды)
+            slot.style.left = '0';
         } else {
-            slot.style.left = '50%'; // Правая половина (например, для Барана)
+            slot.style.left = '50%';
         }
 
         slot.setAttribute('data-id', part.id);
