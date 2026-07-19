@@ -675,16 +675,20 @@ function handlePointerEnd(e) {
         if (document.getElementById('screen-chinese-lego').classList.contains('active')) {
             matchedTarget.style.border = 'none';
             
-            // Картинка становится размером с холст (200px), а отрицательный сдвиг компенсирует деление пополам
-            if (matchedTarget.style.left === '0px' || matchedTarget.style.left === '0') {
-                matchedTarget.innerHTML = `<img src="${activeItem.querySelector('img').src}" style="width:200px; height:200px; object-fit:contain; position:absolute; left:0; top:0; animation: fadeIn 0.2s ease;">`;
+            // Проверяем точный индекс зоны: 0 — левая половина, 1 — правая половина
+            const slotIndex = parseInt(matchedTarget.getAttribute('data-index'));
+            
+            if (slotIndex === 0) {
+                // Левая деталь (Вода) ложится ровно в левую часть силуэта
+                matchedTarget.innerHTML = `<img src="${activeItem.querySelector('img').src}" style="width:200px; height:200px; object-fit:contain; position:absolute; left:0; top:0; animation: fadeIn 0.2s ease; max-width: none;">`;
             } else {
-                matchedTarget.innerHTML = `<img src="${activeItem.querySelector('img').src}" style="width:200px; height:200px; object-fit:contain; position:absolute; left:-100px; top:0; animation: fadeIn 0.2s ease;">`;
+                // Правая деталь (Баран) сдвигается на -100px влево, чтобы идеально перекрыть правую часть силуэта
+                matchedTarget.innerHTML = `<img src="${activeItem.querySelector('img').src}" style="width:200px; height:200px; object-fit:contain; position:absolute; left:-100px; top:0; animation: fadeIn 0.2s ease; max-width: none;">`;
             }
             
             legoMatchedCount++;
             
-            // Проверяем финал строго один раз, когда собраны все части текущего уровня
+            // Финал срабатывает строго один раз по завершении сборки
             if (legoMatchedCount === chineseLegoData[currentLegoLevelIndex].parts.length) {
                 setTimeout(() => {
                     const container = document.getElementById('lego-silhouette-container');
@@ -692,7 +696,7 @@ function handlePointerEnd(e) {
                     playSound('audio/words_win.wav');
                     
                     setTimeout(() => {
-                        currentLegoLevelIndex++; // Переходим на следующий уровень строго ОДИН раз
+                        currentLegoLevelIndex++;
                         if (currentLegoLevelIndex < chineseLegoData.length) {
                             setupLegoGame();
                         } else {
@@ -701,7 +705,7 @@ function handlePointerEnd(e) {
                     }, 3500);
                 }, 400);
             }
-        } 
+        }
         // 🔤 ИНАЧЕ — ИГРАЕМ В СЛОГИ
         else {
             matchedTarget.style.backgroundImage = "url('img/brick_bg.png')"; // Оставляем плашку только для слогов!
