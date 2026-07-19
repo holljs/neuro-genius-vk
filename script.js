@@ -676,23 +676,34 @@ function handlePointerEnd(e) {
         if (document.getElementById('screen-chinese-lego').classList.contains('active')) {
             matchedTarget.style.border = 'none';
             
-            // Находим главный контейнер силуэта
             const silhouetteContainer = document.getElementById('lego-silhouette-container');
+            const slotIndex = parseInt(matchedTarget.getAttribute('data-index'));
             
-            // Вставляем картинку детали прямо в контейнер силуэта размером 1-в-1 с тенью подсказки!
             const finalDetailImg = document.createElement('img');
             finalDetailImg.src = activeItem.querySelector('img').src;
-            finalDetailImg.style.cssText = "position:absolute; top:0; left:0; width:100%; height:100%; object-fit:contain; pointer-events:none; z-index:2; animation: fadeIn 0.2s ease;";
+            
+            // Жестко фиксируем позиционирование половинок: левая занимает левые 50%, правая — правые 50%
+            finalDetailImg.style.position = "absolute";
+            finalDetailImg.style.top = "0";
+            finalDetailImg.style.width = "50%";
+            finalDetailImg.style.height = "100%";
+            finalDetailImg.style.objectFit = "contain";
+            finalDetailImg.style.pointerEvents = "none";
+            finalDetailImg.style.zIndex = "2";
+            finalDetailImg.style.animation = "fadeIn 0.2s ease";
+            
+            if (slotIndex === 0) {
+                finalDetailImg.style.left = "0";
+            } else {
+                finalDetailImg.style.left = "50%";
+            }
             
             if (silhouetteContainer) {
                 silhouetteContainer.appendChild(finalDetailImg);
             }
             
-            legoMatchedCount++;
+            legoMatchedCount++; // Счётчик срабатывает строго один раз!
             
-            legoMatchedCount++;
-            
-            // Финал срабатывает строго один раз по завершении сборки
             if (legoMatchedCount === chineseLegoData[currentLegoLevelIndex].parts.length) {
                 setTimeout(() => {
                     const container = document.getElementById('lego-silhouette-container');
@@ -2676,18 +2687,21 @@ function setupLegoGame() {
         newTargetZone.appendChild(slot);
     });
 
-    // Высыпаем деревянные детальки-ключи вниз (без лишних квадратиков!)
+   // Высыпаем деревянные детальки-ключи вниз (без лишних квадратиков!)
     currentLevel.parts.forEach((part) => {
         const brick = document.createElement('div');
         brick.className = 'draggable-item'; 
-        brick.style.width = '90px';
-        brick.style.height = '90px';
-        brick.style.display = 'flex';
-        brick.style.alignItems = 'center';
-        brick.style.justifyContent = 'center';
-        brick.style.cursor = 'pointer';
-        brick.style.backgroundImage = 'none'; 
-        brick.style.touchAction = 'none';
+        brick.style.cssText = "width: 90px; height: 90px; display: flex; align-items: center; justify-content: center; cursor: pointer; background-image: none; touch-action: none !important;";
+        
+        const img = document.createElement('img');
+        img.src = part.img;
+        img.style.cssText = "width: 100%; height: 100%; object-fit: contain; pointer-events: none; filter: drop-shadow(0px 4px 6px rgba(0,0,0,0.2));"; 
+        
+        brick.appendChild(img);
+        brick.setAttribute('data-id', part.id);
+        brick.addEventListener('pointerdown', handlePointerStart);
+        dragZone.appendChild(brick);
+    });
         
         const img = document.createElement('img');
         img.src = part.img;
