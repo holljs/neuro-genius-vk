@@ -129,8 +129,8 @@ function buyPremium() {
     try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "medium"}); } catch(e){}
     const requestData = {
         user_id: parseInt(userVkId),
-        amount: 150,
-        description: "Подписка Нейро-Гений (1 мес)",
+        amount: 250,
+        description: "Подписка Нейро-Гений (навсегда)",
         platform: "vk",
         currency_type: "geniy_sub" 
     };
