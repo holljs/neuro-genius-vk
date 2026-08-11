@@ -83,25 +83,15 @@ function openSupport() {
 }
 
 function checkAccessAndOpen(roomType) {
-    // 1. Меморика и Нейрогимнастика (brain) теперь БЕСПЛАТНЫ для всех!
-    if (roomType === 'memorika') {
-        openMemorikaMenu();
-        return;
-    }
-    if (roomType === 'brain') {
-        openBrainFitnessMenu();
-        return;
-    }
-
-    // 2. А вот для Ментальной математики (soroban) требуем подписку
-    if (roomType === 'soroban') {
-        if (hasPremiumAccess) {
-            openSorobanMenu();
-        } else {
-            try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "heavy"}); } catch(e){}
-            document.getElementById('vip-modal').style.display = 'flex';
-        }
-    }
+// 🔒 ВСЕ комнаты кроме Слогов — по подписке!
+if (hasPremiumAccess) {
+if (roomType === 'memorika') openMemorikaMenu();
+else if (roomType === 'brain') openBrainFitnessMenu();
+else if (roomType === 'soroban') openSorobanMenu();
+} else {
+try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "heavy"}); } catch(e){}
+document.getElementById('vip-modal').style.display = 'flex';
+}
 }
 
 function getFreeVip() {
