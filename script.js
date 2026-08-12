@@ -221,6 +221,16 @@ const chineseLegoData = [
             { id: 'water', img: 'img/ch_part_water.png', text: 'Вода 氵' },
             { id: 'ancient', img: 'img/ch_part_ancient.png', text: 'Древний 古' }
         ]
+    },
+    // 🔥 НОВОЕ: Море = вода + каждый
+    {
+        id: 'hai',
+        task: 'Собери "Море" 🌊 из капелек и детали "Каждый"!',
+        finalImg: 'img/ch_word_sea.png',
+        parts: [
+            { id: 'water', img: 'img/ch_part_water.png', text: 'Вода 氵' },
+            { id: 'every', img: 'img/ch_part_every.png', text: 'Каждый 每' }
+        ]
     }
 ];
 let currentLegoLevelIndex = 0;
@@ -667,55 +677,43 @@ function handlePointerEnd(e) {
         
        // 🧩 ЕСЛИ ИГРАЕМ В ТАЙНЫ КЛЮЧЕЙ
         if (document.getElementById('screen-chinese-lego').classList.contains('active')) {
-            matchedTarget.style.border = 'none';
-            
+    // 🧩 ДЕТАЛЬКА ЗАЩЁЛКНУЛАСЬ В СВОЙ СЛОТ (как ЛЕГО!)
+    const hint = matchedTarget.querySelector('.lego-slot-hint');
+    if (hint) hint.remove();
+    matchedTarget.style.border = '3px solid #4CAF50';
+    matchedTarget.style.background = 'rgba(76, 175, 80, 0.15)';
+    try { new Audio('audio/click.wav').play(); } catch(e) {}
+
+    const placedImg = document.createElement('img');
+    placedImg.src = activeItem.querySelector('img').src;
+    placedImg.style.cssText = 'position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: contain; pointer-events: none; z-index: 2; animation: fadeIn 0.25s ease; filter: drop-shadow(0 0 14px rgba(76,175,80,0.7));';
+    matchedTarget.appendChild(placedImg);
+
+    setTimeout(() => {
+        matchedTarget.style.border = '3px dashed rgba(255,255,255,0.1)';
+        matchedTarget.style.background = 'transparent';
+    }, 700);
+
+    legoMatchedCount++;
+    if (legoMatchedCount === chineseLegoData[currentLegoLevelIndex].parts.length) {
+        setTimeout(() => {
             const silhouetteContainer = document.getElementById('lego-silhouette-container');
-            const slotIndex = parseInt(matchedTarget.getAttribute('data-index'));
-            
-            const finalDetailImg = document.createElement('img');
-            finalDetailImg.src = activeItem.querySelector('img').src;
-            
-            // Жестко фиксируем позиционирование половинок: левая занимает левые 50%, правая — правые 50%
-            finalDetailImg.style.position = "absolute";
-            finalDetailImg.style.top = "0";
-            finalDetailImg.style.width = "50%";
-            finalDetailImg.style.height = "100%";
-            finalDetailImg.style.objectFit = "contain";
-            finalDetailImg.style.pointerEvents = "none";
-            finalDetailImg.style.zIndex = "2";
-            finalDetailImg.style.animation = "fadeIn 0.2s ease";
-            
-            if (slotIndex === 0) {
-                finalDetailImg.style.left = "0";
-            } else {
-                finalDetailImg.style.left = "50%";
-            }
-            
             if (silhouetteContainer) {
-                silhouetteContainer.appendChild(finalDetailImg);
+                silhouetteContainer.style.display = 'block';
+                silhouetteContainer.innerHTML = `<img src="${chineseLegoData[currentLegoLevelIndex].finalImg}" style="width:100%; height:100%; object-fit:contain; animation: scaleUpWin 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); filter: drop-shadow(0px 8px 20px rgba(0,0,0,0.5));">`;
             }
-            
-            legoMatchedCount++; // Счётчик срабатывает строго ОДИН раз!
-            
-            if (legoMatchedCount === chineseLegoData[currentLegoLevelIndex].parts.length) {
-                setTimeout(() => {
-                    // Эффектно зажигаем ЦЕЛЬНЫЙ цветной 3D-иероглиф вместо половинок
-                    if (silhouetteContainer) {
-                        silhouetteContainer.innerHTML = `<img src="${chineseLegoData[currentLegoLevelIndex].finalImg}" style="width:100%; height:100%; object-fit:contain; animation: scaleUpWin 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); filter: drop-shadow(0px 8px 20px rgba(0,0,0,0.5));">`;
-                    }
-                    playSound('audio/words_win.wav');
-                    
-                    setTimeout(() => {
-                        currentLegoLevelIndex++; // Переходим на следующий уровень
-                        if (currentLegoLevelIndex < chineseLegoData.length) {
-                            setupLegoGame();
-                        } else {
-                            goBackFromChineseLego();
-                        }
-                    }, 3500);
-                }, 400);
-            }
-        }
+            playSound('audio/words_win.wav');
+            setTimeout(() => {
+                currentLegoLevelIndex++;
+                if (currentLegoLevelIndex < chineseLegoData.length) {
+                    setupLegoGame();
+                } else {
+                    goBackFromChineseLego();
+                }
+            }, 3500);
+        }, 400);
+    }
+}
         // 🔤 ИНАЧЕ — ИГРАЕМ В СЛОГИ
         else {
             matchedTarget.style.backgroundImage = "url('img/brick_bg.png')"; // Оставляем плашку только для слогов!
@@ -2626,71 +2624,59 @@ function goBackFromChineseLego() {
 // ==========================================
 function setupLegoGame() {
     const dragZone = document.getElementById('lego-drag-zone');
-    const targetZone = document.getElementById('lego-target-slots');
     const resultZone = document.getElementById('lego-result-zone');
-    
     dragZone.innerHTML = '';
-    targetZone.innerHTML = '';
+    resultZone.innerHTML = '';
     legoMatchedCount = 0;
-    
     const currentLevel = chineseLegoData[currentLegoLevelIndex];
     document.getElementById('lego-task-text').innerHTML = currentLevel.task;
 
-    // Настраиваем тёмный планшет подложки
+    // 🧱 Тёмный планшет-подложка
     resultZone.style.background = 'linear-gradient(135deg, #2c3e50 0%, #1a252f 100%)';
     resultZone.style.borderRadius = '24px';
-    resultZone.style.padding = '25px';
+    resultZone.style.padding = '20px';
     resultZone.style.boxShadow = 'inset 0 4px 10px rgba(0,0,0,0.4), 0 8px 20px rgba(0,0,0,0.1)';
     resultZone.style.width = '90%';
-    resultZone.style.maxWidth = '340px';
-    resultZone.style.margin = '0 auto 30px auto';
+    resultZone.style.maxWidth = '360px';
+    resultZone.style.margin = '0 auto 25px auto';
     resultZone.style.display = 'flex';
-    resultZone.style.flexDirection = 'column';
     resultZone.style.alignItems = 'center';
+    resultZone.style.justifyContent = 'center';
 
-    // Создаём ТЕНЬ-СИЛУЭТ готового иероглифа в центре планшета
-    resultZone.innerHTML = `
-        <div id="lego-silhouette-container" style="position: relative; width: 200px; height: 200px;">
-            <!-- Полупрозрачная тень-подсказка всего знака -->
-            <img src="${currentLevel.finalImg}" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: contain; opacity: 0.15; filter: brightness(0) invert(1) blur(1px);">
-            <!-- Контейнер для фиксации попаданий деталек -->
-            <div id="lego-target-slots" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"></div>
-        </div>
-    `;
+    const vertical = currentLevel.layout === 'vertical';
 
-    const newTargetZone = document.getElementById('lego-target-slots');
+    // 🧩 Доска с ВИДИМЫМИ слотами-половинками
+    const board = document.createElement('div');
+    board.id = 'lego-silhouette-container';
+    board.style.cssText = `position: relative; width: 240px; height: 240px; display: flex; flex-direction: ${vertical ? 'column' : 'row'};`;
 
-    // Расставляем зоны-ловушки строго на свои половины силуэта
     currentLevel.parts.forEach((part, index) => {
         const slot = document.createElement('div');
-        slot.className = 'target-item';
-        
-        slot.style.position = 'absolute';
-        slot.style.top = '0';
-        slot.style.width = '50%';
-        slot.style.height = '100%';
-        
-        if (index === 0) {
-            slot.style.left = '0';
-        } else {
-            slot.style.left = '50%';
-        }
-
+        slot.className = 'target-item lego-slot';
+        slot.style.cssText = `position: relative; width: ${vertical ? '100%' : '50%'}; height: ${vertical ? '50%' : '100%'}; display: flex; align-items: center; justify-content: center; border: 3px dashed rgba(255,255,255,0.35); border-radius: 16px; box-sizing: border-box; transition: border-color 0.3s, background 0.3s;`;
         slot.setAttribute('data-id', part.id);
         slot.setAttribute('data-index', index);
-        newTargetZone.appendChild(slot);
+
+        // Призрачная подсказка — КАКАЯ деталь сюда идёт
+        const hint = document.createElement('img');
+        hint.src = part.img;
+        hint.className = 'lego-slot-hint';
+        hint.style.cssText = 'width: 82%; height: 82%; object-fit: contain; opacity: 0.28; filter: grayscale(1) brightness(2.2); pointer-events: none;';
+        slot.appendChild(hint);
+
+        board.appendChild(slot);
     });
 
-    // Высыпаем деревянные детальки-ключи вниз (без лишних квадратиков!)
+    resultZone.appendChild(board);
+
+    // 🪵 Деревянные детальки на полке — крупные!
     currentLevel.parts.forEach((part) => {
         const brick = document.createElement('div');
-        brick.className = 'draggable-item'; 
-        brick.style.cssText = "width: 90px; height: 90px; display: flex; align-items: center; justify-content: center; cursor: pointer; background-image: none; touch-action: none !important;";
-        
+        brick.className = 'draggable-item';
+        brick.style.cssText = 'width: 110px; height: 110px; display: flex; align-items: center; justify-content: center; cursor: pointer; background-image: none; touch-action: none !important;';
         const img = document.createElement('img');
         img.src = part.img;
-        img.style.cssText = "width: 100%; height: 100%; object-fit: contain; pointer-events: none; filter: drop-shadow(0px 4px 6px rgba(0,0,0,0.2));"; 
-        
+        img.style.cssText = 'width: 100%; height: 100%; object-fit: contain; pointer-events: none; filter: drop-shadow(0px 4px 6px rgba(0,0,0,0.25));';
         brick.appendChild(img);
         brick.setAttribute('data-id', part.id);
         brick.addEventListener('pointerdown', handlePointerStart);
