@@ -696,27 +696,22 @@ function handlePointerEnd(e) {
         matchedTarget.style.background = 'transparent';
     }, 700);
 
-    legoMatchedCount++;
-    if (legoMatchedCount === chineseLegoData[currentLegoLevelIndex].parts.length) {
-        setTimeout(() => {
-            const silhouetteContainer = document.getElementById('lego-silhouette-container');
-            if (silhouetteContainer) {
-                silhouetteContainer.style.display = 'block';
-                silhouetteContainer.innerHTML = `<img src="${chineseLegoData[currentLegoLevelIndex].finalImg}" style="width:100%; height:100%; object-fit:contain; animation: scaleUpWin 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); filter: drop-shadow(0px 8px 20px rgba(0,0,0,0.5));">`;
+                legoMatchedCount++;
+            if (legoMatchedCount === chineseLegoData[currentLegoLevelIndex].parts.length) {
+                // 🔥 Пауза 1.5 сек — чтобы название второй детали успело договорить
+                setTimeout(() => {
+                    const silhouetteContainer = document.getElementById('lego-silhouette-container');
+                    if (silhouetteContainer) {
+                        silhouetteContainer.style.display = 'block';
+                        silhouetteContainer.innerHTML = `<img src="${chineseLegoData[currentLegoLevelIndex].finalImg}" style="width:100%; height:100%; object-fit:contain; animation: scaleUpWin 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); filter: drop-shadow(0px 8px 20px rgba(0,0,0,0.5));">`;
+                    }
+                    // 🔥 Без Ути! Только взрослый голос: победная фраза
+                    playSound(`audio/lego_win_${chineseLegoData[currentLegoLevelIndex].id}.wav`);
+                    // 🔥 Показываем кнопки навигации, автоперехода НЕТ
+                    showLegoNav();
+                }, 1500);
             }
-            try { new Audio('audio/words_win.wav').play(); } catch(e) {} // фанфары фоном
-            playSound(`audio/lego_win_${chineseLegoData[currentLegoLevelIndex].id}.wav`);
-            setTimeout(() => {
-                currentLegoLevelIndex++;
-                if (currentLegoLevelIndex < chineseLegoData.length) {
-                    setupLegoGame();
-                } else {
-                    goBackFromChineseLego();
-                }
-            }, 3500);
-        }, 400);
-    }
-}
+        }
         // 🔤 ИНАЧЕ — ИГРАЕМ В СЛОГИ
         else {
             matchedTarget.style.backgroundImage = "url('img/brick_bg.png')"; // Оставляем плашку только для слогов!
