@@ -95,24 +95,25 @@ document.getElementById('vip-modal').style.display = 'flex';
 }
 
 function getFreeVip() {
-    try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(e){}
-    vkBridge.send("VKWebAppAllowMessagesFromGroup", {"group_id": VK_GROUP_ID})
-    .then(data => {
-        if (data.result) {
-            document.getElementById('vip-modal').style.display = 'none';
-            fetch(`${BACKEND_URL}/api/geniy/grant_bonus`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json", "x-vk-sign": vkSignParams },
-                body: JSON.stringify({ user_id: parseInt(userVkId) })
-            }).then(() => {
-                // Вместо alert() красиво меняем текст прямо в модалке!
-                const modalText = document.getElementById('vip-modal').querySelector('p');
-                if (modalText) {
-                    modalText.innerHTML = "<b style='color:#4CAF50; font-size:16px;'>Ура! Бот отправил вам сообщение. <br>Пожалуйста, перезапустите игру! 🚀</b>";
-                }
-            });
-        }
-    }).catch(err => console.log(err));
+try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(e){}
+vkBridge.send("VKWebAppAllowMessagesFromGroup", {"group_id": VK_GROUP_ID})
+.then(data => {
+if (data.result) {
+fetch(`${BACKEND_URL}/api/geniy/grant_bonus`, {
+method: "POST",
+headers: { "Content-Type": "application/json", "x-vk-sign": vkSignParams },
+body: JSON.stringify({ user_id: parseInt(userVkId) })
+}).then(res => res.json()).then(res => {
+const modalText = document.getElementById('vip-modal').querySelector('p');
+if (res.new) {
+if (modalText) modalText.innerHTML = "<b style='color:#4CAF50; font-size:16px;'>Ура! Доступ на 24 часа открыт! <br>Перезапустите игру! 🚀</b>";
+setTimeout(() => { document.getElementById('vip-modal').style.display = 'none'; }, 2500);
+} else {
+if (modalText) modalText.innerHTML = "<b style='color:#FF9800; font-size:15px;'>Бесплатный бонус уже использован 🎁<br>250 ₽ — и все тренажёры ваши НАВСЕГДА! 💎</b>";
+}
+});
+}
+}).catch(err => console.log(err));
 }
 
 function buyPremium() {
