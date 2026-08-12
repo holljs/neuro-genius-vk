@@ -33,8 +33,9 @@ try {
             }
             // Если у обычного юзера или у тебя активирован Premium на бэкенде — снимаем замочки и с платных карт
             if (hasPremiumAccess) {
-                document.querySelectorAll('.locked-card').forEach(el => el.classList.remove('locked-card'));
-            }
+document.querySelectorAll('.locked-card').forEach(el => el.classList.remove('locked-card'));
+document.querySelectorAll('.vip-lock-badge').forEach(el => el.remove());
+}
         }).catch(err => console.log("Ошибка доступа:", err));
     });
 } catch(e) { console.log("Ошибка инициализации VK:", e); } // <-- ДОБАВИЛИ ЗАКРЫВАЮЩИЙ CATCH
