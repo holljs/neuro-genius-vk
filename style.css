@@ -13,8 +13,10 @@ body {
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
     color: var(--text-color);
     display: flex; flex-direction: column;
-    height: 100vh; overflow: hidden; user-select: none;
-    touch-action: none;
+    height: 100vh; 
+    overflow: hidden; 
+    user-select: none;
+    touch-action: pan-y;   /* ← БЫЛО: none. СТАЛО: pan-y (разрешаем скролл вниз!) */
 }
 
 /* Шапка */
