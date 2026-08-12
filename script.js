@@ -683,6 +683,8 @@ function handlePointerEnd(e) {
     matchedTarget.style.border = '3px solid #4CAF50';
     matchedTarget.style.background = 'rgba(76, 175, 80, 0.15)';
     try { new Audio('audio/click.wav').play(); } catch(e) {}
+    // 🔊 НОВОЕ: проговариваем название поставленной детали
+    playSound(`audio/lego_part_${matchedTarget.getAttribute('data-id')}.wav`);
 
     const placedImg = document.createElement('img');
     placedImg.src = activeItem.querySelector('img').src;
@@ -702,7 +704,8 @@ function handlePointerEnd(e) {
                 silhouetteContainer.style.display = 'block';
                 silhouetteContainer.innerHTML = `<img src="${chineseLegoData[currentLegoLevelIndex].finalImg}" style="width:100%; height:100%; object-fit:contain; animation: scaleUpWin 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); filter: drop-shadow(0px 8px 20px rgba(0,0,0,0.5));">`;
             }
-            playSound('audio/words_win.wav');
+            try { new Audio('audio/words_win.wav').play(); } catch(e) {} // фанфары фоном
+            playSound(`audio/lego_win_${chineseLegoData[currentLegoLevelIndex].id}.wav`);
             setTimeout(() => {
                 currentLegoLevelIndex++;
                 if (currentLegoLevelIndex < chineseLegoData.length) {
@@ -2630,6 +2633,8 @@ function setupLegoGame() {
     legoMatchedCount = 0;
     const currentLevel = chineseLegoData[currentLegoLevelIndex];
     document.getElementById('lego-task-text').innerHTML = currentLevel.task;
+    // 🔊 НОВОЕ: озвучка задания взрослым голосом
+    playSound(`audio/lego_task_${currentLevel.id}.wav`);
 
     // 🧱 Тёмный планшет-подложка
     resultZone.style.background = 'linear-gradient(135deg, #2c3e50 0%, #1a252f 100%)';
