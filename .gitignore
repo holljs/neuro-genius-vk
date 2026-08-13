@@ -2,3 +2,10 @@
 *.bak
 *.log
 .DS_Store
+.env
+.env.*
+*.db
+venv/
+__pycache__/
+*.pyc
+backups/
