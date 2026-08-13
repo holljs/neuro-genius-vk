@@ -2610,6 +2610,45 @@ function openChineseLegoGame() {
     setupLegoGame(); // Эту функцию мы напишем следующим шагом
 }
 
+
+function legoPrev() {
+    try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(e){}
+    if (currentLegoLevelIndex > 0) {
+        currentLegoLevelIndex--;
+        setupLegoGame();
+    }
+}
+
+function legoNext() {
+    try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(e){}
+    if (currentLegoLevelIndex < chineseLegoData.length - 1) {
+        currentLegoLevelIndex++;
+        setupLegoGame();
+    }
+}
+
+function updateLegoNav() {
+    const prev = document.getElementById('lego-prev-btn');
+    const next = document.getElementById('lego-next-btn');
+    const nav = document.getElementById('lego-nav');
+    if (!prev || !next || !nav) return;
+    nav.style.display = 'flex';
+    prev.style.opacity = currentLegoLevelIndex === 0 ? '0.4' : '1';
+    prev.style.pointerEvents = currentLegoLevelIndex === 0 ? 'none' : 'auto';
+    if (currentLegoLevelIndex === chineseLegoData.length - 1) {
+        next.innerHTML = '🏆 Финал';
+        next.style.background = '#FF9800';
+    } else {
+        next.innerHTML = 'Дальше ▶';
+        next.style.background = '#4CAF50';
+    }
+    const t = document.getElementById('lego-task-text');
+    if (t) {
+        const lvl = chineseLegoData[currentLegoLevelIndex];
+        t.innerHTML = '<div style="font-size:12px;color:#888;margin-bottom:4px;">Уровень ' + (currentLegoLevelIndex+1) + ' из ' + chineseLegoData.length + '</div>' + lvl.task;
+    }
+}
+
 function goBackFromChineseLego() {
     try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(e){}
     document.getElementById('screen-chinese-lego').classList.remove('active');
@@ -2630,6 +2669,7 @@ function setupLegoGame() {
     document.getElementById('lego-task-text').innerHTML = currentLevel.task;
     // 🔊 НОВОЕ: озвучка задания взрослым голосом
     playSound(`audio/lego_task_${currentLevel.id}.wav`);
+    updateLegoNav();
 
     // 🧱 Тёмный планшет-подложка
     resultZone.style.background = 'linear-gradient(135deg, #2c3e50 0%, #1a252f 100%)';
