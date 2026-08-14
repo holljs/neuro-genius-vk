@@ -13,8 +13,10 @@ body {
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
     color: var(--text-color);
     display: flex; flex-direction: column;
-    height: 100vh; overflow: hidden; user-select: none;
-    touch-action: none;
+    height: 100vh; 
+    overflow: hidden; 
+    user-select: none;
+    touch-action: pan-y;   /* ← БЫЛО: none. СТАЛО: pan-y (разрешаем скролл вниз!) */
 }
 
 /* Шапка */
@@ -23,10 +25,11 @@ body {
     display: flex; flex-direction: column; align-items: center;
     box-sizing: border-box; background-color: var(--bg-color); flex-shrink: 0; z-index: 100;
 }
+
 .header-title-row { width: 100%; text-align: center; position: relative; display: flex; justify-content: center; align-items: center; min-height: 24px;}
 #room-title { font-size: 20px; font-weight: 700; color: var(--accent-color); display: inline-block; }
-.header-top { display: flex; justify-content: flex-start; width: 100%; margin-top: 10px; }
 
+.header-top { display: flex; justify-content: flex-start; width: 100%; margin-top: 10px; }
 .back-btn {
     font-size: 15px; cursor: pointer; padding: 8px 18px; background: var(--card-bg);
     border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.03);
@@ -43,11 +46,10 @@ body {
 .section-title { font-size: 18px; font-weight: 700; color: var(--accent-color); width: 100%; text-align: left; padding: 15px 20px 5px 20px; box-sizing: border-box; }
 
 /* Меню (грид) */
-.menu-grid {
+.menu-grid { 
     display: grid; grid-template-columns: 1fr 1fr; gap: 15px; padding: 10px 20px 20px 20px;
     align-content: start; overflow-y: auto; flex-grow: 1; width: 100%; box-sizing: border-box;
 }
-
 .category-card {
     background-color: var(--card-bg); border-radius: 24px; padding: 20px 10px;
     display: flex; flex-direction: column; align-items: center; justify-content: center;
@@ -55,10 +57,8 @@ body {
     box-shadow: 0 4px 15px rgba(0,0,0,0.03); width: 100%; box-sizing: border-box; text-align: center;
 }
 .category-card:active { transform: scale(0.96); opacity: 0.9; }
-
 .category-icon-placeholder { width: 100%; max-width: 90px; aspect-ratio: 1/1; margin-bottom: 10px; }
 .category-icon-placeholder img { width: 100%; height: 100%; object-fit: contain; }
-
 .category-title { font-size: 16px; font-weight: 700; color: var(--text-color); line-height: 1.2; }
 .category-subtitle { font-size: 12px; color: #94A3B8; margin-top: 5px; font-weight: 500; }
 
@@ -71,17 +71,17 @@ body {
     flex-grow: 1; display: flex; flex-direction: column; justify-content: flex-start; align-items: center; padding: 10px 15px 30px 15px; width: 100%; box-sizing: border-box;
     overflow-y: auto; overflow-x: hidden; position: relative;
 }
+
 .game-container { display: none; width: 100%; flex-direction: column; align-items: center; box-sizing: border-box; flex-grow: 1; justify-content: flex-start; gap: 10px; }
 .game-container.active { display: flex; }
 
 /* Слоги */
 #word-image-container { width: 100%; display: none; flex-direction: column; align-items: center; position: relative; margin-top: 10px; }
 #word-3d-image { width: 100%; max-width: 250px; aspect-ratio: 1/1; object-fit: contain; margin-bottom: 5px; }
-
 .target-column { display: flex; justify-content: center; align-items: center; gap: 20px; width: 100%; min-height: 120px; margin-top: 10px; }
 .drag-column { display: flex; justify-content: center; align-items: center; gap: 25px; width: 100%; min-height: 120px; margin-top: auto; padding-bottom: 20px; }
 
-.target-item, .draggable-item {
+.target-item, .draggable-item { 
     width: 110px; height: 110px; background-repeat: no-repeat; background-position: center; background-size: cover;
     display: flex; justify-content: center; align-items: center; font-size: 36px; font-weight: bold; position: relative;
 }
@@ -120,7 +120,7 @@ body {
 }
 .target-highlight { color: var(--accent-color); font-size: 24px; font-weight: 800; margin-left: 5px;}
 
-#soroban-hint-card {
+#soroban-hint-card { 
     height: 80px; border-radius: 8px; cursor: pointer;
     border: 1px solid #E2E8F0; transition: transform 0.2s; object-fit: contain;
 }
@@ -141,11 +141,11 @@ body {
 .lightbox-text { color: white; margin-top: 15px; font-size: 14px; font-weight: 500; opacity: 0.8; }
 
 /* Сетка для Обучения */
-.soroban-sub-grid-split {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 15px;
-    padding: 10px 20px;
+.soroban-sub-grid-split { 
+    display: grid; 
+    grid-template-columns: 1fr 1fr; 
+    gap: 15px; 
+    padding: 10px 20px; 
 }
 .sub-column { display: flex; flex-direction: column; gap: 10px; }
 .sub-title-header { font-size: 14px; font-weight: 700; color: #94A3B8; margin-bottom: 5px; text-transform: uppercase; text-align: center;}
@@ -161,12 +161,10 @@ body {
     #soroban-score { font-size: 70px; }
     #soroban-task-text { font-size: 16px; }
 }
-
 @media (max-height: 850px) {
     #abacus-body-container { transform: scale(0.80); transform-origin: top center; margin-bottom: -90px; }
     #soroban-score { font-size: 65px; margin-top: 0; }
 }
-
 @media (max-height: 720px) {
     #abacus-body-container { transform: scale(0.65); transform-origin: top center; margin-bottom: -150px; }
     #soroban-score { font-size: 55px; }
@@ -190,6 +188,7 @@ body {
     background-repeat: no-repeat;
     background-position: center;
 }
+
 .bead-green { background-image: url('img/bead_green.png'); }
 .bead-blue  { background-image: url('img/bead_blue.png'); }
 .bead-red   { background-image: url('img/bead_red.png'); }
@@ -234,6 +233,7 @@ body {
     align-items: center;
     box-sizing: border-box;
 }
+
 .comic-slider-box {
     width: 90%;
     max-width: 420px;
@@ -246,6 +246,7 @@ body {
     box-shadow: 0 12px 35px rgba(0, 0, 0, 0.4);
     box-sizing: border-box;
 }
+
 #comic-slider-img {
     width: 100%;
     aspect-ratio: 1/1;
@@ -254,6 +255,7 @@ body {
     margin-bottom: 15px;
     border: 1px solid #EAEFF5;
 }
+
 .comic-slider-nav {
     display: flex;
     justify-content: space-between;
@@ -263,6 +265,7 @@ body {
     padding: 0 5px;
     box-sizing: border-box;
 }
+
 .comic-nav-btn {
     width: 46px;
     height: 46px;
@@ -287,6 +290,7 @@ body {
     gap: 8px;
     align-items: center;
 }
+
 .comic-dot {
     width: 8px;
     height: 8px;
@@ -326,22 +330,22 @@ body {
     position: fixed;
     top: 0; left: 0;
     width: 100%; height: 100%;
-    background: rgba(0, 0, 0, 0.95); 
-    display: none;
+    background: rgba(0, 0, 0, 0.95); /* Чуть темнее фон для контраста */
+    display: none; 
     z-index: 10000;
 }
 
 .lightbox-scroll-area {
     width: 100%;
     height: 100%;
-    overflow: auto; 
+    overflow: auto; /* Позволяет листать пальцем куда угодно! */
     padding: 20px;
-    padding-bottom: 100px; 
+    padding-bottom: 100px; /* Оставляем место внизу, чтобы кнопка не закрывала текст */
     box-sizing: border-box;
 }
 
 #lightbox-img {
-    min-width: 600px; 
+    min-width: 600px; /* ПРИНУДИТЕЛЬНО делаем картинку огромной на мобилке! */
     width: 100%;
     height: auto;
     display: block;
@@ -365,100 +369,89 @@ body {
     z-index: 10001;
 }
 
-/* --- КИТАЙСКАЯ КОМНАТА: КАРТОЧКИ (БРОНЕБОЙНАЯ ВЕРСИЯ) --- */
+/* --- КИТАЙСКАЯ КОМНАТА: КАРТОЧКИ (СУПЕР-ВЕРСИЯ) --- */
 .flip-card-container {
     perspective: 1000px;
     width: 85vw !important;
     max-width: 340px !important;
-    aspect-ratio: 1 / 1 !important;  
-    height: auto !important;         
+    aspect-ratio: 1 / 1 !important; /* Идеальный квадрат без костылей! */
     margin: 20px auto;
     cursor: pointer;
+    position: relative;
 }
 
-.flip-card-inner { position: relative; width: 100%; height: 100%; text-align: center; transition: transform 0.6s cubic-bezier(0.4, 0.2, 0.2, 1); transform-style: preserve-3d; }
+.flip-card-inner { 
+    position: absolute; /* ВАЖНО: чтобы не схлопывалась высота! */
+    top: 0; left: 0;
+    width: 100%; height: 100%; 
+    text-align: center; 
+    transition: transform 0.6s cubic-bezier(0.4, 0.2, 0.2, 1); 
+    transform-style: preserve-3d; 
+}
+
 .flip-card-container.flipped .flip-card-inner { transform: rotateY(180deg); }
 
-.flip-card-front, .flip-card-back {
-    position: absolute; width: 100%; height: 100%; backface-visibility: hidden;
-    border-radius: 25px !important; box-shadow: 0 12px 35px rgba(0,0,0,0.15);
-    display: flex; flex-direction: column; align-items: center; justify-content: center;
-    background: #fff; border: 5px solid #ffe082; box-sizing: border-box;
+.flip-card-front, .flip-card-back { 
+    position: absolute; width: 100%; height: 100%; backface-visibility: hidden; 
+    border-radius: 25px !important; box-shadow: 0 12px 35px rgba(0,0,0,0.15); 
+    display: flex; flex-direction: column; align-items: center; justify-content: center; 
+    background: #fff; border: 5px solid #ffe082; box-sizing: border-box; 
 }
 
+/* Лицевая сторона */
 .flip-card-front { padding: 0 !important; overflow: hidden !important; }
 
-.flip-card-front img {
-    width: 100% !important;
-    height: 100% !important;
-    max-width: none !important;
-    max-height: none !important;
-    object-fit: cover !important;
-    border-radius: 18px !important;
+/* Картинка */
+.flip-card-front img { 
+    width: 100% !important; 
+    height: 100% !important; 
+    object-fit: cover !important; 
+    border-radius: 18px !important; 
     margin: 0 !important;
     display: block !important;
 }
 
+/* Обратная сторона */
 .flip-card-back { transform: rotateY(180deg); background: #fffde7; border-color: #ffca28; padding: 15px !important; }
 
-.chinese-character { font-size: 85px !important; font-weight: normal; color: #d32f2f; line-height: 1.1; margin-bottom: 5px; text-shadow: 2px 2px 5px rgba(0,0,0,0.05); }
-.chinese-pinyin { font-size: 22px !important; color: #777; margin-bottom: 5px; line-height: 1.4; }
-.chinese-translation { font-size: 32px !important; font-weight: 900; color: #333; line-height: 1; }
-
-/* Кнопка звука на карточке */
-.audio-btn-overlay {
-    position: absolute;
-    bottom: 15px;
-    right: 15px;
-    width: 50px;
-    height: 50px;
-    border-radius: 50%;
-    background: rgba(255, 255, 255, 0.9);
-    border: none;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    z-index: 20; 
-    transition: transform 0.2s, background 0.2s;
-    color: #FF9800; 
-}
-
-.audio-btn-overlay:active {
-    transform: scale(0.9);
-    background: #fff;
-}
-
-.audio-btn-overlay.back-side {
-    bottom: 20px; 
-    right: 20px;
+/* Тексты */
+.chinese-character { 
+    /* Функция min() выберет 11vw на мобилках, но никогда не превысит 85px на планшетах */
+    font-size: min(11vw, 85px) !important; 
+    font-weight: normal; 
     color: #d32f2f; 
+    line-height: 1.1; 
+    margin-bottom: 8px; 
+    text-shadow: 2px 2px 5px rgba(0,0,0,0.05);
+    
+    /* Эти свойства гарантируют аккуратный перенос фраз по иероглифам */
+    white-space: normal !important;
+    word-break: break-all !important; 
+    
+    padding: 0 15px !important;         /* Защитный отступ от краев карточки */
+    text-align: center;
+    width: 100%;                        /* Растягиваем блок, чтобы центровка работала идеально */
+    box-sizing: border-box;
 }
 
-/* Чистые кнопки навигации без эмодзи */
-.nav-btn-clean {
-    padding: 15px 25px;
-    font-size: 24px;
-    border-radius: 20px;
-    border: none;
-    background: #e0e0e0;
-    color: #333;
-    cursor: pointer;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-    transition: transform 0.1s;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    min-width: 60px;
+.chinese-pinyin { 
+    font-size: min(5vw, 22px) !important; /* Тоже делаем адаптивным, чтобы пиньинь не вылезал */
+    color: #777; 
+    margin-bottom: 8px; 
+    line-height: 1.3; 
+    text-align: center;
+    padding: 0 10px !important;
+    width: 100%;
+    box-sizing: border-box;
 }
 
-.nav-btn-clean.primary {
-    background: #4CAF50;
-    color: white;
-    box-shadow: 0 4px 10px rgba(76, 175, 80, 0.4);
-}
-
-.nav-btn-clean:active {
-    transform: scale(0.95);
+.chinese-translation { 
+    font-size: min(6.5vw, 28px) !important; /* Русский перевод теперь тоже идеально встанет на смартфонах */
+    font-weight: 900; 
+    color: #333; 
+    line-height: 1.2; 
+    text-align: center;
+    padding: 0 10px !important;
+    width: 100%;
+    box-sizing: border-box;
 }
