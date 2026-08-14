@@ -320,7 +320,7 @@ const roomsData = {
     'learn_friends': [
         { taskText: "Прибавляем 9: тут нужен учитель Десять (+10) и попрощайся с другом девятки — один (-1).", initialValue: 2, target: 11, taskAudio: "audio/friend9_task.wav", slides: ["img/friend_cover_academy.jpg", "img/friend_cover_friends.jpg", "img/friend9_step1.jpg", "img/friend9_step2.jpg", "img/friend9_step3.jpg"], audioSlides: ["audio/anime_intro_academy.wav", "audio/anime_friends_9_1.wav", "audio/anime_friend9_step1.wav", "audio/anime_friend9_step2.wav", "audio/anime_friend9_step3.wav"] },
         { taskText: "Прибавляем 8: тут нужен учитель Десять (+10) и попрощайся с другом восьми — два (-2).", initialValue: 3, target: 11, taskAudio: "audio/friend8_task.wav", slides: ["img/friend_cover_8_2.jpg"], audioSlides: ["audio/anime_friends_8_2.wav"] },
-        { taskText: "Прибавляем 7: тут нужен учитель Десять (+10) and попрощайся с другом семи — три (-3).", initialValue: 4, target: 11, taskAudio: "audio/friend7_task.wav", slides: ["img/friend_cover_7_3.jpg"], audioSlides: ["audio/anime_friends_7_3.wav"] },
+        { taskText: "Прибавляем 7: тут нужен учитель Десять (+10) и попрощайся с другом семи — три (-3).", initialValue: 4, target: 11, taskAudio: "audio/friend7_task.wav", slides: ["img/friend_cover_7_3.jpg"], audioSlides: ["audio/anime_friends_7_3.wav"] },
         { taskText: "Прибавляем 6: тут нужен учитель Десять (+10) и попрощайся с другом шести — четыре (-4).", initialValue: 4, target: 10, taskAudio: "audio/friend6_task.wav", slides: ["img/friend_cover_6_4.jpg"], audioSlides: ["audio/anime_friends_6_4.wav"] },
         { taskText: "Прибавляем 5: тут нужен учитель Десять (+10) и попрощайся с другом пяти — пять (-5).", initialValue: 6, target: 11, taskAudio: "audio/friend5_task.wav", slides: ["img/friend_cover_5_5.jpg"], audioSlides: ["audio/anime_friends_5_5.wav"] }
     ],
@@ -332,7 +332,7 @@ const roomsData = {
         { taskText: "На спице уже есть два малыша. Прибавь к ним ещё двух. Стало 4!", initialValue: 2, target: 4, taskAudio: "audio/learn_add_1.wav" },
         { taskText: "На спице три малыша. Прибавь к ним Королеву Пять, опусти её вниз. Получится 8.", initialValue: 3, target: 8, taskAudio: "audio/learn_add_2.wav" },
         { taskText: "На синей спице один ученик. Прибавь к нему ещё две синие бусинки. Стало 30.", initialValue: 10, target: 30, taskAudio: "audio/learn_add_3.wav" },
-        { taskText: "Попробуем сразу две спицы! У нас число 12. Прибавь Коровелу Пять. Стало 17.", initialValue: 12, target: 17, taskAudio: "audio/learn_add_4.wav" },
+        { taskText: "Попробуем сразу две спицы! У нас число 12. Прибавь Королеву Пять. Стало 17.", initialValue: 12, target: 17, taskAudio: "audio/learn_add_4.wav" },
         { taskText: "А теперь сотни! Сэнсэй Пятьсот уже здесь. Прибавь к нему четыре бусинки снизу. Получится 900!", initialValue: 500, target: 900, taskAudio: "audio/learn_add_5.wav" }
     ],
     'learn_sub': [
@@ -708,7 +708,7 @@ function handlePointerEnd(e) {
                     // 🔥 Без Ути! Только взрослый голос: победная фраза
                     playSound(`audio/lego_win_${chineseLegoData[currentLegoLevelIndex].id}.wav`);
                     // 🔥 Показываем кнопки навигации, автоперехода НЕТ
-                    showLegoNav();
+                    updateLegoNav();
                 }, 1500);
             }
         }
