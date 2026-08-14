@@ -1,781 +1,951 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Нейро-Гений</title>
-<script src="https://unpkg.com/@vkontakte/vk-bridge/dist/browser.min.js"></script>
-<link rel="stylesheet" href="style.css?v=8889">
-<style>
-/* Броня от случайных скроллов */
-.draggable-item, [id^='chain-drag-zone'] > div {
-touch-action: none !important;
-user-select: none !important;
--webkit-user-select: none !important;
-}
-.selected-wardrobe-item {
-border: 3px solid #FF9800 !important;
-transform: scale(1.1);
-background: #fff3e0 !important;
-box-shadow: 0 0 15px rgba(255, 152, 0, 0.6);
-}
-/* Замочки VIP */
-.locked-card {
-position: relative;
-}
-.locked-card::after {
-content: "VIP";
-position: absolute;
-top: 10px;
-right: 10px;
-background: rgba(0, 0, 0, 0.7);
-color: white;
-padding: 4px 8px;
-border-radius: 10px;
-font-size: 12px;
-font-weight: bold;
-box-shadow: 0 2px 5px rgba(0,0,0,0.3);
-z-index: 5;
-}
-/* Всплывающее окно VIP */
-.vip-modal-overlay {
-display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-background: rgba(0,0,0,0.6); z-index: 1000; align-items: center; justify-content: center;
-backdrop-filter: blur(3px);
-}
-.vip-modal-box {
-background: #fff; width: 90%; max-width: 340px; border-radius: 20px;
-padding: 20px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.3); position: relative;
-}
-.vip-btn-free {
-background: linear-gradient(135deg, #00C853 0%, #388E3C 100%); color: white;
-border: none; border-radius: 15px; padding: 12px; width: 100%; font-size: 16px;
-font-weight: bold; margin-bottom: 10px; cursor: pointer; box-shadow: 0 4px 10px rgba(0,200,83,0.3);
-}
-.vip-btn-buy {
-background: linear-gradient(135deg, #FF9800 0%, #F57C00 100%); color: white;
-border: none; border-radius: 15px; padding: 12px; width: 100%; font-size: 16px;
-font-weight: bold; cursor: pointer; box-shadow: 0 4px 10px rgba(255,152,0,0.3);
-}
-/* Подвал */
-.legal-footer {
-text-align: center; padding: 20px; font-size: 12px; color: #777; margin-top: 20px; line-height: 1.5;
-}
-.legal-footer a { color: #2196F3; text-decoration: none; font-weight: bold; }
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Нейро-Гений</title>
+    <script src="https://unpkg.com/@vkontakte/vk-bridge/dist/browser.min.js"></script>
+    <link rel="stylesheet" href="style.css?v=8892">
+    <style>
+        /* Броня от случайных скроллов */
+        .draggable-item, [id^='chain-drag-zone'] > div {
+            touch-action: none !important;
+            user-select: none !important;
+            -webkit-user-select: none !important;
+        }
+        .selected-wardrobe-item {
+            border: 3px solid #FF9800 !important;
+            transform: scale(1.1);
+            background: #fff3e0 !important;
+            box-shadow: 0 0 15px rgba(255, 152, 0, 0.6);
+        }
+
+        /* 📊 РАЗДЕЛЕНИЕ НА ДВЕ БОЛЬШИЕ КОЛОНКИ: ЛЕВАЯ И ПРАВАЯ */
+        .main-menu-container {
+            display: flex;
+            gap: 20px;
+            padding: 10px 20px;
+            max-width: 900px;
+            margin: 0 auto;
+            align-items: flex-start;
+            box-sizing: border-box;
+            width: 100%;
+        }
+
+        /* Левая колонка (Бесплатные) и Правая колонка (Платные) */
+        .menu-column-left, .menu-column-right {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        /* Стилизация самих карточек главного меню */
+        .menu-card {
+            position: relative;
+            background: #ffffff;
+            border-radius: 24px;
+            padding: 20px 10px;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+            transition: transform 0.2s, box-shadow 0.2s;
+            cursor: pointer;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 150px;
+            width: 100%;
+        }
+        .menu-card:active { transform: scale(0.96); opacity: 0.9; }
+
+        /* 🎯 ЖЕСТКАЯ ЗАЩИТА РАЗМЕРОВ ДЛЯ ВСЕХ ИКОНОК КАРТОЧЕК НА ГЛАВНОЙ */
+        .menu-card .card-icon {
+            width: 75px !important;
+            height: 75px !important;
+            object-fit: contain !important;
+            margin: 0 auto 10px auto !important;
+            display: block !important;
+            opacity: 1 !important;
+        }
+
+        /* Нарядные VIP-комнаты */
+        .locked-card {
+            border: 2px dashed #ffb74d !important;
+            background: #fffdf9 !important;
+        }
+        
+        .vip-lock-badge {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            font-size: 13px;
+            background: #fff;
+            border: 1px solid #ffb74d;
+            color: #f57c00;
+            padding: 4px 8px;
+            border-radius: 10px;
+            font-weight: bold;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            z-index: 5;
+        }
+
+        /* Всплывающее окно VIP */
+        .vip-modal-overlay {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.6); z-index: 1000; align-items: center; justify-content: center;
+            backdrop-filter: blur(3px);
+        }
+        .vip-modal-box {
+            background: #fff; width: 90%; max-width: 340px; border-radius: 20px;
+            padding: 20px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.3); position: relative;
+        }
+        .vip-btn-free {
+            background: linear-gradient(135deg, #00C853 0%, #388E3C 100%); color: white;
+            border: none; border-radius: 15px; padding: 12px; width: 100%; font-size: 16px;
+            font-weight: bold; margin-bottom: 10px; cursor: pointer; box-shadow: 0 4px 10px rgba(0,200,83,0.3);
+        }
+        .vip-btn-buy {
+            background: linear-gradient(135deg, #FF9800 0%, #F57C00 100%); color: white;
+            border: none; border-radius: 15px; padding: 12px; width: 100%; font-size: 16px;
+            font-weight: bold; cursor: pointer; box-shadow: 0 4px 10px rgba(255,152,0,0.3);
+        }
+        /* Подвал */
+        .legal-footer {
+            text-align: center; padding: 20px; font-size: 12px; color: #777; margin-top: 20px; line-height: 1.5;
+        }
+        .legal-footer a { color: #2196F3; text-decoration: none; font-weight: bold; }
+
+        /* Мобильная адаптация: на смартфонах превращаем в одну красивую ленту */
+        @media (max-width: 600px) {
+            .main-menu-container {
+                flex-direction: column;
+                gap: 15px;
+            }
+            .menu-column-left, .menu-column-right {
+                width: 100%;
+            }
+        }
+    </style>
 </head>
 <body>
-<div id="image-lightbox">
-<div class="lightbox-scroll-area">
-<img id="lightbox-img" src="">
-</div>
-<div class="lightbox-close-btn" onclick="closeLightbox()">Закрыть</div>
-</div>
-<div id="screen-menu" class="screen active">
-<div class="header">
-<div class="header-title-row">
-<span style="font-size: 26px; font-weight: 800; color: var(--accent-color);">Нейро-Гений</span>
-</div>
-</div>
-<div class="hero-title">Тренажёры интеллекта:</div>
-<div class="menu-grid">
-<div class="category-card" onclick="openWordsMenu()">
-<div style="margin: 0 auto 10px auto; width: 70px; height: 70px;">
-<img src="img/icon_words.png" alt="" style="width: 100%; height: 100%; object-fit: contain;">
-</div>
-<div class="category-title">Слоги</div>
-<div class="category-subtitle">Составь слово</div>
-</div>
-<div class="category-card locked-card" onclick="checkAccessAndOpen('soroban')">
-<div style="margin: 0 auto 10px auto; width: 70px; height: 70px;">
-<img src="img/icon_soroban.png" alt="" style="width: 100%; height: 100%; object-fit: contain;">
-</div>
-<div class="category-title">Ментальная арифметика</div>
-<div class="category-subtitle">Счёты Соробан</div>
-</div>
-<div class="category-card locked-card" onclick="checkAccessAndOpen('memorika')">
-<div style="margin: 0 auto 10px auto; width: 70px; height: 70px;">
-<img src="img/icon_memo.png" alt="" style="width: 100%; height: 100%; object-fit: contain;">
-</div>
-<div class="category-title">Меморика</div>
-<div class="category-subtitle">Развитие супер-памяти</div>
-</div>
-<div class="category-card locked-card" onclick="checkAccessAndOpen('brain')">
-<div style="margin: 0 auto 10px auto; width: 70px; height: 70px;">
-<img src="img/icon_brain.png" onerror="this.src='img/icon_memo.png'" alt="" style="width: 100%; height: 100%; object-fit: contain;">
-</div>
-<div class="category-title">Брейн-фитнес</div>
-<div class="category-subtitle">Нейрогимнастика</div>
-</div>
-<div class="category-card" onclick="openChineseMenu()">
-<div style="margin: 0 auto 10px auto; width: 70px; height: 70px;">
-<img src="img/icon_panda.png" onerror="this.src='img/icon_memo.png'" alt="" style="width: 100%; height: 100%; object-fit: contain;">
-</div>
-<div class="category-title">Китайский язык</div>
-<div class="category-subtitle">Учим слова и счет</div>
-</div>
-</div>
-<div class="legal-footer">
-© 2026 Нейро-Гений<br>
-Самозанятая Селяхова Наталья Викторовна<br>
-ИНН: 502204523550 | <a href="https://vk.com/neuro_master_online" target="_blank">Служба заботы (ВК)</a>
-</div>
-</div>
-<div id="screen-words-menu" class="screen" style="overflow-y: auto;">
-<div class="header" style="position: sticky; top: 0; z-index: 10;">
-<div class="header-title-row"><span id="room-title">Слоги</span></div>
-<div class="header-top"><div class="back-btn" onclick="goMainFromWordsMenu()">Назад</div></div>
-</div>
-<div class="hero-title">Выбери уровень:</div>
-<div class="menu-grid sub-grid">
-<div class="category-card sub-card" onclick="openRoom('words_2', 'Слоги: 2 кусочка')">
-<div style="margin: 0 auto 10px auto; width: 60px; height: 60px;"><img src="img/icon_syl_2.png" alt="" style="width: 100%; height: 100%; object-fit: contain;"></div>
-<div class="category-title sub-title">2 слога</div>
-<div class="category-subtitle">Простые слова</div>
-</div>
-<div class="category-card sub-card" onclick="openRoom('words_3', 'Слоги: 3 кусочка')">
-<div style="margin: 0 auto 10px auto; width: 60px; height: 60px;"><img src="img/icon_syl_3.png" alt="" style="width: 100%; height: 100%; object-fit: contain;"></div>
-<div class="category-title sub-title">3 слога</div>
-<div class="category-subtitle">Средний уровень</div>
-</div>
-<div class="category-card sub-card" onclick="openRoom('words_4', 'Слоги: 4 кусочка')">
-<div style="margin: 0 auto 10px auto; width: 60px; height: 60px;"><img src="img/icon_syl_4.png" alt="" style="width: 100%; height: 100%; object-fit: contain;"></div>
-<div class="category-title sub-title">4 слога</div>
-<div class="category-subtitle">Сложные слова</div>
-</div>
-</div>
-</div>
-<div id="screen-memorika-menu" class="screen" style="overflow-y: auto;">
-<div class="header" style="position: sticky; top: 0; z-index: 10;">
-<div class="header-title-row"><span id="room-title">Меморика</span></div>
-<div class="header-top"><div class="back-btn" onclick="goMainFromMemorika()">Назад</div></div>
-</div>
-<div class="hero-title">Выберите технику:</div>
-<div class="menu-grid sub-grid">
-<div class="category-card sub-card" onclick="openWardrobeMenu()">
-<div style="margin: 0 auto 10px auto; width: 60px; height: 60px;"><img src="img/icon_wardrobe.png" alt="" style="width: 100%; height: 100%; object-fit: contain;"></div>
-<div class="category-title sub-title">Дворец Памяти</div><div class="category-subtitle">Метод Локи</div>
-</div>
-<div class="category-card sub-card" onclick="openChainMenu()">
-<div style="margin: 0 auto 10px auto; width: 60px; height: 60px;"><img src="img/icon_chain.png" alt="" style="width: 100%; height: 100%; object-fit: contain;"></div>
-<div class="category-title sub-title">Цепочка по рассказу</div><div class="category-subtitle">Связывание образов</div>
-</div>
-<div class="category-card sub-card" onclick="openPoemInput()">
-<div style="margin: 0 auto 10px auto; width: 60px; height: 60px;"><img src="img/icon_poem.png" alt="" style="width: 100%; height: 100%; object-fit: contain;"></div>
-<div class="category-title sub-title">Стихи и рисование</div><div class="category-subtitle">Рисуем и запоминаем</div>
-</div>
-<div class="category-card sub-card" onclick="openMultiplicationMenu()">
-<div style="margin: 0 auto 10px auto; width: 60px; height: 60px;"><img src="img/icon_magicwand.png" alt="" style="width: 100%; height: 100%; object-fit: contain;"></div>
-<div class="category-title sub-title">Лайфхаки умножения</div><div class="category-subtitle">Учим таблицу весело</div>
-</div>
-</div>
-</div>
-<div id="screen-chain-menu" class="screen" style="overflow-y: auto;">
-<div class="header" style="position: sticky; top: 0; z-index: 10;">
-<div class="header-title-row"><span id="room-title">Цепочка</span></div>
-<div class="header-top"><div class="back-btn" onclick="goBackToMemorikaFromChain()">Назад</div></div>
-</div>
-<div class="hero-title">Тренировка памяти</div>
-<div class="menu-grid sub-grid">
-<div class="category-card sub-card" style="background: #fff3e0; border-color: #c8e6c9;" onclick="startChainLearning()">
-<div style="margin: 0 auto 10px auto; width: 50px; height: 50px;"><img src="img/icon_chain_learn.png" alt="" style="width: 100%; height: 100%; object-fit: contain;"></div>
-<div class="category-title sub-title">Обучение (10 слов)</div><div class="category-subtitle">Как придумывать историю</div>
-</div>
-<div class="sub-title-header" style="grid-column: 1 / -1; margin-top: 15px;">Выбери сложность:</div>
-<div class="category-card sub-card" onclick="startChainTraining(5)">
-<div style="margin: 0 auto 5px auto; width: 45px; height: 45px;"><img src="img/icon_chain_5.png" alt="" style="width: 100%; height: 100%; object-fit: contain;"></div>
-<div class="category-title sub-title">Новичок</div><div class="category-subtitle">5 предметов</div>
-</div>
-<div class="category-card sub-card" onclick="startChainTraining(10)">
-<div style="margin: 0 auto 5px auto; width: 45px; height: 45px;"><img src="img/icon_chain_10.png" alt="" style="width: 100%; height: 100%; object-fit: contain;"></div>
-<div class="category-title sub-title">Ученик</div><div class="category-subtitle">10 предметов</div>
-</div>
-<div class="category-card sub-card" onclick="startChainTraining(15)">
-<div style="margin: 0 auto 5px auto; width: 45px; height: 45px;"><img src="img/icon_chain_15.png" alt="" style="width: 100%; height: 100%; object-fit: contain;"></div>
-<div class="category-title sub-title">Мастер</div><div class="category-subtitle">15 предметов</div>
-</div>
-<div class="category-card sub-card" onclick="startChainTraining(20)">
-<div style="margin: 0 auto 5px auto; width: 45px; height: 45px;"><img src="img/icon_chain_20.png" alt="" style="width: 100%; height: 100%; object-fit: contain;"></div>
-<div class="category-title sub-title">Ниндзя</div><div class="category-subtitle">20 предметов</div>
-</div>
-</div>
-</div>
-<div id="screen-multiplication-menu" class="screen" style="overflow-y: auto;">
-<div class="header" style="position: sticky; top: 0; z-index: 10;">
-<div class="header-title-row"><span id="room-title">Лайфхаки</span></div>
-<div class="header-top"><div class="back-btn" onclick="goBackToMemorikaFromMult()">Назад</div></div>
-</div>
-<div class="hero-title">Выбери фокус:</div>
-<div class="menu-grid sub-grid">
-<div class="category-card sub-card" onclick="openMagic9()">
-<div style="margin: 0 auto 10px auto; width: 60px; height: 60px;"><img src="img/icon_hack_9.png" alt="" style="width: 100%; height: 100%; object-fit: contain;"></div>
-<div class="category-title sub-title">Магия на 9</div><div class="category-subtitle">Считаем на пальцах</div>
-</div>
-<div class="category-card sub-card" onclick="openPoems()">
-<div style="margin: 0 auto 10px auto; width: 60px; height: 60px;"><img src="img/icon_hack_poem.png" alt="" style="width: 100%; height: 100%; object-fit: contain;"></div>
-<div class="category-title sub-title">Стихи-ассоциации</div><div class="category-subtitle">Трудные примеры</div>
-</div>
-<div class="category-card sub-card" onclick="openMagic5()">
-<div style="margin: 0 auto 10px auto; width: 60px; height: 60px;"><img src="img/icon_hack_5.png" alt="" style="width: 100%; height: 100%; object-fit: contain;"></div>
-<div class="category-title sub-title">Магия на 5</div><div class="category-subtitle">Секрет с половинкой</div>
-</div>
-<div class="category-card sub-card" onclick="openMultTest()" style="background: #e8f5e9; border-color: #c8e6c9;">
-<div style="margin: 0 auto 10px auto; width: 60px; height: 60px;"><img src="img/icon_soroban_play.png" alt="" style="width: 100%; height: 100%; object-fit: contain;"></div>
-<div class="category-title sub-title">Проверка знаний</div><div class="category-subtitle">Решай примеры</div>
-</div>
-</div>
-</div>
-<div id="screen-magic-9" class="screen" style="overflow-y: auto;">
-<div class="header" style="position: sticky; top: 0; z-index: 10;">
-<div class="header-title-row"><span id="room-title">Лайфхаки</span></div>
-<div class="header-top"><div class="back-btn" onclick="goBackToMultFromMagic9()">Назад</div></div>
-</div>
-<div class="hero-title">Магия умножения на 9!</div>
-<div style="text-align: center; font-size: 16px; color: #444; margin: 15px 20px; background: #e3f2fd; padding: 15px; border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.05);">
-<b>Секретное правило:</b><br> Листай стрелочками и загибай пальчики.<br> Всё, что <b>слева</b> — это <b>десятки</b>.<br> Всё, что <b>справа</b> — это <b>единицы</b>!
-</div>
-<div class="hands-container" style="position: relative; width: 90%; max-width: 400px; margin: 0 auto; margin-top: 15px;">
-<img id="hands-image" src="img/hands_0.jpg" style="width: 100%; border-radius: 20px; display: block; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
-</div>
-<div class="nav-arrows-container" style="margin-top: 20px;">
-<div id="btn-prev-magic" class="nav-arrow-btn" onclick="changeMagicFinger(-1)">◀</div>
-<div id="btn-next-magic" class="nav-arrow-btn" onclick="changeMagicFinger(1)">▶</div>
-</div>
-<div id="magic-9-result" style="text-align: center; margin-top: 15px; font-size: 24px; font-weight: bold; color: var(--accent-color);">Выбери палец стрелочками</div>
-</div>
-<div id="screen-poems" class="screen" style="overflow-y: auto;">
-<div class="header" style="position: sticky; top: 0; z-index: 10;">
-<div class="header-title-row"><span id="room-title">Стихи-ассоциации</span></div>
-<div class="header-top"><div class="back-btn" onclick="goBackToMultFromPoems()">Назад</div></div>
-</div>
-<div class="hero-title">Запоминаем трудные примеры!</div>
-<div class="poem-card" style="text-align: center; margin: 15px auto; width: 90%; max-width: 350px; background: #fff; border-radius: 20px; box-shadow: 0 8px 20px rgba(0,0,0,0.08); padding: 20px; box-sizing: border-box; border: 2px solid #e3f2fd;">
-<div id="poem-math" style="font-size: 42px; font-weight: 900; color: #333; margin-bottom: 15px;">6 × 8 = <span style="color:#E91E63">48</span></div>
-<img id="poem-img" src="img/poem_48.jpg" style="width: 100%; border-radius: 15px; margin-bottom: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
-<div id="poem-text" style="font-size: 18px; color: #444; font-weight: bold; line-height: 1.4; background: #fff9c4; padding: 10px; border-radius: 10px;">
-Шесть на восемь — сорок восемь,<br>Мы бегемота кушать просим!
-</div>
-</div>
-<div class="nav-arrows-container" style="margin-top: 15px; justify-content: center; gap: 60px; padding-bottom: 30px;">
-<div id="btn-prev-poem" class="nav-arrow-btn" onclick="changePoem(-1)">◀</div>
-<div id="btn-next-poem" class="nav-arrow-btn" onclick="changePoem(1)">▶</div>
-</div>
-</div>
-<div id="screen-magic-5" class="screen" style="overflow-y: auto;">
-<div class="header" style="position: sticky; top: 0; z-index: 10;">
-<div class="header-title-row"><span>Магия на 5</span></div>
-<div class="header-top"><div class="back-btn" onclick="goBackToMultFromMagic5()">Назад</div></div>
-</div>
-<div class="hero-title">Магия умножения на 5</div>
-<div class="poem-card" style="text-align: center; margin: 15px auto; width: 90%; max-width: 350px; background: #fff; border-radius: 20px; box-shadow: 0 8px 20px rgba(0,0,0,0.08); padding: 20px; box-sizing: border-box; border: 2px solid #e3f2fd;">
-<div id="magic5-math" style="font-size: 42px; font-weight: 900; color: #333; margin-bottom: 15px;"></div>
-<img id="magic5-img" src="" style="width: 100%; border-radius: 15px; margin-bottom: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
-<div id="magic5-text" style="font-size: 18px; color: #444; font-weight: bold; line-height: 1.4; background: #fff9c4; padding: 10px; border-radius: 10px;"></div>
-</div>
-<div class="nav-arrows-container" style="margin-top: 15px; justify-content: center; gap: 60px; padding-bottom: 30px;">
-<div id="btn-prev-magic5" class="nav-arrow-btn" onclick="changeMagic5(-1)">◀</div>
-<div id="btn-next-magic5" class="nav-arrow-btn" onclick="changeMagic5(1)">▶</div>
-</div>
-</div>
-<div id="screen-mult-test" class="screen" style="overflow-y: auto;">
-<div class="header" style="position: sticky; top: 0; z-index: 10;">
-<div class="header-title-row"><span id="room-title">Тренажёр умножения</span></div>
-<div class="header-top"><div class="back-btn" onclick="goBackToMultFromTest()">Назад</div></div>
-</div>
-<div style="padding: 20px; text-align: center;">
-<div style="font-size: 20px; font-weight: bold; color: #555; margin-bottom: 10px;">Твой счёт: <span id="mult-test-score" style="color: #4CAF50; font-size: 24px;">0 / 0</span></div>
-<div id="mult-test-question" style="font-size: 60px; font-weight: 900; margin: 30px 0; color: #333; text-shadow: 2px 2px 5px rgba(0,0,0,0.1);">7 × 8 = ?</div>
-<div id="mult-test-options" style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; max-width: 300px; margin: 0 auto;"></div>
-</div>
-</div>
-<div id="screen-soroban-menu" class="screen">
-<div class="header" style="position: sticky; top: 0; z-index: 10;">
-<div class="header-title-row"><span id="room-title">Ментальная арифметика</span></div>
-<div class="header-top"><div class="back-btn" onclick="goMainFromSubmenu()">Назад</div></div>
-</div>
-<div class="hero-title">Выберите режим:</div>
-<div class="menu-grid">
-<div class="category-card" onclick="startSoroban('free', 'free', 'Свободный режим')">
-<div style="margin: 0 auto 15px auto; width: 80px; height: 80px;"><img src="img/icon_soroban_free.png" alt="" style="width: 100%; height: 100%; object-fit: contain;"></div>
-<div class="category-title">Свободный режим</div><div class="category-subtitle">Изучайте косточки без заданий</div>
-</div>
-<div class="category-card" onclick="openSorobanLearnMenu()">
-<div style="margin: 0 auto 15px auto; width: 80px; height: 80px;"><img src="img/icon_soroban_learn.png" alt="" style="width: 100%; height: 100%; object-fit: contain;"></div>
-<div class="category-title">Обучение</div><div class="category-subtitle">Правила и разряды</div>
-</div>
-<div class="category-card" onclick="openSorobanPlayMenu()">
-<div style="margin: 0 auto 15px auto; width: 80px; height: 80px;"><img src="img/icon_soroban_play.png" alt="" style="width: 100%; height: 100%; object-fit: contain;"></div>
-<div class="category-title">Тренировка</div><div class="category-subtitle">Решение примеров</div>
-</div>
-</div>
-</div>
-<div id="screen-soroban-learn-menu" class="screen" style="overflow-y: auto;">
-<div class="header" style="position: sticky; top: 0; z-index: 10;">
-<div class="header-title-row"><span id="room-title">Обучение</span></div>
-<div class="header-top"><div class="back-btn" onclick="goBackToSorobanMenuFromLearn()">Назад</div></div>
-</div>
-<div class="menu-grid soroban-sub-grid-split">
-<div class="sub-column">
-<div class="sub-title-header">Разряды</div>
-<div class="category-card sub-card" style="background-color: #ffebee; border-color: #ffcdd2;" onclick="startSoroban('learn', 'learn_units', 'Единицы')"><div class="category-title sub-title">Единицы</div></div>
-<div class="category-card sub-card" style="background-color: #e3f2fd; border-color: #bbdefb;" onclick="startSoroban('learn', 'learn_tens', 'Десятки')"><div class="category-title sub-title">Десятки</div></div>
-<div class="category-card sub-card" style="background-color: #e8f5e9; border-color: #c8e6c9;" onclick="startSoroban('learn', 'learn_hundreds', 'Сотни')"><div class="category-title sub-title">Сотни</div></div>
-<div class="sub-title-header" style="margin-top: 15px;">Друзья</div>
-<div class="category-card sub-card" style="background-color: #f3e5f5; border-color: #e1bee7;" onclick="startSoroban('learn', 'learn_friends', 'Друзья 10')"><div class="category-title sub-title">Друзья 10</div></div>
-<div class="category-card sub-card" style="background-color: #fff3e0; border-color: #ffe0b2; margin-top: 10px;" onclick="startSoroban('learn', 'learn_friends_5', 'Братцы Пять')"><div class="category-title sub-title">Братцы 5</div></div>
-</div>
-<div class="sub-column">
-<div class="sub-title-header">Действия</div>
-<div class="category-card sub-card" style="background-color: #e0f2f1; border-color: #b2dfdb;" onclick="startSoroban('learn', 'learn_add', 'Сложение')"><div class="category-title sub-title">Сложение</div></div>
-<div class="category-card sub-card" style="background-color: #e0f7fa; border-color: #b2ebf2;" onclick="startSoroban('learn', 'learn_sub', 'Вычитание')"><div class="category-title sub-title">Вычитание</div></div>
-<div class="category-card sub-card" style="background-color: #fffde7; border-color: #fff59d;" onclick="startSoroban('learn', 'learn_mult', 'Умножение')"><div class="category-title sub-title">Умножение</div></div>
-<div class="category-card sub-card" style="background-color: #ede7f6; border-color: #d1c4e9;" onclick="startSoroban('learn', 'learn_div', 'Деление')"><div class="category-title sub-title">Деление</div></div>
-</div>
-</div>
-</div>
-<div id="screen-soroban-play-menu" class="screen" style="overflow-y: auto;">
-<div class="header" style="position: sticky; top: 0; z-index: 10;">
-<div class="header-title-row"><span id="room-title">Тренировка</span></div>
-<div class="header-top"><div class="back-btn" onclick="goBackToSorobanMenuFromPlay()">Назад</div></div>
-</div>
-<div class="menu-grid sub-grid" style="margin-top: 15px;">
-<div class="category-card sub-card" style="background-color: #e3f2fd; border-color: #bbdefb;" onclick="startSoroban('play', 'play_numbers', 'Тренировка: Набери число')"><div class="category-title sub-title">Набери число</div></div>
-<div class="category-card sub-card" style="background-color: #e8f5e9; border-color: #c8e6c9;" onclick="startSoroban('play', 'play_simple', 'Тренировка: Прямой счёт')"><div class="category-title sub-title">Прямой счёт (+ и -)</div></div>
-<div class="category-card sub-card" style="background-color: #fff3e0; border-color: #ffe0b2;" onclick="startSoroban('play', 'play_friends_5', 'Тренировка: Орден Пяти')"><div class="category-title sub-title">Орден Пяти</div></div>
-<div class="category-card sub-card" style="background-color: #f3e5f5; border-color: #e1bee7;" onclick="startSoroban('play', 'play_friends_10', 'Тренировка: Друзья 10')"><div class="category-title sub-title">Академия Десяти</div></div>
-<div class="category-card sub-card" style="background-color: #fffde7; border-color: #fff59d;" onclick="startSoroban('play', 'play_mult', 'Тренировка: Умножение')"><div class="category-title sub-title">Умножение</div></div>
-<div class="category-card sub-card" style="background-color: #ede7f6; border-color: #d1c4e9;" onclick="startSoroban('play', 'play_div', 'Тренировка: Деление')"><div class="category-title sub-title">Деление</div></div>
-</div>
-</div>
-<div id="screen-room" class="screen">
-<div class="header">
-<div class="header-title-row"><span id="game-room-title">Комната</span></div>
-<div class="header-top"><div class="back-btn" id="btn-back-to-menu">Назад</div></div>
-</div>
-<div class="room-content-area">
-<div id="game-area" class="game-container">
-<div id="word-image-container">
-<img id="word-3d-image" src="" alt="">
-<div class="nav-arrows-container" style="position: absolute; top: 110px; gap: 150px;">
-<div id="btn-prev-word" class="nav-arrow-btn" onclick="changeWord(-1)">◀</div>
-<div id="btn-next-word" class="nav-arrow-btn" onclick="changeWord(1)">▶</div>
-</div>
-</div>
-<div class="target-column" id="target-zone"></div>
-<div class="drag-column" id="drag-zone"></div>
-<div id="soroban-controls" style="display:none; width:100%; flex-direction:column; align-items:center;">
-<div id="soroban-task-container" style="display:none;">
-<div id="soroban-task-text">Загрузка задания...</div>
-<div id="scroll-btn" style="display:none; margin-top: 10px; cursor: pointer; color: #FF9800; font-weight: bold; font-size: 18px;" onclick="openLightbox('img/scroll_table.jpg')">Посмотреть Свиток Сэнсэя</div>
-<div id="soroban-hint-container" style="display:none; flex-direction:column; align-items:center;">
-<img id="soroban-hint-card" src="" alt="Подсказка" onclick="openLightbox(this.src)">
-<div class="hint-label">Нажмите для увеличения</div>
-</div>
-<div class="nav-arrows-container" id="soroban-nav-arrows">
-<div id="btn-prev-soroban" class="nav-arrow-btn" onclick="changeSorobanTask(-1)">◀</div>
-<div id="btn-next-soroban" class="nav-arrow-btn" onclick="changeSorobanTask(1)">▶</div>
-</div>
-</div>
-</div>
-<div id="soroban-score" style="display:none;">0</div>
-</div>
-</div>
-</div>
-<div id="comic-slider-modal" class="comic-modal">
-<div class="comic-slider-box">
-<img id="comic-slider-img" src="" alt="Обучающий комикс">
-<div class="comic-slider-nav">
-<div id="btn-comic-prev" class="comic-nav-btn" onclick="moveSlide(-1)">◀</div>
-<div id="comic-slider-dots"></div>
-<div id="btn-comic-next" class="comic-nav-btn" onclick="moveSlide(1)">▶</div>
-</div>
-<button id="btn-comic-start" onclick="closeComicSlider()">В бой!</button>
-</div>
-</div>
-<div id="screen-chain-game" class="screen" style="overflow-y: auto;">
-<div class="header" style="position: sticky; top: 0; z-index: 10;">
-<div class="header-title-row"><span id="chain-game-title">Магия Истории</span></div>
-<div class="header-top"><div class="back-btn" onclick="goBackToChainMenu()">Назад</div></div>
-</div>
-<div id="chain-stage-container" style="padding: 20px; text-align: center;">
-<div id="chain-message" style="font-size: 20px; font-weight: bold; margin-bottom: 20px; color: #333;">Запомни предметы!</div>
-<div id="chain-visual-area" style="min-height: 300px; display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; background: #fff; border-radius: 20px; padding: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.05);"></div>
-<div id="chain-controls" style="margin-top: 30px;">
-<button id="btn-chain-next" class="comic-nav-btn" style="display:none; margin: 0 auto; width: 200px; height: 50px; font-size: 20px;" onclick="nextChainStage()">Дальше</button>
-</div>
-</div>
-</div>
-<div id="screen-poem-input" class="screen" style="overflow-y: auto;">
-<div class="header" style="position: sticky; top: 0; z-index: 10;">
-<div class="header-title-row"><span id="room-title">Учим любой стих!</span></div>
-<div class="header-top"><div class="back-btn" onclick="goBackToMemorikaFromPoemInput()">Назад</div></div>
-</div>
-<div style="padding: 15px; text-align: center;">
-<div style="background: #fff9c4; border: 2px solid #fbc02d; border-radius: 15px; padding: 15px; margin-bottom: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); text-align: left;">
-<h3 style="margin-top: 0; margin-bottom: 10px; color: #f57f17; text-align: center;">Секрет супер-памяти</h3>
-<p style="margin: 0 0 10px 0; font-size: 15px; color: #333; line-height: 1.4;">Чтобы быстро выучить стихотворение, мы превратим его в <b>пиктограммы</b> — твои собственные рисунки-ассоциации!</p>
-<p style="margin: 0 0 10px 0; font-size: 15px; color: #333; line-height: 1.4;">Например, для строчки <i>«У лукоморья дуб зелёный»</i> нарисуй просто лук и дерево. Не старайся рисовать красиво, подойдут самые простые каракули!</p>
-<p style="margin: 0; font-size: 15px; color: #333; line-height: 1.4;">В конце игры ты посмотришь на свои рисунки и легко расскажешь весь стих! А если забудешь — всегда можно нажать кнопочку и подсмотреть в текст.</p>
-</div>
-<div class="hero-title" style="font-size: 20px; margin-bottom: 15px;">Впиши стих или выбери готовый:</div>
-<div style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-bottom: 15px;">
-<button onclick="loadPredefinedPoem('barto')" style="padding: 8px 15px; border-radius: 15px; border: 2px solid #a29bfe; background: #fff; color: #a29bfe; font-weight: bold; cursor: pointer; transition: 0.2s;">Бычок</button>
-<button onclick="loadPredefinedPoem('tanya')" style="padding: 8px 15px; border-radius: 15px; border: 2px solid #a29bfe; background: #fff; color: #a29bfe; font-weight: bold; cursor: pointer; transition: 0.2s;">Таня</button>
-<button onclick="loadPredefinedPoem('pushkin')" style="padding: 8px 15px; border-radius: 15px; border: 2px solid #a29bfe; background: #fff; color: #a29bfe; font-weight: bold; cursor: pointer; transition: 0.2s;">Дуб</button>
-</div>
-<textarea id="custom-poem-text" rows="7" style="width: 100%; box-sizing: border-box; padding: 15px; font-size: 16px; border: 2px solid #a29bfe; border-radius: 15px; box-shadow: inset 0 2px 5px rgba(0,0,0,0.05); resize: none; font-family: inherit; margin-bottom: 20px;" placeholder="Вставь свой текст сюда..."></textarea>
-<button onclick="startCustomPoemDrawing()" style="width: 100%; max-width: 300px; height: 50px; font-size: 20px; font-weight: bold; background: linear-gradient(135deg, #a29bfe 0%, #6c5ce7 100%); color: white; border: none; border-radius: 25px; cursor: pointer; box-shadow: 0 4px 15px rgba(108, 92, 231, 0.4);">Начать рисовать!</button>
-</div>
-</div>
-<div id="screen-poem-draw" class="screen" style="overflow-y: auto;">
-<div class="header" style="position: sticky; top: 0; z-index: 10;">
-<div class="header-title-row"><span id="room-title">Мольберт Гения</span></div>
-<div class="header-top"><div class="back-btn" onclick="goBackToMemorikaFromDraw()">Назад</div></div>
-</div>
-<div style="text-align: center; margin: 15px 20px;">
-<div id="draw-poem-text" style="font-size: 22px; font-weight: bold; color: #333; min-height: 60px; display: flex; align-items: center; justify-content: center;">Загрузка...</div>
-</div>
-<div style="display: flex; justify-content: center; margin-bottom: 15px;">
-<canvas id="drawing-canvas" width="300" height="300" style="background: #fff; border: 4px solid #d7ccc8; border-radius: 15px; box-shadow: inset 0 0 10px rgba(0,0,0,0.1); touch-action: none;"></canvas>
-</div>
-<div style="display: flex; justify-content: center; gap: 15px; margin-bottom: 30px;">
-<button onclick="clearCanvas()" style="padding: 10px 20px; font-size: 18px; font-weight: bold; border-radius: 20px; border: 2px solid #ff5252; background: #ffebee; color: #ff5252;">Удалить</button>
-<button onclick="nextDrawLine()" style="padding: 10px 30px; font-size: 18px; font-weight: bold; border-radius: 20px; border: none; background: #4CAF50; color: white; box-shadow: 0 4px 10px rgba(76, 175, 80, 0.4);">Готово!</button>
-</div>
-</div>
-<div id="screen-poem-result" class="screen" style="overflow-y: auto;">
-<div class="header" style="position: sticky; top: 0; z-index: 10;">
-<div class="header-title-row"><span id="room-title">Твоя шпаргалка!</span></div>
-<div class="header-top"><div class="back-btn" onclick="goBackToMemorikaFromDrawResult()">В меню</div></div>
-</div>
-<div class="hero-title" style="font-size: 20px; margin-bottom: 5px;">Глядя на рисунки, расскажи стих!</div>
-<div style="text-align: center; font-size: 14px; color: #777; margin-bottom: 15px;">(Нажми на рисунок, чтобы увеличить)</div>
-<div style="text-align: center; margin-bottom: 15px;">
-<button id="btn-toggle-poem" onclick="togglePoemText()" style="padding: 10px 20px; font-size: 16px; font-weight: bold; border-radius: 20px; border: 2px solid #9b59b6; background: #fff; color: #9b59b6; cursor: pointer; transition: 0.2s; box-shadow: 0 4px 10px rgba(155,89,182,0.1);">Подсмотреть текст</button>
-</div>
-<div id="draw-result-list" style="padding: 10px 20px; padding-bottom: 40px; display: flex; flex-direction: column; align-items: center;"></div>
-</div>
-<div id="screen-wardrobe-menu" class="screen" style="overflow-y: auto;">
-<div class="header" style="position: sticky; top: 0; z-index: 10;">
-<div class="header-title-row"><span id="room-title">Дворец Памяти</span></div>
-<div class="header-top"><div class="back-btn" onclick="goBackToMemorikaFromWardrobeMenu()">Назад</div></div>
-</div>
-<div class="hero-title">Выбери количество предметов:</div>
-<div class="menu-grid sub-grid">
-<div class="category-card sub-card" onclick="startWardrobeGame(5)">
-<div style="margin: 0 auto 5px auto; width: 45px; height: 45px;"><img src="img/icon_chain_5.png" alt="" style="width: 100%; height: 100%; object-fit: contain;"></div>
-<div class="category-title sub-title">Малыш</div><div class="category-subtitle">5 предметов</div>
-</div>
-<div class="category-card sub-card" onclick="startWardrobeGame(7)">
-<div style="margin: 0 auto 5px auto; width: 45px; height: 45px;"><img src="img/icon_chain_7.png" onerror="this.src='img/icon_chain.png'" alt="" style="width: 100%; height: 100%; object-fit: contain;"></div>
-<div class="category-title sub-title">Исследователь</div><div class="category-subtitle">7 предметов</div>
-</div>
-<div class="category-card sub-card" onclick="startWardrobeGame(10)">
-<div style="margin: 0 auto 5px auto; width: 45px; height: 45px;"><img src="img/icon_chain_10.png" alt="" style="width: 100%; height: 100%; object-fit: contain;"></div>
-<div class="category-title sub-title">Гений</div><div class="category-subtitle">10 предметов</div>
-</div>
-</div>
-</div>
-<div id="screen-wardrobe-game" class="screen" style="overflow-y: auto;">
-<div class="header" style="position: sticky; top: 0; z-index: 10;">
-<div class="header-title-row"><span id="room-title">Дворец Памяти</span></div>
-<div class="header-top"><div class="back-btn" onclick="goBackToWardrobeMenuFromGame()">Назад</div></div>
-</div>
-<div style="padding: 10px; text-align: center;">
-<div id="wardrobe-instruction" style="background: #e3f2fd; border: 2px solid #64b5f6; border-radius: 15px; padding: 10px; margin-bottom: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); font-size: 16px; color: #1565c0; font-weight: bold;">
-<b>Сфотографируй свою комнату!</b><br>
-<span style="font-size:14px; font-weight:normal; color:#444;">Потом выбирай вещи внизу и "лепи" их на фото слева направо.</span>
-</div>
-<input type="file" id="camera-input" accept="image/*" style="display:none;" onchange="loadRoomPhoto(event)">
-<button id="btn-camera" onclick="document.getElementById('camera-input').click()" style="width: 100%; max-width: 300px; height: 40px; font-size: 16px; font-weight: bold; background: #8e44ad; color: white; border: none; border-radius: 20px; cursor: pointer; box-shadow: 0 4px 10px rgba(142, 68, 173, 0.4); margin-bottom: 15px;">Сделать фото комнаты</button>
-<div id="room-photo-container" style="position: relative; width: 100%; max-width: 400px; height: 300px; margin: 0 auto 20px auto; background: #eee; border-radius: 15px; overflow: hidden; box-shadow: 0 8px 20px rgba(0,0,0,0.2); border: 3px dashed #ccc; display: flex; align-items: center; justify-content: center; cursor: pointer;" onclick="handleRoomPhotoClick(event)">
-<span id="room-photo-placeholder" style="color: #999; font-weight: bold;">Нажми кнопку выше, чтобы добавить фото!</span>
-<img id="room-photo-img" src="" style="position: absolute; top:0; left:0; width: 100%; height: 100%; object-fit: cover; pointer-events: none; display: none;">
-</div>
-<div id="wardrobe-items-pool" style="display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; min-height: 80px;"></div>
-<button id="btn-wardrobe-memorized" style="display: none; width: 100%; max-width: 300px; height: 50px; font-size: 20px; font-weight: bold; background: linear-gradient(135deg, #4CAF50 0%, #2E7D32 100%); color: white; border: none; border-radius: 25px; cursor: pointer; box-shadow: 0 4px 15px rgba(76, 175, 80, 0.4); margin: 20px auto 0 auto;" onclick="startWardrobeRecall()">Я запомнил!</button>
-<div id="wardrobe-recall-area" style="display: none; margin-top: 10px;">
-<div id="wardrobe-targets" style="display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin-bottom: 25px;"></div>
-<div id="wardrobe-distractors" style="display: flex; flex-wrap: wrap; justify-content: center; gap: 10px;"></div>
-</div>
-</div>
-</div>
-<div id="screen-brain-fitness-menu" class="screen" style="overflow-y: auto;">
-<div class="header" style="position: sticky; top: 0; z-index: 10;">
-<div class="header-title-row"><span id="room-title">Брейн-фитнес</span></div>
-<div class="header-top"><div class="back-btn" onclick="goMainFromBrainFitness()">Назад</div></div>
-</div>
-<div class="hero-title">Выбери тренажёр:</div>
-<div class="menu-grid sub-grid">
-<div class="category-card sub-card" onclick="startBrainConfusion()">
-<div style="margin: 0 auto 10px auto; width: 60px; height: 60px;"><img src="img/icon_confusion.png" onerror="this.src='img/icon_memo.png'" alt="" style="width: 100%; height: 100%; object-fit: contain;"></div>
-<div class="category-title sub-title">Путаница</div><div class="category-subtitle">Слушай и смотри</div>
-</div>
-<div class="category-card sub-card" onclick="openBrainRacing()">
-<div style="margin: 0 auto 10px auto; width: 60px; height: 60px;"><img src="img/icon_racing.png" onerror="this.src='img/icon_memo.png'" alt="" style="width: 100%; height: 100%; object-fit: contain;"></div>
-<div class="category-title sub-title">Нейро-гонки</div><div class="category-subtitle">Две руки сразу</div>
-</div>
-<div class="category-card sub-card" onclick="openBrainMirrorDraw()">
-<div style="margin: 0 auto 10px auto; width: 60px; height: 60px;"><img src="img/icon_mirror.png" onerror="this.src='img/icon_memo.png'" alt="" style="width: 100%; height: 100%; object-fit: contain;"></div>
-<div class="category-title sub-title">Зеркалки</div><div class="category-subtitle">Рисуй двумя руками</div>
-</div>
-<div class="category-card sub-card" onclick="openBrainPathfinder()">
-<div style="margin: 0 auto 10px auto; width: 60px; height: 60px;"><img src="img/icon_penguin.png" onerror="this.src='img/icon_memo.png'" alt="" style="width: 100%; height: 100%; object-fit: contain;"></div>
-<div class="category-title sub-title">Следопыт</div><div class="category-subtitle">Мысленный маршрут</div>
-</div>
-<div class="category-card sub-card" onclick="openBrainGestures()">
-<div style="margin: 0 auto 10px auto; width: 60px; height: 60px;"><img src="img/icon_gestures.png" onerror="this.src='img/icon_brain.png'" alt="" style="width: 100%; height: 100%; object-fit: contain;"></div>
-<div class="category-title sub-title">Нейро-жесты</div><div class="category-subtitle">Повторяй движения</div>
-</div>
-</div>
-</div>
-<div id="screen-brain-confusion" class="screen" style="overflow-y: auto;">
-<div class="header" style="position: sticky; top: 0; z-index: 10;">
-<div class="header-title-row"><span id="room-title">Путаница</span></div>
-<div class="header-top"><div class="back-btn" onclick="goBackToBrainFitnessFromConfusion()">Назад</div></div>
-</div>
-<div style="padding: 10px; text-align: center;">
-<div style="background: #e8f5e9; border: 2px solid #81c784; border-radius: 15px; padding: 10px; margin-bottom: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); font-size: 16px; color: #2e7d32; font-weight: bold;">Смотри на экран, слушай звуки и отвечай на вопрос Уточки! Не дай себя запутать!</div>
-<div style="width: 100%; max-width: 300px; height: 15px; background: #e0e0e0; border-radius: 10px; margin: 0 auto 20px auto; overflow: hidden; box-shadow: inset 0 2px 5px rgba(0,0,0,0.1);"><div id="confusion-timer-bar" style="width: 100%; height: 100%; background: #4CAF50; transition: width 0.05s linear, background-color 0.3s ease;"></div></div>
-<div style="display: flex; justify-content: center; margin-bottom: 20px;"><img id="confusion-main-img" src="" style="width: 150px; height: 150px; object-fit: contain; background: #fff; border-radius: 20px; box-shadow: 0 8px 20px rgba(0,0,0,0.1); border: 3px solid #eee;"></div>
-<div id="confusion-question-text" style="font-size: 20px; font-weight: bold; margin-bottom: 20px; color: #e91e63;">Слушай внимательно...</div>
-<div id="confusion-options" style="display: flex; justify-content: center; gap: 15px; flex-wrap: wrap;"></div>
-</div>
-</div>
-<div id="screen-brain-racing" class="screen" style="background: #333;">
-<div class="header" style="position: absolute; top: 0; z-index: 20; width: 100%; background: rgba(255,255,255,0.9); box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
-<div class="header-title-row"><span id="room-title">Нейро-гонки</span></div>
-<div class="header-top"><div class="back-btn" onclick="goBackToBrainFitnessFromRacing()">Назад</div></div>
-</div>
-<div id="racing-game-area" style="position: relative; width: 100%; height: 100vh; overflow: hidden; touch-action: none; background: #555;">
-<div style="position: absolute; left: 50%; top: 0; bottom: 0; width: 4px; background: #fff; transform: translateX(-50%); z-index: 1; box-shadow: 0 0 10px rgba(255,255,255,0.5);"></div>
-<div id="racing-left-zone" style="position: absolute; left: 0; top: 0; width: 50%; height: 100%; z-index: 10;" onpointerdown="toggleCarLane('left')"></div>
-<div id="racing-right-zone" style="position: absolute; left: 50%; top: 0; width: 50%; height: 100%; z-index: 10;" onpointerdown="toggleCarLane('right')"></div>
-<div id="racing-score-display" style="position: absolute; top: 90px; left: 50%; transform: translateX(-50%); z-index: 15; font-size: 36px; font-weight: 900; color: #fff; text-shadow: 0 4px 10px rgba(0,0,0,0.5);">0 км</div>
-<div id="racing-hint" style="position: absolute; top: 150px; width: 100%; text-align: center; z-index: 15; font-size: 18px; color: rgba(255,255,255,0.8); font-weight: bold; pointer-events: none;">Нажимай по бокам, чтобы рулить!</div>
-<img id="car-left" src="img/car_blue.png" onerror="this.src='img/bs_car_big.png'" style="position: absolute; width: 70px; height: auto; max-height: 120px; object-fit: contain; bottom: 10vh; left: 12.5%; transform: translateX(-50%); z-index: 5; transition: left 0.15s cubic-bezier(0.175, 0.885, 0.32, 1.275);">
-<img id="car-right" src="img/car_red.png" onerror="this.src='img/bs_car_big.png'" style="position: absolute; width: 70px; height: auto; max-height: 120px; object-fit: contain; bottom: 10vh; left: 62.5%; transform: translateX(-50%); z-index: 5; transition: left 0.15s cubic-bezier(0.175, 0.885, 0.32, 1.275);">
-<div id="racing-obstacles" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 4; pointer-events: none;"></div>
-</div>
-<div id="racing-game-over" style="display: none; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 30px; border-radius: 20px; text-align: center; z-index: 20; box-shadow: 0 10px 30px rgba(0,0,0,0.5); width: 80%; max-width: 300px;">
-<h2 style="color: #F44336; margin-top: 0; font-size: 28px;">БАМ!</h2>
-<p style="font-size: 18px; color: #555;">Ты проехал: <br><span id="racing-final-score" style="font-size: 42px; font-weight: 900; color: #333;">0 км</span></p>
-<button onclick="startRacingGame()" style="margin-top: 15px; width: 100%; padding: 15px; font-size: 20px; border-radius: 25px; border: none; background: linear-gradient(135deg, #4CAF50 0%, #2E7D32 100%); color: white; font-weight: bold; cursor: pointer; box-shadow: 0 4px 15px rgba(76, 175, 80, 0.4);">Ещё раз!</button>
-</div>
-</div>
-<div id="screen-brain-mirror-draw" class="screen" style="overflow-y: auto;">
-<div class="header" style="position: sticky; top: 0; z-index: 10;">
-<div class="header-title-row"><span>Зеркалки</span></div>
-<div class="header-top"><div class="back-btn" onclick="goBackToBrainFitnessFromMirror()">Назад</div></div>
-</div>
-<div style="padding: 10px; text-align: center;">
-<div style="background: #fff3e0; border: 2px solid #ffb74d; border-radius: 15px; padding: 10px; margin-bottom: 15px; font-size: 15px; color: #e65100; font-weight: bold; box-shadow: 0 4px 10px rgba(0,0,0,0.02);">Поставь пальчики на обе половинки экрана и веди их одновременно по контурам!</div>
-<div style="margin-bottom: 15px; display: flex; justify-content: center; align-items: center; gap: 20px;">
-<button onclick="changeMirrorLevel(-1)" style="padding: 8px 18px; font-size: 18px; font-weight: bold; border-radius: 12px; border: 1px solid #ccc; background: white; cursor: pointer;">◀</button>
-<span id="mirror-level-title" style="font-size: 18px; font-weight: bold; color: #333; min-width: 180px;">Уровень 1</span>
-<button onclick="changeMirrorLevel(1)" style="padding: 8px 18px; font-size: 18px; font-weight: bold; border-radius: 12px; border: 1px solid #ccc; background: white; cursor: pointer;">▶</button>
-</div>
-<div id="mirror-canvas-wrapper" style="position: relative; display: inline-block; white-space: nowrap; background: white; border: 4px solid #cfd8dc; border-radius: 15px; box-shadow: 0 8px 25px rgba(0,0,0,0.06); overflow: hidden; touch-action: none;">
-<canvas id="mirror-canvas-left" width="170" height="340" style="border-right: 2px dashed #b0bec5; display: inline-block; vertical-align: top; background: #faf8f5;"></canvas>
-<canvas id="mirror-canvas-right" width="170" height="340" style="display: inline-block; vertical-align: top; background: #faf8f5;"></canvas>
-</div>
-<div style="margin-top: 15px; display: flex; justify-content: center; gap: 20px;">
-<button onclick="clearMirrorCanvas()" style="padding: 12px 25px; font-size: 16px; font-weight: bold; border-radius: 20px; border: 2px solid #ff5252; background: #ffebee; color: #ff5252; cursor: pointer; box-shadow: 0 4px 10px rgba(255,82,82,0.15);">Очистить холст</button>
-</div>
-</div>
-</div>
-<div id="screen-brain-pathfinder" class="screen" style="background: #e0f7fa; overflow-y: auto;">
-<div class="header" style="position: sticky; top: 0; z-index: 10; background: rgba(255,255,255,0.9);">
-<div class="header-title-row"><span id="room-title">Следопыт</span></div>
-<div class="header-top"><div class="back-btn" onclick="goBackToBrainFitnessFromPathfinder()">Назад</div></div>
-</div>
-<div style="padding: 10px; text-align: center;">
-<div style="background: #fff; border: 2px solid #b0bec5; border-radius: 15px; padding: 15px; margin-bottom: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.05);">
-<div style="font-size: 18px; color: #222; font-weight: 900; margin-bottom: 8px;">Пройди мысленно весь путь!</div>
-<div style="font-size: 15px; color: #333; line-height: 1.5;">
-Смотри на стрелочки и <b>нажми только на ОДНУ льдинку</b> — ту, где Пингвин окажется в самом конце.
-<div style="margin-top: 8px;"><span style="display: inline-block; background: #ffe082; padding: 4px 10px; border-radius: 8px; color: #000; font-weight: bold;">Льдинки по пути нажимать не нужно!</span></div>
-</div>
-<audio id="pathfinder-instruction-audio" src="audio/instruction_pathfinder.wav"></audio>
-</div>
-<div style="min-height: 70px; margin-bottom: 15px; background: #fff; border-radius: 15px; display: flex; justify-content: center; align-items: center; gap: 5px; flex-wrap: wrap; padding: 10px; box-sizing: border-box; border: 1px solid #eee;">
-<div id="pathfinder-commands" style="display: flex; gap: 8px; justify-content: center; align-items: center; flex-wrap: wrap;"></div>
-</div>
-<div id="pathfinder-grid" style="display: grid; grid-template-columns: repeat(5, 60px); grid-gap: 5px; justify-content: center; margin: 0 auto; position: relative; width: 320px; height: 320px;">
-<img id="pathfinder-penguin" src="img/penguin.png" onerror="this.src='img/bs_bunny.png'" style="position: absolute; width: 40px; height: 40px; object-fit: contain; z-index: 5; transition: all 0.3s ease; pointer-events: none; left: 140px; top: 140px;">
-</div>
-<div style="margin-top: 15px; font-size: 16px; color: #00838f; font-weight: bold;">Уровень сложности: <span id="pathfinder-level-display" style="font-size: 20px; color: #00BCD4;">3 шага</span></div>
-<button id="btn-pathfinder-start" onclick="startPathfinderGame()" style="margin-top: 15px; width: 100%; max-width: 250px; padding: 15px; font-size: 18px; border-radius: 25px; border: none; background: linear-gradient(135deg, #00BCD4 0%, #00acc1 100%); color: white; font-weight: bold; cursor: pointer; box-shadow: 0 4px 15px rgba(0, 188, 212, 0.4);">Начать!</button>
-</div>
-</div>
-<div id="screen-brain-gestures" class="screen" style="background: #f5f5f5; overflow-y: auto;">
-<div class="header" style="position: sticky; top: 0; z-index: 10; background: rgba(255,255,255,0.95);">
-<div class="header-title-row"><span>Нейро-жесты</span></div>
-<div class="header-top"><div class="back-btn" onclick="goBackToBrainFitnessFromGestures()">Назад</div></div>
-</div>
-<div style="padding: 10px; text-align: center;">
-<div style="background: #fff; border: 2px solid #b0bec5; border-radius: 15px; padding: 15px; margin-bottom: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.05);">
-<div style="font-size: 18px; color: #222; font-weight: 900; margin-bottom: 6px;">Повторяй жесты двумя руками!</div>
-<div style="font-size: 14px; color: #555;">Успевай менять знаки на руках до того, как сгорит таймер!</div>
-</div>
-<div style="width: 100%; max-width: 300px; height: 12px; background: #e0e0e0; border-radius: 10px; margin: 0 auto 15px auto; overflow: hidden; box-shadow: inset 0 2px 5px rgba(0,0,0,0.05);"><div id="gestures-timer-bar" style="width: 100%; height: 100%; background: #4CAF50; transition: width 0.05s linear;"></div></div>
-<div style="display: flex; justify-content: center; gap: 15px; margin: 0 auto 20px auto; max-width: 360px;">
-<div id="gesture-card-left" style="flex: 1; background: white; border: 4px solid #2196F3; border-radius: 20px; padding: 15px; box-shadow: 0 6px 15px rgba(0,0,0,0.05); transition: transform 0.1s ease;">
-<div style="font-size: 14px; font-weight: bold; color: #2196F3; margin-bottom: 8px;">ЛЕВАЯ РУКА</div>
-<div style="width: 100%; height: 110px; display: flex; align-items: center; justify-content: center;"><img id="gesture-img-left" src="img/g_fist.png" style="max-width: 100%; max-height: 100%; object-fit: contain; transform: scaleX(-1);"></div>
-<div id="gesture-name-left" style="font-size: 18px; font-weight: 900; color: #333; margin-top: 8px;">Кулак</div>
-</div>
-<div id="gesture-card-right" style="flex: 1; background: white; border: 4px solid #E91E63; border-radius: 20px; padding: 15px; box-shadow: 0 6px 15px rgba(0,0,0,0.05); transition: transform 0.1s ease;">
-<div style="font-size: 14px; font-weight: bold; color: #E91E63; margin-bottom: 8px;">ПРАВАЯ РУКА</div>
-<div style="width: 100%; height: 110px; display: flex; align-items: center; justify-content: center;"><img id="gesture-img-right" src="img/g_palm.png" style="max-width: 100%; max-height: 100%; object-fit: contain;"></div>
-<div id="gesture-name-right" style="font-size: 18px; font-weight: 900; color: #333; margin-top: 8px;">Ладонь</div>
-</div>
-</div>
-<div style="margin-bottom: 20px; display: flex; justify-content: center; align-items: center; gap: 15px; background: white; padding: 10px 20px; border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.02); max-width: 280px; margin-left: auto; margin-right: auto;">
-<button onclick="changeGesturesSpeed(-1)" style="padding: 8px 15px; font-size: 18px; font-weight: bold; border-radius: 10px; border: 1px solid #ccc; background: white; cursor: pointer;">◀</button>
-<div style="flex: 1;"><div style="font-size: 12px; color: #777; font-weight: bold;">СКОРОСТЬ</div><span id="gestures-speed-title" style="font-size: 16px; font-weight: bold; color: #333;">Обычная</span></div>
-<button onclick="changeGesturesSpeed(1)" style="padding: 8px 15px; font-size: 18px; font-weight: bold; border-radius: 10px; border: 1px solid #ccc; background: white; cursor: pointer;">▶</button>
-</div>
-<button id="btn-gestures-start" onclick="startGesturesGame()" style="width: 100%; max-width: 250px; padding: 15px; font-size: 20px; border-radius: 25px; border: none; background: linear-gradient(135deg, #4CAF50 0%, #2E7D32 100%); color: white; font-weight: bold; cursor: pointer; box-shadow: 0 4px 15px rgba(76, 175, 80, 0.4);">Старт!</button>
-</div>
-</div>
-<div id="screen-chinese-main-menu" class="screen" style="background: var(--bg-color);">
-<div class="header" style="position: sticky; top: 0; z-index: 10;">
-<div class="header-title-row"><span id="room-title">Китайский язык</span></div>
-<div class="header-top"><div class="back-btn" onclick="goMainFromChinese()">Назад</div></div>
-</div>
-<div class="hero-title">Выберите режим:</div>
-<div class="menu-grid">
-<div class="category-card" onclick="openChineseWordsMenu()">
-<div style="margin: 0 auto 15px auto; width: 80px; height: 80px;"><img src="img/icon_words.png" alt="" style="width: 100%; height: 100%; object-fit: contain;"></div>
-<div class="category-title">Слова</div><div class="category-subtitle">Учим базовые иероглифы</div>
-</div>
-<div class="category-card" onclick="openChinesePhrasesMenu()">
-<div style="margin: 0 auto 15px auto; width: 80px; height: 80px;"><img src="img/icon_memo.png" alt="" style="width: 100%; height: 100%; object-fit: contain;"></div>
-<div class="category-title">Фразы</div><div class="category-subtitle">Слушаем и говорим</div>
-</div>
-<div class="category-card" onclick="alert('Скоро появится!')">
-<div style="margin: 0 auto 15px auto; width: 80px; height: 80px;"><img src="img/icon_magicwand.png" alt="" style="width: 100%; height: 100%; object-fit: contain;"></div>
-<div class="category-title">Лайфхаки</div><div class="category-subtitle">Магия ассоциаций</div>
-</div>
-<div class="category-card" onclick="alert('Скоро появится!')">
-<div style="margin: 0 auto 15px auto; width: 80px; height: 80px;"><img src="img/icon_poem.png" alt="" style="width: 100%; height: 100%; object-fit: contain;"></div>
-<div class="category-title">Рисуем иероглифы</div><div class="category-subtitle">Каллиграфия по шагам</div>
-</div>
-</div>
-</div>
-<div id="screen-chinese-words-menu" class="screen" style="overflow-y: auto; background: var(--bg-color);">
-<div class="header" style="position: sticky; top: 0; z-index: 10;">
-<div class="header-title-row"><span id="room-title">Слова</span></div>
-<div class="header-top"><div class="back-btn" onclick="goBackToChineseMain('screen-chinese-words-menu')">Назад</div></div>
-</div>
-<div class="menu-grid soroban-sub-grid-split">
-<div class="sub-column">
-<div class="sub-title-header">Базовые</div>
-<div class="category-card sub-card" style="background-color: #ffebee; border-color: #ffcdd2;" onclick="openChineseCategory('family')"><div class="category-title sub-title">Семья</div></div>
-<div class="category-card sub-card" style="background-color: #e3f2fd; border-color: #bbdefb;" onclick="openChineseCategory('body')"><div class="category-title sub-title">Моё тело</div></div>
-</div>
-<div class="sub-column">
-<div class="sub-title-header">Окружение</div>
-<div class="category-card sub-card" style="background-color: #e8f5e9; border-color: #c8e6c9;" onclick="openChineseCategory('food')"><div class="category-title sub-title">Вкусняшки</div></div>
-<div class="category-card sub-card" style="background-color: #fff3e0; border-color: #ffe0b2;" onclick="openChineseCategory('animals')"><div class="category-title sub-title">Зверята</div></div>
-<div class="category-card sub-card" style="background-color: #f3e5f5; border-color: #e1bee7;" onclick="openChineseCategory('transport')"><div class="category-title sub-title">Транспорт</div></div>
-</div>
-<div style="grid-column: 1 / -1; margin-top: 20px; padding: 0 10px;">
-    <button onclick="startChineseQuiz('last')" style="width: 100%; padding: 15px; background: linear-gradient(135deg, #FF9800 0%, #F57C00 100%); color: white; border: none; border-radius: 20px; font-size: 18px; font-weight: bold; box-shadow: 0 4px 15px rgba(255,152,0,0.3); cursor: pointer;">Проверка знаний (Викторина)</button>
-</div>
-</div>
-</div>
-<div id="screen-chinese-phrases-menu" class="screen" style="overflow-y: auto; background: var(--bg-color);">
-<div class="header" style="position: sticky; top: 0; z-index: 10;">
-<div class="header-title-row"><span id="room-title">Фразы</span></div>
-<div class="header-top"><div class="back-btn" onclick="goBackToChineseMain('screen-chinese-phrases-menu')">Назад</div></div>
-</div>
-<div class="menu-grid soroban-sub-grid-split">
-<div class="sub-column">
-<div class="sub-title-header">Общение</div>
-<div class="category-card sub-card" style="background-color: #fffde7; border-color: #fff59d;" onclick="openChineseCategory('ph_manners')"><div class="category-title sub-title">Этикет</div></div>
-<div class="category-card sub-card" style="background-color: #ffebee; border-color: #ffcdd2;" onclick="openChineseCategory('ph_needs')"><div class="category-title sub-title">Потребности</div></div>
-<div class="category-card sub-card" style="background-color: #e0f7fa; border-color: #b2ebf2;" onclick="openChineseCategory('ph_play')"><div class="category-title sub-title">Игры</div></div>
-</div>
-<div class="sub-column">
-<div class="sub-title-header">В городе</div>
-<div class="category-card sub-card" style="background-color: #e8f5e9; border-color: #c8e6c9;" onclick="openChineseCategory('ph_shop')"><div class="category-title sub-title">В магазине</div></div>
-<div class="category-card sub-card" style="background-color: #ede7f6; border-color: #d1c4e9;" onclick="openChineseCategory('ph_way')"><div class="category-title sub-title">Поиск пути</div></div>
-</div>
-<div style="grid-column: 1 / -1; margin-top: 20px; padding: 0 10px;">
-    <button onclick="startChineseQuiz('last')" style="width: 100%; padding: 15px; background: linear-gradient(135deg, #FF9800 0%, #F57C00 100%); color: white; border: none; border-radius: 20px; font-size: 18px; font-weight: bold; box-shadow: 0 4px 15px rgba(255,152,0,0.3); cursor: pointer;">Проверка знаний (Викторина)</button>
-</div>
-</div>
-</div>
-<div id="screen-chinese-cards" class="screen" style="overflow-y: auto; background: #fafafa;">
-<div class="header" style="position: sticky; top: 0; z-index: 10; background: rgba(255,255,255,0.95);">
-<div class="header-title-row"><span>Китайские карточки</span></div>
-<div class="header-top"><div class="back-btn" onclick="goBackToChineseMenuFromCards()">Назад</div></div>
-</div>
-<div style="padding: 15px; text-align: center;">
-<div style="background: #fff; border: 2px solid #ffcc80; border-radius: 15px; padding: 10px; margin-bottom: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); font-size: 15px; color: #e65100; font-weight: bold;">
-Нажми на карточку, чтобы перевернуть её и узнать иероглиф!
-</div>
-<div id="chinese-card" class="flip-card-container" onclick="flipChineseCard()">
-<div class="flip-card-inner">
-<div class="flip-card-front">
-<img id="ch-card-img" src="" alt="Картинка" onerror="this.src='img/icon_memo.png'">
-<button class="audio-btn-overlay" onclick="event.stopPropagation(); playCurrentCardAudio('ru')">
-<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path></svg>
-</button>
-</div>
-<div class="flip-card-back">
-<div id="ch-card-char" class="chinese-character"></div>
-<div id="ch-card-pinyin" class="chinese-pinyin"></div>
-<div id="ch-card-ru" class="chinese-translation"></div>
-<button class="audio-btn-overlay back-side" onclick="event.stopPropagation(); playCurrentCardAudio('ch')">
-<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path></svg>
-</button>
-</div>
-</div>
-</div>
-<div style="display: flex; justify-content: center; gap: 40px; margin-top: 30px;">
-<button id="btn-ch-prev" onclick="changeChineseCard(-1)" class="nav-btn-clean">◀</button>
-<button id="btn-ch-next" onclick="changeChineseCard(1)" class="nav-btn-clean primary">▶</button>
-</div>
-</div>
-</div>
-<!-- ЭКРАН ВИКТОРИНЫ -->
-<div id="screen-chinese-quiz" class="screen" style="overflow-y: auto; background: var(--bg-color);">
-    <div class="header" style="position: sticky; top: 0; z-index: 10;">
-        <div class="header-title-row"><span id="room-title">Проверка знаний</span></div>
-        <div class="header-top"><div class="back-btn" onclick="goBackToChineseMain('screen-chinese-quiz')">Назад</div></div>
+
+    <div id="image-lightbox">
+        <div class="lightbox-scroll-area">
+            <img id="lightbox-img" src="">
+        </div>
+        <div class="lightbox-close-btn" onclick="closeLightbox()">✖ Закрыть</div>
     </div>
     
-    <div style="padding: 20px; text-align: center;">
-        <div style="font-size: 16px; color: #777; margin-bottom: 10px;">Вопрос <span id="quiz-progress">1/5</span></div>
+    <div id="screen-menu" class="screen active" style="overflow-y: auto;">
+        <div class="header">
+            <div class="header-title-row">
+                <div onclick="openAboutModal()" style="position: absolute; left: 15px; top: 50%; transform: translateY(-50%); width: 32px; height: 32px; background: #E2E8F0; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #64748B; font-weight: bold; cursor: pointer; box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);">?</div>
+                <span style="font-size: 26px; font-weight: 800; color: var(--accent-color);">Нейро-Гений</span>
+            </div>
+        </div>
+        <div class="hero-title">Интерактивное обучение:</div>
         
-        <div id="quiz-question-area" style="background: white; border-radius: 20px; padding: 20px; margin-bottom: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); min-height: 180px; display: flex; align-items: center; justify-content: center; flex-direction: column;">
-            <img id="quiz-img" src="" style="max-width: 150px; max-height: 150px; object-fit: contain; margin-bottom: 10px; border-radius: 15px;">
-            <button id="quiz-audio-btn" onclick="playQuizAudio()" style="background: #FF9800; color: white; border: none; width: 60px; height: 60px; border-radius: 50%; font-size: 24px; cursor: pointer; display: none; box-shadow: 0 4px 10px rgba(255,152,0,0.3); align-items: center; justify-content: center;">
-                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path></svg>
-            </button>
+        <!-- Наша нарядная двухколоночная структура главного меню -->
+        <div class="main-menu-container">
+            
+            <!-- ====== ЛЕВАЯ КОЛОНКА: 3 БЕСПЛАТНЫХ КУРСА ====== -->
+            <div class="menu-column-left">
+                
+                <!-- 1. Слоги -->
+                <div class="menu-card" onclick="openWordsMenu()">
+                    <img src="img/icon_words.png" alt="Слоги" class="card-icon">
+                    <div class="category-title">Слоги</div>
+                    <div class="category-subtitle">Составь слово</div>
+                </div>
+
+                <!-- 2. Меморика -->
+                <div class="menu-card locked-card" onclick="checkAccessAndOpen('memorika')">
+<div class="vip-lock-badge">🔒 VIP</div>
+                    <img src="img/icon_memo.png" alt="Меморика" class="card-icon">
+                    <div class="category-title">Меморика</div>
+                    <div class="category-subtitle">Развитие супер-памяти</div>
+                </div>
+
+                <!-- 3. Нейрогимнастика -->
+                <div class="menu-card locked-card" onclick="checkAccessAndOpen('brain')">
+<div class="vip-lock-badge">🔒 VIP</div>
+                    <img src="img/icon_brain.png" onerror="this.src='img/icon_memo.png'" alt="Нейрогимнастика" class="card-icon">
+                    <div class="category-title">Нейрогимнастика</div>
+                    <div class="category-subtitle">Развитие когнитивных навыков</div>
+                </div>
+
+            </div>
+
+            <!-- ====== ПРАВАЯ КОЛОНКА: 2 ПЛАТНЫХ VIP КУРСА ====== -->
+            <div class="menu-column-right">
+                
+                <!-- 4. Ментальная арифметика -->
+                <div class="menu-card locked-card" onclick="checkAccessAndOpen('soroban')">
+                    <div class="vip-lock-badge">🔒 VIP</div>
+                    <img src="img/icon_soroban.png" alt="Ментальная арифметика" class="card-icon">
+                    <div class="category-title">Ментальная арифметика</div>
+                    <div class="category-subtitle">Счёты Соробан</div>
+                </div>
+
+                <!-- 5. Китайский язык -->
+                <div class="menu-card locked-card" onclick="openChineseMenu()">
+                    <div class="vip-lock-badge">🔒 VIP</div>
+                    <img src="img/ch_icon_main.png" onerror="this.src='img/icon_memo.png'" alt="Китайский язык" class="card-icon">
+                    <div class="category-title">Китайский язык</div>
+                    <div class="category-subtitle">Пошаговое обучение</div>
+                </div>
+
+            </div>
+
         </div>
 
-        <div id="quiz-options" style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;"></div>
-        
-        <div id="quiz-feedback" style="margin-top: 20px; font-size: 20px; font-weight: bold; min-height: 30px;"></div>
+        <div class="legal-footer">
+            © 2026 Нейро-Гений<br>
+            Самозанятая Селяхова Наталья Викторовна<br>
+            ИНН: 502204523550 | <a href="https://vk.com/club78549529" target="_blank">Служба заботы (ВК)</a>
+        </div>
+    </div> 
+
+    <div id="screen-words-menu" class="screen" style="overflow-y: auto;">
+        <div class="header" style="position: sticky; top: 0; z-index: 10;">
+            <div class="header-title-row"><span id="room-title">Слоги</span></div>
+            <div class="header-top"><div class="back-btn" onclick="goMainFromWordsMenu()">⬅ В главное меню</div></div>
+        </div>
+        <div class="hero-title">Выбери уровень:</div>
+        <div class="menu-grid sub-grid">
+            <div class="category-card sub-card" onclick="openRoom('words_2', 'Слоги: 2 кусочка')">
+                <div class="category-icon-placeholder"><img src="img/icon_syl_2.png" alt=""></div>
+                <div class="category-title sub-title">2 слога</div>
+                <div class="category-subtitle">Простые слова</div>
+            </div>
+            <div class="category-card sub-card" onclick="openRoom('words_3', 'Слоги: 3 кусочка')">
+                <div class="category-icon-placeholder"><img src="img/icon_syl_3.png" alt=""></div>
+                <div class="category-title sub-title">3 слога</div>
+                <div class="category-subtitle">Средний уровень</div>
+            </div>
+            <div class="category-card sub-card" onclick="openRoom('words_4', 'Слоги: 4 кусочка')">
+                <div class="category-icon-placeholder"><img src="img/icon_syl_4.png" alt=""></div>
+                <div class="category-title sub-title">4 слога</div>
+                <div class="category-subtitle">Сложные слова</div>
+            </div>
+        </div>
     </div>
-</div>
-<div id="vip-modal" class="vip-modal-overlay">
-<div class="vip-modal-box">
-<div style="position: absolute; top: 10px; right: 15px; font-size: 24px; color: #999; cursor: pointer;" onclick="document.getElementById('vip-modal').style.display='none'">✖</div>
-<img src="img/icon_brain.png" style="width: 80px; margin-bottom: 10px;">
-<h2 style="margin: 0 0 10px 0; color: #333; font-size: 22px;">Доступ закрыт</h2>
-<p style="color: #666; font-size: 14px; margin-bottom: 20px;">Открой все тренажеры «Нейро-Гения»! Развивай память, внимание и пространственное мышление на максимум.</p>
-<button class="vip-btn-free" onclick="getFreeVip()">Получить 24 часа БЕСПЛАТНО</button>
-<button class="vip-btn-buy" id="btn-buy-premium" onclick="buyPremium()">Купить подписку (150 ₽/мес)</button>
-<div id="mobile-payment-msg" style="display: none; font-size: 12px; color: #777; margin-top: 12px; line-height: 1.4;">
-Оформление подписки доступно только с компьютера или в веб-версии ВК. Если у вас есть вопросы, напишите <a href="https://vk.com/club78549529" target="_blank" style="color: #2196F3; font-weight: bold; text-decoration: none;">администратору</a>.
-</div>
-</div>
-</div>
-<script src="script.js?v=8889"></script>
+
+    <div id="screen-memorika-menu" class="screen" style="overflow-y: auto;">
+        <div class="header" style="position: sticky; top: 0; z-index: 10;">
+            <div class="header-title-row"><span id="room-title">Меморика</span></div>
+            <div class="header-top"><div class="back-btn" onclick="goMainFromMemorika()">⬅ В главное меню</div></div>
+        </div>
+        <div class="hero-title">Выберите технику:</div>
+        <div class="menu-grid sub-grid">
+            <div class="category-card sub-card" onclick="openWardrobeMenu()">
+                <div class="category-icon-placeholder"><img src="img/icon_wardrobe.png" alt=""></div>
+                <div class="category-title sub-title">Дворец Памяти</div><div class="category-subtitle">Метод Локи</div>
+            </div>
+            <div class="category-card sub-card" onclick="openChainMenu()">
+                <div class="category-icon-placeholder"><img src="img/icon_chain.png" alt=""></div>
+                <div class="category-title sub-title">Цепочка по рассказу</div><div class="category-subtitle">Связывание образов</div>
+            </div>
+            <div class="category-card sub-card" onclick="openPoemInput()">
+                <div class="category-icon-placeholder"><img src="img/icon_poem.png" alt=""></div>
+                <div class="category-title sub-title">Стихи и рисование</div><div class="category-subtitle">Рисуем и запоминаем</div>
+            </div>
+            <div class="category-card sub-card" onclick="openMultiplicationMenu()">
+                <div class="category-icon-placeholder"><img src="img/icon_magicwand.png" alt=""></div>
+                <div class="category-title sub-title">Лайфхаки умножения</div><div class="category-subtitle">Учим таблицу весело</div>
+            </div>
+        </div>
+    </div>
+
+    <div id="screen-chain-menu" class="screen" style="overflow-y: auto;">
+        <div class="header" style="position: sticky; top: 0; z-index: 10;">
+            <div class="header-title-row"><span id="room-title">Цепочка</span></div>
+            <div class="header-top"><div class="back-btn" onclick="goBackToMemorikaFromChain()">⬅ Назад</div></div>
+        </div>
+        <div class="hero-title">Тренировка памяти</div>
+        <div class="menu-grid sub-grid">
+            <div class="category-card sub-card" style="background: #fff3e0; border-color: #c8e6c9;" onclick="startChainLearning()">
+                <div class="category-icon-placeholder"><img src="img/icon_chain_learn.png" alt=""></div>
+                <div class="category-title sub-title">Обучение (10 слов)</div><div class="category-subtitle">Как придумывать историю</div>
+            </div>
+            <div class="sub-title-header" style="grid-column: 1 / -1; margin-top: 15px;">Выбери сложность:</div>
+            <div class="category-card sub-card" onclick="startChainTraining(5)">
+                <div class="category-icon-placeholder"><img src="img/icon_chain_5.png" alt=""></div>
+                <div class="category-title sub-title">Новичок</div><div class="category-subtitle">5 предметов</div>
+            </div>
+            <div class="category-card sub-card" onclick="startChainTraining(10)">
+                <div class="category-icon-placeholder"><img src="img/icon_chain_10.png" alt=""></div>
+                <div class="category-title sub-title">Ученик</div><div class="category-subtitle">10 предметов</div>
+            </div>
+            <div class="category-card sub-card" onclick="startChainTraining(15)">
+                <div class="category-icon-placeholder"><img src="img/icon_chain_15.png" alt=""></div>
+                <div class="category-title sub-title">Мастер</div><div class="category-subtitle">15 предметов</div>
+            </div>
+            <div class="category-card sub-card" onclick="startChainTraining(20)">
+                <div class="category-icon-placeholder"><img src="img/icon_chain_20.png" alt=""></div>
+                <div class="category-title sub-title">Ниндзя</div><div class="category-subtitle">20 предметов</div>
+            </div>
+        </div>
+    </div>
+
+    <div id="screen-multiplication-menu" class="screen" style="overflow-y: auto;">
+        <div class="header" style="position: sticky; top: 0; z-index: 10;">
+            <div class="header-title-row"><span id="room-title">Лайфхаки</span></div>
+            <div class="header-top"><div class="back-btn" onclick="goBackToMemorikaFromMult()">⬅ Назад</div></div>
+        </div>
+        <div class="hero-title">Выбери фокус:</div>
+        <div class="menu-grid sub-grid">
+            <div class="category-card sub-card" onclick="openMagic9()">
+                <div class="category-icon-placeholder"><img src="img/icon_hack_9.png" alt=""></div>
+                <div class="category-title sub-title">Магия на 9</div><div class="category-subtitle">Считаем на пальцах</div>
+            </div>
+            <div class="category-card sub-card" onclick="openPoems()">
+                <div class="category-icon-placeholder"><img src="img/icon_hack_poem.png" alt=""></div>
+                <div class="category-title sub-title">Стихи-ассоциации</div><div class="category-subtitle">Трудные примеры</div>
+            </div>
+            <div class="category-card sub-card" onclick="openMagic5()">
+                <div class="category-icon-placeholder"><img src="img/icon_hack_5.png" alt=""></div>
+                <div class="category-title sub-title">Магия на 5</div><div class="category-subtitle">Секрет с половинкой</div>
+            </div>
+            <div class="category-card sub-card" onclick="openMultTest()" style="background: #e8f5e9; border-color: #c8e6c9;">
+                <div class="category-icon-placeholder"><img src="img/icon_soroban_play.png" alt=""></div>
+                <div class="category-title sub-title">Проверка знаний</div><div class="category-subtitle">Решай примеры</div>
+            </div>
+        </div>
+    </div>
+
+    <div id="screen-magic-9" class="screen" style="overflow-y: auto;">
+        <div class="header" style="position: sticky; top: 0; z-index: 10;">
+            <div class="header-title-row"><span id="room-title">Лайфхаки</span></div>
+            <div class="header-top"><div class="back-btn" onclick="goBackToMultFromMagic9()">⬅ Назад</div></div>
+        </div>
+        <div class="hero-title">Магия умножения на 9!</div>
+        <div style="text-align: center; font-size: 16px; color: #444; margin: 15px 20px; background: #e3f2fd; padding: 15px; border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.05);">
+            <b>Секретное правило:</b><br> Листай стрелочками и загибай пальчики.<br> Всё, что <b>слева</b> — это <b>десятки</b>.<br> Всё, что <b>справа</b> — это <b>единицы</b>!
+        </div>
+        <div class="hands-container" style="position: relative; width: 90%; max-width: 400px; margin: 0 auto; margin-top: 15px;">
+            <img id="hands-image" src="img/hands_0.jpg" style="width: 100%; border-radius: 20px; display: block; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+        </div>
+        <div class="nav-arrows-container" style="margin-top: 20px;">
+            <div id="btn-prev-magic" class="nav-arrow-btn" onclick="changeMagicFinger(-1)">◀</div>
+            <div id="btn-next-magic" class="nav-arrow-btn" onclick="changeMagicFinger(1)">▶</div>
+        </div>
+        <div id="magic-9-result" style="text-align: center; margin-top: 15px; font-size: 24px; font-weight: bold; color: var(--accent-color);">Выбери палец стрелочками ☝️</div>
+    </div>
+
+    <div id="screen-poems" class="screen" style="overflow-y: auto;">
+        <div class="header" style="position: sticky; top: 0; z-index: 10;">
+            <div class="header-title-row"><span id="room-title">Стихи-ассоциации</span></div>
+            <div class="header-top"><div class="back-btn" onclick="goBackToMultFromPoems()">⬅ Назад</div></div>
+        </div>
+        <div class="hero-title">Запоминаем трудные примеры!</div>
+        <div class="poem-card" style="text-align: center; margin: 15px auto; width: 90%; max-width: 350px; background: #fff; border-radius: 20px; box-shadow: 0 8px 20px rgba(0,0,0,0.08); padding: 20px; box-sizing: border-box; border: 2px solid #e3f2fd;">
+            <div id="poem-math" style="font-size: 42px; font-weight: 900; color: #333; margin-bottom: 15px;">6 × 8 = <span style="color:#E91E63">48</span></div>
+            <img id="poem-img" src="img/poem_48.jpg" style="width: 100%; border-radius: 15px; margin-bottom: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
+            <div id="poem-text" style="font-size: 18px; color: #444; font-weight: bold; line-height: 1.4; background: #fff9c4; padding: 10px; border-radius: 10px;">
+                Шесть на восемь — сорок восемь,<br>Мы бегемота кушать просим!
+            </div>
+        </div>
+        <div class="nav-arrows-container" style="margin-top: 15px; justify-content: center; gap: 60px; padding-bottom: 30px;">
+            <div id="btn-prev-poem" class="nav-arrow-btn" onclick="changePoem(-1)">◀</div>
+            <div id="btn-next-poem" class="nav-arrow-btn" onclick="changePoem(1)">▶</div>
+        </div>
+    </div>
+
+    <div id="screen-magic-5" class="screen" style="overflow-y: auto;">
+        <div class="header" style="position: sticky; top: 0; z-index: 10;">
+            <div class="header-title-row"><span>Магия на 5</span></div>
+            <div class="header-top"><div class="back-btn" onclick="goBackToMultFromMagic5()">⬅ Назад</div></div>
+        </div>
+        <div class="hero-title">Магия умножения на 5</div>
+        <div class="poem-card" style="text-align: center; margin: 15px auto; width: 90%; max-width: 350px; background: #fff; border-radius: 20px; box-shadow: 0 8px 20px rgba(0,0,0,0.08); padding: 20px; box-sizing: border-box; border: 2px solid #e3f2fd;">
+            <div id="magic5-math" style="font-size: 42px; font-weight: 900; color: #333; margin-bottom: 15px;"></div>
+            <img id="magic5-img" src="" style="width: 100%; border-radius: 15px; margin-bottom: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
+            <div id="magic5-text" style="font-size: 18px; color: #444; font-weight: bold; line-height: 1.4; background: #fff9c4; padding: 10px; border-radius: 10px;"></div>
+        </div>
+        <div class="nav-arrows-container" style="margin-top: 15px; justify-content: center; gap: 60px; padding-bottom: 30px;">
+            <div id="btn-prev-magic5" class="nav-arrow-btn" onclick="changeMagic5(-1)">◀</div>
+            <div id="btn-next-magic5" class="nav-arrow-btn" onclick="changeMagic5(1)">▶</div>
+        </div>
+    </div>
+
+    <div id="screen-mult-test" class="screen" style="overflow-y: auto;">
+        <div class="header" style="position: sticky; top: 0; z-index: 10;">
+            <div class="header-title-row"><span id="room-title">Тренажёр умножения</span></div>
+            <div class="header-top"><div class="back-btn" onclick="goBackToMultFromTest()">⬅ Назад</div></div>
+        </div>
+        <div style="padding: 20px; text-align: center;">
+            <div style="font-size: 20px; font-weight: bold; color: #555; margin-bottom: 10px;">Твой счёт: <span id="mult-test-score" style="color: #4CAF50; font-size: 24px;">0 / 0</span></div>
+            <div id="mult-test-question" style="font-size: 60px; font-weight: 900; margin: 30px 0; color: #333; text-shadow: 2px 2px 5px rgba(0,0,0,0.1);">7 × 8 = ?</div>
+            <div id="mult-test-options" style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; max-width: 300px; margin: 0 auto;"></div>
+        </div>
+    </div>
+
+    <div id="screen-soroban-menu" class="screen">
+        <div class="header" style="position: sticky; top: 0; z-index: 10;">
+            <div class="header-title-row"><span id="room-title">Ментальная арифметика</span></div>
+            <div class="header-top"><div class="back-btn" onclick="goMainFromSubmenu()">⬅ В главное меню</div></div>
+        </div>
+        <div class="hero-title">Выберите режим:</div>
+        <div class="menu-grid">
+            <div class="category-card" onclick="startSoroban('free', 'free', 'Свободный режим')">
+                <div class="category-icon-placeholder"><img src="img/icon_soroban_free.png" alt=""></div>
+                <div class="category-title">Свободный режим</div><div class="category-subtitle">Изучайте косточки без заданий</div>
+            </div>
+            <div class="category-card" onclick="openSorobanLearnMenu()">
+                <div class="category-icon-placeholder"><img src="img/icon_soroban_learn.png" alt=""></div>
+                <div class="category-title">Обучение</div><div class="category-subtitle">Правила и разряды</div>
+            </div>
+            <div class="category-card" onclick="openSorobanPlayMenu()">
+                <div class="category-icon-placeholder"><img src="img/icon_soroban_play.png" alt=""></div>
+                <div class="category-title">Тренировка</div><div class="category-subtitle">Решение примеров</div>
+            </div>
+        </div>
+    </div>
+
+    <div id="screen-soroban-learn-menu" class="screen" style="overflow-y: auto;">
+        <div class="header" style="position: sticky; top: 0; z-index: 10;">
+            <div class="header-title-row"><span id="room-title">Обучение</span></div>
+            <div class="header-top"><div class="back-btn" onclick="goBackToSorobanMenuFromLearn()">⬅ Назад</div></div>
+        </div>
+        <div class="menu-grid soroban-sub-grid-split">
+            <div class="sub-column">
+                <div class="sub-title-header">Разряды</div>
+                <div class="category-card sub-card" style="background-color: #ffebee; border-color: #ffcdd2;" onclick="startSoroban('learn', 'learn_units', 'Единицы')"><div class="category-title sub-title">Единицы</div></div>
+                <div class="category-card sub-card" style="background-color: #e3f2fd; border-color: #bbdefb;" onclick="startSoroban('learn', 'learn_tens', 'Десятки')"><div class="category-title sub-title">Десятки</div></div>
+                <div class="category-card sub-card" style="background-color: #e8f5e9; border-color: #c8e6c9;" onclick="startSoroban('learn', 'learn_hundreds', 'Сотни')"><div class="category-title sub-title">Сотни</div></div>
+                <div class="sub-title-header" style="margin-top: 15px;">Друзья</div>
+                <div class="category-card sub-card" style="background-color: #f3e5f5; border-color: #e1bee7;" onclick="startSoroban('learn', 'learn_friends', 'Друзья 10')"><div class="category-title sub-title">Друзья 10</div></div>
+                <div class="category-card sub-card" style="background-color: #fff3e0; border-color: #ffe0b2; margin-top: 10px;" onclick="startSoroban('learn', 'learn_friends_5', 'Братцы Пять')"><div class="category-title sub-title">Братцы 5</div></div>
+            </div>
+            <div class="sub-column">
+                <div class="sub-title-header">Действия</div>
+                <div class="category-card sub-card" style="background-color: #e0f2f1; border-color: #b2dfdb;" onclick="startSoroban('learn', 'learn_add', 'Сложение')"><div class="category-title sub-title">Сложение</div></div>
+                <div class="category-card sub-card" style="background-color: #e0f7fa; border-color: #b2ebf2;" onclick="startSoroban('learn', 'learn_sub', 'Вычитание')"><div class="category-title sub-title">Вычитание</div></div>
+                <div class="category-card sub-card" style="background-color: #fffde7; border-color: #fff59d;" onclick="startSoroban('learn', 'learn_mult', 'Умножение')"><div class="category-title sub-title">Умножение</div></div>
+                <div class="category-card sub-card" style="background-color: #ede7f6; border-color: #d1c4e9;" onclick="startSoroban('learn', 'learn_div', 'Деление')"><div class="category-title sub-title">Деление</div></div>
+            </div>
+        </div>
+    </div>
+
+    <div id="screen-soroban-play-menu" class="screen" style="overflow-y: auto;">
+        <div class="header" style="position: sticky; top: 0; z-index: 10;">
+            <div class="header-title-row"><span id="room-title">Тренировка</span></div>
+            <div class="header-top"><div class="back-btn" onclick="goBackToSorobanMenuFromPlay()">⬅ Назад</div></div>
+        </div>
+        <div class="menu-grid sub-grid" style="margin-top: 15px;">
+            <div class="category-card sub-card" style="background-color: #e3f2fd; border-color: #bbdefb;" onclick="startSoroban('play', 'play_numbers', 'Тренировка: Набери число')"><div class="category-title sub-title">Набери число</div></div>
+            <div class="category-card sub-card" style="background-color: #e8f5e9; border-color: #c8e6c9;" onclick="startSoroban('play', 'play_simple', 'Тренировка: Прямой счёт')"><div class="category-title sub-title">Прямой счёт (+ и -)</div></div>
+            <div class="category-card sub-card" style="background-color: #fff3e0; border-color: #ffe0b2;" onclick="startSoroban('play', 'play_friends_5', 'Тренировка: Орден Пяти')"><div class="category-title sub-title">Орден Пяти</div></div>
+            <div class="category-card sub-card" style="background-color: #f3e5f5; border-color: #e1bee7;" onclick="startSoroban('play', 'play_friends_10', 'Тренировка: Друзья 10')"><div class="category-title sub-title">Академия Десяти</div></div>
+            <div class="category-card sub-card" style="background-color: #fffde7; border-color: #fff59d;" onclick="startSoroban('play', 'play_mult', 'Тренировка: Умножение')"><div class="category-title sub-title">Умножение</div></div>
+            <div class="category-card sub-card" style="background-color: #ede7f6; border-color: #d1c4e9;" onclick="startSoroban('play', 'play_div', 'Тренировка: Деление')"><div class="category-title sub-title">Деление</div></div>
+        </div>
+    </div>
+
+    <div id="screen-room" class="screen">
+        <div class="header">
+            <div class="header-title-row"><span id="game-room-title">Комната</span></div>
+            <div class="header-top"><div class="back-btn" id="btn-back-to-menu">⬅ Назад</div></div>
+        </div>
+        <div class="room-content-area">
+            <div id="game-area" class="game-container">
+                <div id="word-image-container">
+                    <img id="word-3d-image" src="" alt="">
+                    <div class="nav-arrows-container" style="position: absolute; top: 110px; gap: 150px;">
+                        <div id="btn-prev-word" class="nav-arrow-btn" onclick="changeWord(-1)">◀</div>
+                        <div id="btn-next-word" class="nav-arrow-btn" onclick="changeWord(1)">▶</div>
+                    </div>
+                </div>
+                <div class="target-column" id="target-zone"></div>
+                <div class="drag-column" id="drag-zone"></div>
+                <div id="soroban-controls" style="display:none; width:100%; flex-direction:column; align-items:center;">
+                    <div id="soroban-task-container" style="display:none;">
+                        <div id="soroban-task-text">Загрузка задания...</div>
+                        <div id="scroll-btn" style="display:none; margin-top: 10px; cursor: pointer; color: #FF9800; font-weight: bold; font-size: 18px;" onclick="openLightbox('img/scroll_table.jpg')">📜 Посмотреть Свиток Сэнсэя</div>
+                        <div id="soroban-hint-container" style="display:none; flex-direction:column; align-items:center;">
+                            <img id="soroban-hint-card" src="" alt="Подсказка" onclick="openLightbox(this.src)">
+                            <div class="hint-label">Нажмите для увеличения</div>
+                        </div>
+                        <div class="nav-arrows-container" id="soroban-nav-arrows">
+                            <div id="btn-prev-soroban" class="nav-arrow-btn" onclick="changeSorobanTask(-1)">◀</div>
+                            <div id="btn-next-soroban" class="nav-arrow-btn" onclick="changeSorobanTask(1)">▶</div>
+                        </div>
+                    </div>
+                </div>
+                <div id="soroban-score" style="display:none;">0</div>
+            </div>
+        </div>
+    </div>
+
+    <div id="comic-slider-modal" class="comic-modal">
+        <div class="comic-slider-box">
+            <img id="comic-slider-img" src="" alt="Обучающий комикс">
+            <div class="comic-slider-nav">
+                <div id="btn-comic-prev" class="comic-nav-btn" onclick="moveSlide(-1)">◀</div>
+                <div id="comic-slider-dots"></div>
+                <div id="btn-comic-next" class="comic-nav-btn" onclick="moveSlide(1)">▶</div>
+            </div>
+            <button id="btn-comic-start" onclick="closeComicSlider()">В бой! 🥷</button>
+        </div>
+    </div>
+
+    <div id="screen-chain-game" class="screen" style="overflow-y: auto;">
+        <div class="header" style="position: sticky; top: 0; z-index: 10;">
+            <div class="header-title-row"><span id="chain-game-title">Магия Истории</span></div>
+            <div class="header-top"><div class="back-btn" onclick="goBackToChainMenu()">⬅ Назад</div></div>
+        </div>
+        <div id="chain-stage-container" style="padding: 20px; text-align: center;">
+            <div id="chain-message" style="font-size: 20px; font-weight: bold; margin-bottom: 20px; color: #333;">Запомни предметы!</div>
+            <div id="chain-visual-area" style="min-height: 300px; display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; background: #fff; border-radius: 20px; padding: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.05);"></div>
+            <div id="chain-controls" style="margin-top: 30px;">
+                <button id="btn-chain-next" class="comic-nav-btn" style="display:none; margin: 0 auto; width: 200px; height: 50px; font-size: 20px;" onclick="nextChainStage()">Дальше ➔</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="screen-poem-input" class="screen" style="overflow-y: auto;">
+        <div class="header" style="position: sticky; top: 0; z-index: 10;">
+            <div class="header-title-row"><span id="room-title">Учим любой стих!</span></div>
+            <div class="header-top"><div class="back-btn" onclick="goBackToMemorikaFromPoemInput()">⬅ Назад</div></div>
+        </div>
+        <div style="padding: 15px; text-align: center;">
+            <div style="background: #fff9c4; border: 2px solid #fbc02d; border-radius: 15px; padding: 15px; margin-bottom: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); text-align: left;">
+                <h3 style="margin-top: 0; margin-bottom: 10px; color: #f57f17; text-align: center;">Секрет супер-памяти 💡</h3>
+                <p style="margin: 0 0 10px 0; font-size: 15px; color: #333; line-height: 1.4;">Чтобы быстро выучить стихотворение, мы превратим его в <b>пиктограммы</b> — твои собственные рисунки-ассоциации!</p>
+                <p style="margin: 0 0 10px 0; font-size: 15px; color: #333; line-height: 1.4;">Например, для строчки <i>«У лукоморья дуб зелёный»</i> нарисуй просто лук 🧅 и дерево 🌳. Не старайся рисовать красиво, подойдут самые простые каракули!</p>
+                <p style="margin: 0; font-size: 15px; color: #333; line-height: 1.4;">В конце игры ты посмотришь на свои рисунки и легко расскажешь весь стих! А если забудешь — всегда можно нажать кнопочку и подсмотреть в text. 👀</p>
+            </div>
+            <div class="hero-title" style="font-size: 20px; margin-bottom: 15px;">Впиши стих или выбери готовый:</div>
+            <div style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-bottom: 15px;">
+                <button onclick="loadPredefinedPoem('barto')" style="padding: 8px 15px; border-radius: 15px; border: 2px solid #a29bfe; background: #fff; color: #a29bfe; font-weight: bold; cursor: pointer; transition: 0.2s;">Бычок 🐂</button>
+                <button onclick="loadPredefinedPoem('tanya')" style="padding: 8px 15px; border-radius: 15px; border: 2px solid #a29bfe; background: #fff; color: #a29bfe; font-weight: bold; cursor: pointer; transition: 0.2s;">Таня 👧</button>
+                <button onclick="loadPredefinedPoem('pushkin')" style="padding: 8px 15px; border-radius: 15px; border: 2px solid #a29bfe; background: #fff; color: #a29bfe; font-weight: bold; cursor: pointer; transition: 0.2s;">Дуб 🌳</button>
+            </div>
+            <textarea id="custom-poem-text" rows="7" style="width: 100%; box-sizing: border-box; padding: 15px; font-size: 16px; border: 2px solid #a29bfe; border-radius: 15px; box-shadow: inset 0 2px 5px rgba(0,0,0,0.05); resize: none; font-family: inherit; margin-bottom: 20px;" placeholder="Вставь свой текст сюда..."></textarea>
+            <button onclick="startCustomPoemDrawing()" style="width: 100%; max-width: 300px; height: 50px; font-size: 20px; font-weight: bold; background: linear-gradient(135deg, #a29bfe 0%, #6c5ce7 100%); color: white; border: none; border-radius: 25px; cursor: pointer; box-shadow: 0 4px 15px rgba(108, 92, 231, 0.4);">🖌 Начать рисовать!</button>
+        </div>
+    </div>
+
+    <div id="screen-poem-draw" class="screen" style="overflow-y: auto;">
+        <div class="header" style="position: sticky; top: 0; z-index: 10;">
+            <div class="header-title-row"><span id="room-title">Мольберт Гения</span></div>
+            <div class="header-top"><div class="back-btn" onclick="goBackToMemorikaFromDraw()">⬅ Назад</div></div>
+        </div>
+        <div style="text-align: center; margin: 15px 20px;">
+            <div id="draw-poem-text" style="font-size: 22px; font-weight: bold; color: #333; min-height: 60px; display: flex; align-items: center; justify-content: center;">Загрузка...</div>
+        </div>
+        <div style="display: flex; justify-content: center; margin-bottom: 15px;">
+            <canvas id="drawing-canvas" width="300" height="300" style="background: #fff; border: 4px solid #d7ccc8; border-radius: 15px; box-shadow: inset 0 0 10px rgba(0,0,0,0.1); touch-action: none;"></canvas>
+        </div>
+        <div style="display: flex; justify-content: center; gap: 15px; margin-bottom: 30px;">
+            <button onclick="clearCanvas()" style="padding: 10px 20px; font-size: 18px; font-weight: bold; border-radius: 20px; border: 2px solid #ff5252; background: #ffebee; color: #ff5252;">Удалить 🗑️</button>
+            <button onclick="nextDrawLine()" style="padding: 10px 30px; font-size: 18px; font-weight: bold; border-radius: 20px; border: none; background: #4CAF50; color: white; box-shadow: 0 4px 10px rgba(76, 175, 80, 0.4);">Готово! ➔</button>
+        </div>
+    </div>
+
+    <div id="screen-poem-result" class="screen" style="overflow-y: auto;">
+        <div class="header" style="position: sticky; top: 0; z-index: 10;">
+            <div class="header-title-row"><span id="room-title">Твоя шпаргалка!</span></div>
+            <div class="header-top"><div class="back-btn" onclick="goBackToMemorikaFromDrawResult()">⬅ В меню</div></div>
+        </div>
+        <div class="hero-title" style="font-size: 20px; margin-bottom: 5px;">Глядя на рисунки, расскажи стих!</div>
+        <div style="text-align: center; font-size: 14px; color: #777; margin-bottom: 15px;">(Нажми на рисунок, чтобы увеличить)</div>
+        <div style="text-align: center; margin-bottom: 15px;">
+            <button id="btn-toggle-poem" onclick="togglePoemText()" style="padding: 10px 20px; font-size: 16px; font-weight: bold; border-radius: 20px; border: 2px solid #9b59b6; background: #fff; color: #9b59b6; cursor: pointer; transition: 0.2s; box-shadow: 0 4px 10px rgba(155,89,182,0.1);">👀 Подсмотреть текст</button>
+        </div>
+        <div id="draw-result-list" style="padding: 10px 20px; padding-bottom: 40px; display: flex; flex-direction: column; align-items: center;"></div>
+    </div>
+
+    <div id="screen-wardrobe-menu" class="screen" style="overflow-y: auto;">
+        <div class="header" style="position: sticky; top: 0; z-index: 10;">
+            <div class="header-title-row"><span id="room-title">Дворец Памяти</span></div>
+            <div class="header-top"><div class="back-btn" onclick="goBackToMemorikaFromWardrobeMenu()">⬅ Назад</div></div>
+        </div>
+        <div class="hero-title">Выбери количество предметов:</div>
+        <div class="menu-grid">
+            <div class="category-card sub-card" onclick="startWardrobeGame(5)">
+                <div class="category-icon-placeholder"><img src="img/icon_chain_5.png" alt=""></div>
+                <div class="category-title sub-title">Малыш</div><div class="category-subtitle">5 предметов</div>
+            </div>
+            <div class="category-card sub-card" onclick="startWardrobeGame(7)">
+                <div class="category-icon-placeholder"><img src="img/icon_chain_7.png" onerror="this.src='img/icon_chain.png'" alt=""></div>
+                <div class="category-title sub-title">Исследователь</div><div class="category-subtitle">7 предметов</div>
+            </div>
+            <div class="category-card sub-card" onclick="startWardrobeGame(10)">
+                <div class="category-icon-placeholder"><img src="img/icon_chain_10.png" alt=""></div>
+                <div class="category-title sub-title">Гений</div><div class="category-subtitle">10 предметов</div>
+            </div>
+        </div>
+    </div>
+
+    <div id="screen-wardrobe-game" class="screen" style="overflow-y: auto;">
+        <div class="header" style="position: sticky; top: 0; z-index: 10;">
+            <div class="header-title-row"><span id="room-title">Дворец Памяти</span></div>
+            <div class="header-top"><div class="back-btn" onclick="goBackToWardrobeMenuFromGame()">⬅ Назад</div></div>
+        </div>
+        <div style="padding: 10px; text-align: center;">
+            <div id="wardrobe-instruction" style="background: #e3f2fd; border: 2px solid #64b5f6; border-radius: 15px; padding: 10px; margin-bottom: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); font-size: 16px; color: #1565c0; font-weight: bold;">
+                <b>📸 Сфотографируй свою комнату!</b><br>
+                <span style="font-size:14px; font-weight:normal; color:#444;">Потом выбирай вещи внизу и "лепи" их на фото слева направо.</span>
+            </div>
+            <input type="file" id="camera-input" accept="image/*" style="display:none;" onchange="loadRoomPhoto(event)">
+            <button id="btn-camera" onclick="document.getElementById('camera-input').click()" style="width: 100%; max-width: 300px; height: 40px; font-size: 16px; font-weight: bold; background: #8e44ad; color: white; border: none; border-radius: 20px; cursor: pointer; box-shadow: 0 4px 10px rgba(142, 68, 173, 0.4); margin-bottom: 15px;">📸 Сделать фото комнаты</button>
+            <div id="room-photo-container" style="position: relative; width: 100%; max-width: 400px; height: 300px; margin: 0 auto 20px auto; background: #eee; border-radius: 15px; overflow: hidden; box-shadow: 0 8px 20px rgba(0,0,0,0.2); border: 3px dashed #ccc; display: flex; align-items: center; justify-content: center; cursor: pointer;" onclick="handleRoomPhotoClick(event)">
+                <span id="room-photo-placeholder" style="color: #999; font-weight: bold;">Нажми кнопку выше, чтобы добавить фото!</span>
+                <img id="room-photo-img" src="" style="position: absolute; top:0; left:0; width: 100%; height: 100%; object-fit: cover; pointer-events: none; display: none;">
+            </div>
+            <div id="wardrobe-items-pool" style="display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; min-height: 80px;"></div>
+            <button id="btn-wardrobe-memorized" style="display: none; width: 100%; max-width: 300px; height: 50px; font-size: 20px; font-weight: bold; background: linear-gradient(135deg, #4CAF50 0%, #2E7D32 100%); color: white; border: none; border-radius: 25px; cursor: pointer; box-shadow: 0 4px 15px rgba(76, 175, 80, 0.4); margin: 20px auto 0 auto;" onclick="startWardrobeRecall()">Я запомнил! ✨</button>
+            <div id="wardrobe-recall-area" style="display: none; margin-top: 10px;">
+                <div id="wardrobe-targets" style="display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin-bottom: 25px;"></div>
+                <div id="wardrobe-distractors" style="display: flex; flex-wrap: wrap; justify-content: center; gap: 10px;"></div>
+            </div>
+        </div>
+    </div>
+
+    <div id="screen-brain-fitness-menu" class="screen" style="overflow-y: auto;">
+        <div class="header" style="position: sticky; top: 0; z-index: 10;">
+            <div class="header-title-row"><span id="room-title">Брейн-фитнес</span></div>
+            <div class="header-top"><div class="back-btn" onclick="goMainFromBrainFitness()">⬅ В главное меню</div></div>
+        </div>
+        <div class="hero-title">Выбери тренажёр:</div>
+        <div class="menu-grid">
+            <div class="category-card sub-card" onclick="startBrainConfusion()">
+                <div class="category-icon-placeholder"><img src="img/icon_confusion.png" onerror="this.src='img/icon_memo.png'" alt=""></div>
+                <div class="category-title sub-title">Путаница</div><div class="category-subtitle">Слушай и смотри</div>
+            </div>
+            <div class="category-card sub-card" onclick="openBrainRacing()">
+                <div class="category-icon-placeholder"><img src="img/icon_racing.png" onerror="this.src='img/icon_memo.png'" alt=""></div>
+                <div class="category-title sub-title">Нейро-гонки</div><div class="category-subtitle">Две руки сразу</div>
+            </div>
+            <div class="category-card sub-card" onclick="openBrainMirrorDraw()">
+                <div class="category-icon-placeholder"><img src="img/icon_mirror.png" onerror="this.src='img/icon_memo.png'" alt=""></div>
+                <div class="category-title sub-title">Зеркалки</div><div class="category-subtitle">Рисуй двумя руками</div>
+            </div>
+            <div class="category-card sub-card" onclick="openBrainPathfinder()">
+                <div class="category-icon-placeholder"><img src="img/icon_penguin.png" onerror="this.src='img/icon_memo.png'" alt=""></div>
+                <div class="category-title sub-title">Следопыт</div><div class="category-subtitle">Мысленный маршрут</div>
+            </div>
+            <div class="category-card sub-card" onclick="openBrainGestures()">
+                <div class="category-icon-placeholder"><img src="img/icon_gestures.png" onerror="this.src='img/icon_brain.png'" alt=""></div>
+                <div class="category-title sub-title">Нейро-жесты</div><div class="category-subtitle">Повторяй движения</div>
+            </div>
+        </div>
+    </div>
+
+    <div id="screen-brain-confusion" class="screen" style="overflow-y: auto;">
+        <div class="header" style="position: sticky; top: 0; z-index: 10;">
+            <div class="header-title-row"><span id="room-title">Путаница</span></div>
+            <div class="back-btn" onclick="goBackToBrainFitnessFromConfusion()">⬅ Назад</div>
+        </div>
+        <div style="padding: 10px; text-align: center;">
+            <div style="background: #e8f5e9; border: 2px solid #81c784; border-radius: 15px; padding: 10px; margin-bottom: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); font-size: 16px; color: #2e7d32; font-weight: bold;">Смотри на экран, слушай звуки и отвечай на вопрос Уточки! Не дай себя запутать! 🦆</div>
+            <div style="width: 100%; max-width: 300px; height: 15px; background: #e0e0e0; border-radius: 10px; margin: 0 auto 20px auto; overflow: hidden; box-shadow: inset 0 2px 5px rgba(0,0,0,0.1);"><div id="confusion-timer-bar" style="width: 100%; height: 100%; background: #4CAF50; transition: width 0.05s linear, background-color 0.3s ease;"></div></div>
+            <div style="display: flex; justify-content: center; margin-bottom: 20px;"><img id="confusion-main-img" src="" style="width: 150px; height: 150px; object-fit: contain; background: #fff; border-radius: 20px; box-shadow: 0 8px 20px rgba(0,0,0,0.1); border: 3px solid #eee;"></div>
+            <div id="confusion-question-text" style="font-size: 20px; font-weight: bold; margin-bottom: 20px; color: #e91e63;">Слушай внимательно...</div>
+            <div id="confusion-options" style="display: flex; justify-content: center; gap: 15px; flex-wrap: wrap;"></div>
+        </div>
+    </div>
+
+    <div id="screen-brain-racing" class="screen" style="background: #333;">
+        <div class="header" style="position: absolute; top: 0; z-index: 20; width: 100%; background: rgba(255,255,255,0.9); box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
+            <div class="header-title-row"><span id="room-title">Нейро-гонки</span></div>
+            <div class="header-top"><div class="back-btn" onclick="goBackToBrainFitnessFromRacing()">⬅ Назад</div></div>
+        </div>
+        <div id="racing-game-area" style="position: relative; width: 100%; height: 100vh; overflow: hidden; touch-action: none; background: #555;">
+            <div style="position: absolute; left: 50%; top: 0; bottom: 0; width: 4px; background: #fff; transform: translateX(-50%); z-index: 1; box-shadow: 0 0 10px rgba(255,255,255,0.5);"></div>
+            <div id="racing-left-zone" style="position: absolute; left: 0; top: 0; width: 50%; height: 100%; z-index: 10;" onpointerdown="toggleCarLane('left')"></div>
+            <div id="racing-right-zone" style="position: absolute; left: 50%; top: 0; width: 50%; height: 100%; z-index: 10;" onpointerdown="toggleCarLane('right')"></div>
+            <div id="racing-score-display" style="position: absolute; top: 90px; left: 50%; transform: translateX(-50%); z-index: 15; font-size: 36px; font-weight: 900; color: #fff; text-shadow: 0 4px 10px rgba(0,0,0,0.5);">0 км</div>
+            <div id="racing-hint" style="position: absolute; top: 150px; width: 100%; text-align: center; z-index: 15; font-size: 18px; color: rgba(255,255,255,0.8); font-weight: bold; pointer-events: none;">Нажимай по бокам, чтобы рулить! 👇</div>
+            <img id="car-left" src="img/car_blue.png" onerror="this.src='img/bs_car_big.png'" style="position: absolute; width: 70px; height: auto; max-height: 120px; object-fit: contain; bottom: 10vh; left: 12.5%; transform: translateX(-50%); z-index: 5; transition: left 0.15s cubic-bezier(0.175, 0.885, 0.32, 1.275);">
+            <img id="car-right" src="img/car_red.png" onerror="this.src='img/bs_car_big.png'" style="position: absolute; width: 70px; height: auto; max-height: 120px; object-fit: contain; bottom: 10vh; left: 62.5%; transform: translateX(-50%); z-index: 5; transition: left 0.15s cubic-bezier(0.175, 0.885, 0.32, 1.275);">
+            <div id="racing-obstacles" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 4; pointer-events: none;"></div>
+        </div>
+        <div id="racing-game-over" style="display: none; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 30px; border-radius: 20px; text-align: center; z-index: 20; box-shadow: 0 10px 30px rgba(0,0,0,0.5); width: 80%; max-width: 300px;">
+            <h2 style="color: #F44336; margin-top: 0; font-size: 28px;">БАМ! 💥</h2>
+            <p style="font-size: 18px; color: #555;">Ты проехал: <br><span id="racing-final-score" style="font-size: 42px; font-weight: 900; color: #333;">0 км</span></p>
+            <button onclick="startRacingGame()" style="margin-top: 15px; width: 100%; padding: 15px; font-size: 20px; border-radius: 25px; border: none; background: linear-gradient(135deg, #4CAF50 0%, #2E7D32 100%); color: white; font-weight: bold; cursor: pointer; box-shadow: 0 4px 15px rgba(76, 175, 80, 0.4);">Ещё раз! 🔄</button>
+        </div>
+    </div>
+
+    <div id="screen-brain-mirror-draw" class="screen" style="overflow-y: auto;">
+        <div class="header" style="position: sticky; top: 0; z-index: 10;">
+            <div class="header-title-row"><span>Зеркалки</span></div>
+            <div class="header-top"><div class="back-btn" onclick="goBackToBrainFitnessFromMirror()">⬅ Назад</div></div>
+        </div>
+        <div style="padding: 10px; text-align: center;">
+            <div style="background: #fff3e0; border: 2px solid #ffb74d; border-radius: 15px; padding: 10px; margin-bottom: 15px; font-size: 15px; color: #e65100; font-weight: bold; box-shadow: 0 4px 10px rgba(0,0,0,0.02);">Поставь пальчики на обе половинки экрана и веди их одновременно по контурам! 🦋</div>
+            <div style="margin-bottom: 15px; display: flex; justify-content: center; align-items: center; gap: 20px;">
+                <button onclick="changeMirrorLevel(-1)" style="padding: 8px 18px; font-size: 18px; font-weight: bold; border-radius: 12px; border: 1px solid #ccc; background: white; cursor: pointer;">◀</button>
+                <span id="mirror-level-title" style="font-size: 18px; font-weight: bold; color: #333; min-width: 180px;">Уровень 1</span>
+                <button onclick="changeMirrorLevel(1)" style="padding: 8px 18px; font-size: 18px; font-weight: bold; border-radius: 12px; border: 1px solid #ccc; background: white; cursor: pointer;">▶</button>
+            </div>
+            <div id="mirror-canvas-wrapper" style="position: relative; display: inline-block; white-space: nowrap; background: white; border: 4px solid #cfd8dc; border-radius: 15px; box-shadow: 0 8px 25px rgba(0,0,0,0.06); overflow: hidden; touch-action: none;">
+                <canvas id="mirror-canvas-left" width="170" height="340" style="border-right: 2px dashed #b0bec5; display: inline-block; vertical-align: top; background: #faf8f5;"></canvas>
+                <canvas id="mirror-canvas-right" width="170" height="340" style="display: inline-block; vertical-align: top; background: #faf8f5;"></canvas>
+            </div>
+            <div style="margin-top: 15px; display: flex; justify-content: center; gap: 20px;">
+                <button onclick="clearMirrorCanvas()" style="padding: 12px 25px; font-size: 16px; font-weight: bold; border-radius: 20px; border: 2px solid #ff5252; background: #ffebee; color: #ff5252; cursor: pointer; box-shadow: 0 4px 10px rgba(255,82,82,0.15);">Очистить холст 🗑️</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="screen-brain-pathfinder" class="screen" style="background: #e0f7fa; overflow-y: auto;">
+        <div class="header" style="position: sticky; top: 0; z-index: 10; background: rgba(255,255,255,0.95);">
+            <div class="header-title-row"><span id="room-title">Следопыт</span></div>
+            <div class="header-top"><div class="back-btn" onclick="goBackToBrainFitnessFromPathfinder()">⬅ Назад</div></div>
+        </div>
+        <div style="padding: 10px; text-align: center;">
+            <div style="background: #fff; border: 2px solid #b0bec5; border-radius: 15px; padding: 15px; margin-bottom: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.05);">
+                <div style="font-size: 18px; color: #222; font-weight: 900; margin-bottom: 8px;">Пройди мысленно весь путь! 🐧</div>
+                <div style="font-size: 15px; color: #333; line-height: 1.5;">
+                    Смотри на стрелочки и <b>нажми только на ОДНУ льдинку</b> — ту, где Пингвин окажется в самом конце.
+                    <div style="margin-top: 8px;"><span style="display: inline-block; background: #ffe082; padding: 4px 10px; border-radius: 8px; color: #000; font-weight: bold;">Льдинки по пути нажимать не нужно! ❄️</span></div>
+                </div>
+                <audio id="pathfinder-instruction-audio" src="audio/instruction_pathfinder.wav"></audio>
+            </div>
+            <div style="min-height: 70px; margin-bottom: 15px; background: #fff; border-radius: 15px; display: flex; justify-content: center; align-items: center; gap: 5px; flex-wrap: wrap; padding: 10px; box-sizing: border-box; border: 1px solid #eee;">
+                <div id="pathfinder-commands" style="display: flex; gap: 8px; justify-content: center; align-items: center; flex-wrap: wrap;"></div>
+            </div>
+            <div id="pathfinder-grid" style="display: grid; grid-template-columns: repeat(5, 60px); grid-gap: 5px; justify-content: center; margin: 0 auto; position: relative; width: 320px; height: 320px;">
+                <img id="pathfinder-penguin" src="img/penguin.png" onerror="this.src='img/bs_bunny.png'" style="position: absolute; width: 40px; height: 40px; object-fit: contain; z-index: 5; transition: all 0.3s ease; pointer-events: none; left: 140px; top: 140px;">
+            </div>
+            <div style="margin-top: 15px; font-size: 16px; color: #00838f; font-weight: bold;">Уровень сложности: <span id="pathfinder-level-display" style="font-size: 20px; color: #00BCD4;">3 шага</span></div>
+            <button id="btn-pathfinder-start" onclick="startPathfinderGame()" style="margin-top: 15px; width: 100%; max-width: 250px; padding: 15px; font-size: 18px; border-radius: 25px; border: none; background: linear-gradient(135deg, #00BCD4 0%, #00acc1 100%); color: white; font-weight: bold; cursor: pointer; box-shadow: 0 4px 15px rgba(0, 188, 212, 0.4);">Начать! ▶️</button>
+        </div>
+    </div>
+
+    <div id="screen-brain-gestures" class="screen" style="background: #f5f5f5; overflow-y: auto;">
+        <div class="header" style="position: sticky; top: 0; z-index: 10; background: rgba(255,255,255,0.95);">
+            <div class="header-title-row"><span>Нейро-жесты</span></div>
+            <div class="header-top"><div class="back-btn" onclick="goBackToBrainFitnessFromGestures()">⬅ Назад</div></div>
+        </div>
+        <div style="padding: 10px; text-align: center;">
+            <div style="background: #fff; border: 2px solid #b0bec5; border-radius: 15px; padding: 15px; margin-bottom: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.05);">
+                <div style="font-size: 18px; color: #222; font-weight: 900; margin-bottom: 6px;">Повторяй жесты двумя руками! 👐</div>
+                <div style="font-size: 14px; color: #555;">Успевай менять знаки на руках до того, как сгорит таймер!</div>
+            </div>
+            <div style="width: 100%; max-width: 300px; height: 12px; background: #e0e0e0; border-radius: 10px; margin: 0 auto 15px auto; overflow: hidden; box-shadow: inset 0 2px 5px rgba(0,0,0,0.05);"><div id="gestures-timer-bar" style="width: 100%; height: 100%; background: #4CAF50; transition: width 0.05s linear;"></div></div>
+            <div style="display: flex; justify-content: center; gap: 15px; margin: 0 auto 20px auto; max-width: 360px;">
+                <div id="gesture-card-left" style="flex: 1; background: white; border: 4px solid #2196F3; border-radius: 20px; padding: 15px; box-shadow: 0 6px 15px rgba(0,0,0,0.05); transition: transform 0.1s ease;">
+                    <div style="font-size: 14px; font-weight: bold; color: #2196F3; margin-bottom: 8px;">ЛЕВАЯ РУКА</div>
+                    <div style="width: 100%; height: 110px; display: flex; align-items: center; justify-content: center;"><img id="gesture-img-left" src="img/g_fist.png" style="max-width: 100%; max-height: 100%; object-fit: contain; transform: scaleX(-1);"></div>
+                    <div id="gesture-name-left" style="font-size: 18px; font-weight: 900; color: #333; margin-top: 8px;">Кулак</div>
+                </div>
+                <div id="gesture-card-right" style="flex: 1; background: white; border: 4px solid #E91E63; border-radius: 20px; padding: 15px; box-shadow: 0 6px 15px rgba(0,0,0,0.05); transition: transform 0.1s ease;">
+                    <div style="font-size: 14px; font-weight: bold; color: #E91E63; margin-bottom: 8px;">ПРАВАЯ РУКА</div>
+                    <div style="width: 100%; height: 110px; display: flex; align-items: center; justify-content: center;"><img id="gesture-img-right" src="img/g_palm.png" style="max-width: 100%; max-height: 100%; object-fit: contain;"></div>
+                    <div id="gesture-name-right" style="font-size: 18px; font-weight: 900; color: #333; margin-top: 8px;">Ладонь</div>
+                </div>
+            </div>
+            <div style="margin-bottom: 20px; display: flex; justify-content: center; align-items: center; gap: 15px; background: white; padding: 10px 20px; border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.02); max-width: 280px; margin-left: auto; margin-right: auto;">
+                <button onclick="changeGesturesSpeed(-1)" style="padding: 8px 15px; font-size: 18px; font-weight: bold; border-radius: 10px; border: 1px solid #ccc; background: white; cursor: pointer;">◀</button>
+                <div style="flex: 1;"><div style="font-size: 12px; color: #777; font-weight: bold;">СКОРОСТЬ</div><span id="gestures-speed-title" style="font-size: 16px; font-weight: bold; color: #333;">Обычная</span></div>
+                <button onclick="changeGesturesSpeed(1)" style="padding: 8px 15px; font-size: 18px; font-weight: bold; border-radius: 10px; border: 1px solid #ccc; background: white; cursor: pointer;">▶</button>
+            </div>
+            <button id="btn-gestures-start" onclick="startGesturesGame()" style="width: 100%; max-width: 250px; padding: 15px; font-size: 20px; border-radius: 25px; border: none; background: linear-gradient(135deg, #4CAF50 0%, #2E7D32 100%); color: white; font-weight: bold; cursor: pointer; box-shadow: 0 4px 15px rgba(76, 175, 80, 0.4);">Старт! ▶️</button>
+        </div>
+    </div>
+
+    <div id="screen-chinese-main-menu" class="screen" style="background: var(--bg-color);">
+        <div class="header" style="position: sticky; top: 0; z-index: 10;">
+            <div class="header-title-row"><span id="room-title">Китайский язык</span></div>
+            <div class="header-top"><div class="back-btn" onclick="goMainFromChinese()">⬅ В главное меню</div></div>
+        </div>
+        <div class="hero-title">Выберите режим:</div>
+        <div class="menu-grid">
+            <div class="category-card" onclick="openChineseWordsMenu()">
+                <div class="category-icon-placeholder">
+                    <img src="img/ch_icon_words.png" alt="" style="width: 100%; height: 100%; object-fit: contain;">
+                </div>
+                <div class="category-title">Слова</div>
+                <div class="category-subtitle">Учим базовые иероглифы</div>
+            </div>
+            
+            <div class="category-card" onclick="openChinesePhrasesMenu()">
+                <div class="category-icon-placeholder">
+                    <img src="img/ch_icon_phrases.png" alt="" style="width: 100%; height: 100%; object-fit: contain;">
+                </div>
+                <div class="category-title">Фразы</div>
+                <div class="category-subtitle">Слушаем и говорим</div>
+            </div>
+            
+            <div class="category-card" onclick="openChineseHacks()">
+                <div class="category-icon-placeholder">
+                    <img src="img/ch_icon_hacks.png" alt="" style="width: 100%; height: 100%; object-fit: contain;">
+                </div>
+                <div class="category-title">Лайфхаки</div>
+                <div class="category-subtitle">Магия ассоциаций</div>
+            </div>
+            
+            <div class="category-card" onclick="openChineseLegoGame()">
+                <div class="category-icon-placeholder">
+                    <img src="img/ch_part_water.png" alt="Конструктор" style="width: 100%; height: 100%; object-fit: contain;">
+                </div>
+                <div class="category-title">Тайны ключей</div>
+                <div class="category-subtitle">Собираем 3D иероглифы</div>
+            </div>
+        </div>
+    </div>
+
+    <div id="screen-chinese-words-menu" class="screen" style="overflow-y: auto; background: var(--bg-color);">
+        <div class="header" style="position: sticky; top: 0; z-index: 10;">
+            <div class="header-title-row"><span id="room-title">Слова</span></div>
+            <div class="header-top"><div class="back-btn" onclick="goBackToChineseMain('screen-chinese-words-menu')">⬅ Назад</div></div>
+        </div>
+        <div class="menu-grid soroban-sub-grid-split">
+            <div class="sub-column">
+                <div class="sub-title-header">Базовые</div>
+                <div class="category-card sub-card" style="background-color: #ffebee; border-color: #ffcdd2;" onclick="openChineseCategory('family')"><div class="category-title sub-title">Семья</div></div>
+                <div class="category-card sub-card" style="background-color: #e3f2fd; border-color: #bbdefb;" onclick="openChineseCategory('body')"><div class="category-title sub-title">Моё тело</div></div>
+            </div>
+            <div class="sub-column">
+                <div class="sub-title-header">Окружение</div>
+                <div class="category-card sub-card" style="background-color: #e8f5e9; border-color: #c8e6c9;" onclick="openChineseCategory('food')"><div class="category-title sub-title">Вкусняшки</div></div>
+                <div class="category-card sub-card" style="background-color: #fff3e0; border-color: #ffe0b2;" onclick="openChineseCategory('animals')"><div class="category-title sub-title">Зверята</div></div>
+                <div class="category-card sub-card" style="background-color: #f3e5f5; border-color: #e1bee7;" onclick="openChineseCategory('transport')"><div class="category-title sub-title">Транспорт</div></div>
+            </div>
+        </div>
+    </div>
+
+    <div id="screen-chinese-phrases-menu" class="screen" style="overflow-y: auto; background: var(--bg-color);">
+        <div class="header" style="position: sticky; top: 0; z-index: 10;">
+            <div class="header-title-row"><span id="room-title">Фразы</span></div>
+            <div class="header-top"><div class="back-btn" onclick="goBackToChineseMain('screen-chinese-phrases-menu')">⬅ Назад</div></div>
+        </div>
+        <div class="menu-grid soroban-sub-grid-split">
+            <div class="sub-column">
+                <div class="sub-title-header">Общение</div>
+                <div class="category-card sub-card" style="background-color: #fffde7; border-color: #fff59d;" onclick="openChineseCategory('ph_manners')"><div class="category-title sub-title">Этикет</div></div>
+                <div class="category-card sub-card" style="background-color: #ffebee; border-color: #ffcdd2;" onclick="openChineseCategory('ph_needs')"><div class="category-title sub-title">Потребности</div></div>
+                <div class="category-card sub-card" style="background-color: #e0f7fa; border-color: #b2ebf2;" onclick="openChineseCategory('ph_play')"><div class="category-title sub-title">Игры</div></div>
+            </div>
+            <div class="sub-column">
+                <div class="sub-title-header">В городе</div>
+                <div class="category-card sub-card" style="background-color: #e8f5e9; border-color: #c8e6c9;" onclick="openChineseCategory('ph_shop')"><div class="category-title sub-title">В магазине</div></div>
+                <div class="category-card sub-card" style="background-color: #ede7f6; border-color: #d1c4e9;" onclick="openChineseCategory('ph_way')"><div class="category-title sub-title">Поиск пути</div></div>
+            </div>
+        </div>
+    </div>
+
+    <div id="screen-chinese-cards" class="screen" style="overflow-y: auto; background: #fafafa;">
+        <div class="header" style="position: sticky; top: 0; z-index: 10; background: rgba(255,255,255,0.95);">
+            <div class="header-title-row"><span>Китайские карточки</span></div>
+            <div class="header-top"><div class="back-btn" onclick="goBackToChineseMenuFromCards()">⬅ Назад</div></div>
+        </div>
+        <div style="padding: 15px; text-align: center;">
+            <div style="background: #fff; border: 2px solid #ffcc80; border-radius: 15px; padding: 10px; margin-bottom: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); font-size: 15px; color: #e65100; font-weight: bold;">
+                Нажми на карточку, чтобы перевернуть её и узнать иероглиф!
+            </div>
+
+            <div id="chinese-card" class="flip-card-container" onclick="flipChineseCard()">
+                <div class="flip-card-inner">
+                    <div class="flip-card-front">
+                        <img id="ch-card-img" src="" alt="Картинка" onerror="this.src='img/icon_memo.png'">
+                    </div>
+                    <div class="flip-card-back">
+                        <div id="ch-card-char" class="chinese-character"></div>
+                        <div id="ch-card-pinyin" class="chinese-pinyin"></div>
+                        <div id="ch-card-ru" class="chinese-translation"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div style="display: flex; justify-content: center; gap: 40px; margin-top: 30px;">
+                <button id="btn-ch-prev" onclick="changeChineseCard(-1)" style="padding: 15px 25px; font-size: 24px; border-radius: 20px; border: none; background: #e0e0e0; color: #333; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">◀</button>
+                <button id="btn-ch-next" onclick="changeChineseCard(1)" style="padding: 15px 25px; font-size: 24px; border-radius: 20px; border: none; background: #4CAF50; color: white; cursor: pointer; box-shadow: 0 4px 10px rgba(76, 175, 80, 0.4);">▶</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="vip-modal" class="vip-modal-overlay">
+        <div class="vip-modal-box">
+            <div style="position: absolute; top: 10px; right: 15px; font-size: 24px; color: #999; cursor: pointer;" onclick="document.getElementById('vip-modal').style.display='none'">✖</div>
+            <img src="img/icon_brain.png" style="width: 80px; margin-bottom: 10px;">
+            <h2 style="margin: 0 0 10px 0; color: #333; font-size: 22px;">Доступ закрыт 🔒</h2>
+            <p style="color: #666; font-size: 14px; margin-bottom: 20px; line-height: 1.4;">
+                Открой все тренажеры «Нейро-Гения»! Развивай память, внимание и пространственное мышление на максимум. Если у вас есть вопросы, напишите <a href="https://vk.com/club78549529" target="_blank" style="color: #2196F3; font-weight: bold; text-decoration: none;">администратору</a>.
+            </p>
+            
+            <button class="vip-btn-free" onclick="getFreeVip()">🎁 Получить 24 часа доступа</button>
+            <button class="vip-btn-buy" id="btn-buy-premium" onclick="buyPremium()">💎 Купить подписку (250 ₽ навсегда)</button>
+            <div id="mobile-payment-msg" style="display: none;"></div>
+        </div>
+    </div>
+
+    <div id="about-modal" class="vip-modal-overlay" onclick="if(event.target===this) closeAboutModal()">
+        <div class="vip-modal-box" style="padding: 30px 20px;">
+            <div style="position: absolute; top: 15px; right: 15px; font-size: 24px; color: #999; cursor: pointer;" onclick="closeAboutModal()">✖</div>
+            <h2 style="margin: 0 0 10px 0; color: #333; font-size: 22px;">О приложении</h2>
+            <p style="color: #555; font-size: 15px; margin-bottom: 10px;">«Нейро-Гений» — интерактивная образовательная платформа.</p>
+            <p style="color: #555; font-size: 14px; margin-bottom: 20px; line-height: 1.4;">Развивайте память, внимание, логику и изучайте языки с помощью увлекательных нейро-игр!</p>
+            
+            <div style="text-align: left; font-size: 12px; color: #999; margin-bottom: 20px; padding-top: 15px; border-top: 1px solid #eee; line-height: 1.5;">
+                Продавец: Самозанятая Селяхова Н.В.<br>
+                ИНН: 502204523550<br>
+                Email: holljs@mail.ru
+            </div>
+            
+            <button onclick="openSupport()" style="width: 100%; padding: 15px; font-size: 16px; font-weight: bold; background: #0077FF; color: white; border: none; border-radius: 12px; cursor: pointer; box-shadow: 0 4px 10px rgba(0, 119, 255, 0.3); display: flex; align-items: center; justify-content: center; gap: 10px;">
+                💬 Написать разработчику
+            </button>
+        </div>
+    </div>
+
+    <!-- Модальное окно "Лайфхаки" -->
+    <div id="hacks-modal" class="comic-modal" style="display: none;">
+        <div class="comic-slider-box" style="background: #FFFDF3; border: 4px solid #FFE082;">
+            <h3 id="hack-title" style="margin: 0 0 10px 0; color: #333; font-size: 20px; text-align: center;">Заголовок</h3>
+            
+            <img id="hack-img" src="" alt="Лайфхак" style="width: 100%; aspect-ratio: 1/1; object-fit: cover; border-radius: 20px; margin-bottom: 12px; border: 2px solid #FFECA1;">
+            
+            <p id="hack-text" style="color: #555; font-size: 15px; text-align: center; line-height: 1.4; margin: 0 0 15px 0; min-height: 80px; padding: 0 5px;"></p>
+            
+            <div class="comic-slider-nav">
+                <div class="comic-nav-btn" id="hack-prev-btn" onclick="moveHack(-1)">◀</div>
+                <div id="hack-dots"></div>
+                <div class="comic-nav-btn" id="hack-next-btn" onclick="moveHack(1)">▶</div>
+            </div>
+            
+            <button id="btn-hack-close" onclick="closeChineseHacks()" style="width: 100%; padding: 12px; background: #FFB300; color: white; border: none; border-radius: 16px; font-size: 16px; font-weight: 800; cursor: pointer; box-shadow: 0 4px 10px rgba(255,179,0,0.3);">Понятно! 💡</button>
+        </div>
+    </div>
+    
+   <!-- 🧩 ЭКРАН: КИТАЙСКИЙ LEGO-КОНСТРУКТОР -->
+    <div id="screen-chinese-lego" class="screen" style="overflow-y: auto;">
+        <div class="header" style="position: sticky; top: 0; z-index: 10;">
+            <div class="header-title-row"><span>Тайны ключей</span></div>
+            <div class="header-top"><div class="back-btn" onclick="goBackFromChineseLego()">⬅ Назад</div></div>
+        </div>
+        <div style="padding: 15px; text-align: center;">
+            <div id="lego-task-text" style="font-size: 20px; font-weight: bold; margin-bottom: 25px; color: #333; min-height: 50px;">
+                Загрузка задания...
+            </div>
+            
+            <!-- Поле, где появится готовый иероглиф после сборки -->
+            <div id="lego-result-zone" style="min-height: 260px; display: flex; align-items: center; justify-content: center; margin-bottom: 30px;">
+                <div id="lego-target-slots" style="display: flex; gap: 20px; justify-content: center; min-height: 120px; align-items: center;">
+                    <!-- Сюда JS будет динамически ставить серые слоты под детальки -->
+                </div>
+            </div>
+
+            <!-- Нижняя полка с деревянными кубиками-детальками -->
+            <div id="lego-drag-zone" style="display: flex; justify-content: center; gap: 25px; min-height: 120px; padding-bottom: 20px; align-items: center;">
+                <!-- Сюда JS высыпет детальки -->
+            </div>
+
+            <!-- 🔥 НОВОЕ: кнопки Назад / Дальше -->
+            <div id="lego-nav" style="display: none; justify-content: center; align-items: center; gap: 20px; padding-bottom: 20px;">
+                <div id="lego-prev-btn" onclick="legoPrev()" style="width: 60px; height: 60px; background: #fff; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 24px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); cursor: pointer;">◀</div>
+                <div id="lego-next-btn" onclick="legoNext()" style="min-width: 140px; height: 60px; background: #4CAF50; color: #fff; border-radius: 30px; display: flex; align-items: center; justify-content: center; font-size: 18px; font-weight: bold; box-shadow: 0 4px 12px rgba(76,175,80,0.4); cursor: pointer; padding: 0 20px;">Дальше ▶</div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="script.js?v=8914"></script>
 </body>
 </html>
