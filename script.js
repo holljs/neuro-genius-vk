@@ -2731,11 +2731,12 @@ function setupLegoGame() {
 
 // ==========================================
 //        КИТАЙСКАЯ ВИКТОРИНА (СЛОВА И ФРАЗЫ)
+//        Спокойный стиль, только SVG-иконки
 // ==========================================
 let chqItems = [];
 let chqIndex = 0;
 let chqScore = 0;
-let chqMode = 'words'; // 'words' или 'phrases'
+let chqMode = 'words';
 let chqCurrentQuestion = null;
 let chqSelectedAnswer = null;
 let chqAnswered = false;
@@ -2743,194 +2744,182 @@ let chqAnswered = false;
 const wordsCategories = ['family', 'body', 'food', 'animals', 'transport'];
 const phrasesCategories = ['ph_manners', 'ph_needs', 'ph_play', 'ph_shop', 'ph_way'];
 
+const CHQ_SPEAKER_SVG = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#7A90A4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path></svg>';
+const CHQ_CHECK_SVG = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>';
+const CHQ_OK_SVG = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#6E9B80" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="16 9 10.5 14.5 8 12"></polyline></svg>';
+const CHQ_NO_SVG = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#B08585" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg>';
+const CHQ_INFO_SVG = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#7A90A4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>';
+const CHQ_MEDAL_SVG = '<svg width="70" height="70" viewBox="0 0 24 24" fill="none" stroke="#7A90A4" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="6"></circle><polyline points="8.5 13 7 22 12 19.5 17 22 15.5 13"></polyline></svg>';
+
 function startChineseQuiz(mode) {
     try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "medium"}); } catch(e){}
     chqMode = mode;
     chqItems = [];
-    
-    // Собираем только нужные категории
     const cats = mode === 'words' ? wordsCategories : phrasesCategories;
     cats.forEach(cat => {
         if (chineseDatabase[cat]) {
-            chineseDatabase[cat].forEach(item => {
-                chqItems.push({...item, category: cat});
-            });
+            chineseDatabase[cat].forEach(item => chqItems.push(item));
         }
     });
-    
     chqItems = shuffleArray([...chqItems]).slice(0, 10);
-    
-    if (chqItems.length < 4) {
-        alert("Слишком мало слов в базе!");
-        return;
-    }
-    
+    if (chqItems.length < 4) { alert("Слишком мало карточек для викторины!"); return; }
     chqIndex = 0;
     chqScore = 0;
     document.getElementById('chq-total').innerText = chqItems.length;
-    
+    document.getElementById('chq-title').innerText = mode === 'words' ? 'Проверка знаний: Слова' : 'Проверка знаний: Фразы';
     document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
     document.getElementById('screen-chinese-quiz').classList.add('active');
     showChineseQuestion();
 }
 
 function showChineseQuestion() {
-    if (chqIndex >= chqItems.length) {
-        finishChineseQuiz();
-        return;
-    }
-    
+    if (chqIndex >= chqItems.length) { finishChineseQuiz(); return; }
     chqCurrentQuestion = chqItems[chqIndex];
     chqSelectedAnswer = null;
     chqAnswered = false;
-    
+
     document.getElementById('chq-current').innerText = chqIndex + 1;
     document.getElementById('chq-image').src = chqCurrentQuestion.img;
     document.getElementById('chq-feedback').innerText = '';
-    document.getElementById('chq-answer-btn').style.display = 'block';
-    document.getElementById('chq-answer-btn').disabled = false;
-    document.getElementById('chq-answer-btn').innerText = 'Ответить ✨';
-    document.getElementById('chq-answer-btn').onclick = checkChineseQuizAnswer;
-    
-    // Генерируем 3 неправильных варианта
-    let wrongOptions = chqItems.filter(item => item.id !== chqCurrentQuestion.id);
-    wrongOptions = shuffleArray(wrongOptions).slice(0, 3);
-    let allOptions = shuffleArray([chqCurrentQuestion, ...wrongOptions]);
-    
-    const optionsContainer = document.getElementById('chq-options');
-    optionsContainer.innerHTML = '';
-    
-    allOptions.forEach((opt, idx) => {
+
+    const imgBox = document.getElementById('chq-image-box');
+    if (imgBox) imgBox.style.display = 'flex';
+
+    const answerBtn = document.getElementById('chq-answer-btn');
+    answerBtn.style.display = 'block';
+    answerBtn.innerText = 'Ответить';
+    answerBtn.onclick = checkChineseQuizAnswer;
+
+    let wrong = chqItems.filter(i => i.id !== chqCurrentQuestion.id && i.ru !== chqCurrentQuestion.ru);
+    wrong = shuffleArray(wrong).slice(0, 3);
+    const options = shuffleArray([chqCurrentQuestion, ...wrong]);
+
+    const box = document.getElementById('chq-options');
+    box.innerHTML = '';
+    options.forEach(opt => {
         const row = document.createElement('div');
-        row.style.cssText = 'display: flex; align-items: center; background: white; border: 3px solid #e0e0e0; border-radius: 16px; padding: 10px; gap: 10px; cursor: pointer; transition: all 0.2s;';
+        row.className = 'chq-row';
         row.setAttribute('data-id', opt.id);
-        
-        // Иероглиф-кнопка
-        const charBtn = document.createElement('div');
-        charBtn.style.cssText = 'flex: 1; font-size: 28px; font-weight: bold; color: #d32f2f; text-align: center; padding: 8px;';
-        charBtn.innerText = opt.char;
-        charBtn.onclick = (e) => {
-            e.stopPropagation();
-            playSound(opt.audio); // 🔊 Китайская озвучка!
-        };
-        
-        // Чекбокс
+        row.style.cssText = 'display:flex; align-items:center; gap:12px; background:#fff; border:2px solid #E2E8F0; border-radius:16px; padding:10px 12px; cursor:pointer; transition:all 0.2s;';
+
         const check = document.createElement('div');
-        check.style.cssText = 'width: 32px; height: 32px; border: 3px solid #9e9e9e; border-radius: 8px; background: white; display: flex; align-items: center; justify-content: center; font-size: 22px; color: white; transition: all 0.2s;';
-        check.innerText = '';
-        
-        // Клик по всей строке — выбираем/снимаем галочку
+        check.className = 'chq-check';
+        check.style.cssText = 'width:30px; height:30px; border:2px solid #C3CDD9; border-radius:8px; background:#fff; display:flex; align-items:center; justify-content:center; flex-shrink:0; transition:all 0.2s;';
+
+        const charLabel = document.createElement('div');
+        charLabel.style.cssText = 'flex:1; text-align:center; font-size:26px; font-weight:bold; color:#333; line-height:1.2; word-break:break-all;';
+        charLabel.innerText = opt.char;
+
+        const spk = document.createElement('div');
+        spk.style.cssText = 'width:36px; height:36px; border-radius:50%; background:#F4F6F9; display:flex; align-items:center; justify-content:center; flex-shrink:0;';
+        spk.innerHTML = CHQ_SPEAKER_SVG;
+
+        const playOptAudio = (e) => {
+            e.stopPropagation();
+            if (opt.audio) playSound(opt.audio);
+            try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(err){}
+        };
+        charLabel.onclick = playOptAudio;
+        spk.onclick = playOptAudio;
+
         row.onclick = () => {
             if (chqAnswered) return;
-            // Снимаем выделение со всех
-            optionsContainer.querySelectorAll('div[data-id]').forEach(r => {
-                r.style.borderColor = '#e0e0e0';
-                r.style.background = 'white';
-                r.querySelector('div:last-child').innerText = '';
-                r.querySelector('div:last-child').style.background = 'white';
-                r.querySelector('div:last-child').style.borderColor = '#9e9e9e';
+            box.querySelectorAll('.chq-row').forEach(r => {
+                r.style.borderColor = '#E2E8F0';
+                r.style.background = '#fff';
+                const c = r.querySelector('.chq-check');
+                c.innerHTML = '';
+                c.style.background = '#fff';
+                c.style.borderColor = '#C3CDD9';
             });
-            // Выделяем текущий
-            row.style.borderColor = '#FF9800';
-            row.style.background = '#fff3e0';
-            check.innerText = '✓';
-            check.style.background = '#FF9800';
-            check.style.borderColor = '#FF9800';
+            if (chqSelectedAnswer === opt.id) { chqSelectedAnswer = null; return; }
             chqSelectedAnswer = opt.id;
-            try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(e){}
+            row.style.borderColor = '#7A90A4';
+            row.style.background = '#F4F6F9';
+            check.innerHTML = CHQ_CHECK_SVG;
+            check.style.background = '#7A90A4';
+            check.style.borderColor = '#7A90A4';
+            try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(err){}
         };
-        
-        row.appendChild(charBtn);
+
         row.appendChild(check);
-        optionsContainer.appendChild(row);
+        row.appendChild(charLabel);
+        row.appendChild(spk);
+        box.appendChild(row);
     });
 }
 
 function playQuizRussian() {
-    // При клике на картинку — русская озвучка
-    if (chqCurrentQuestion && chqCurrentQuestion.ru_audio) {
-        playSound(chqCurrentQuestion.ru_audio);
-    }
+    if (chqCurrentQuestion && chqCurrentQuestion.ru_audio) playSound(chqCurrentQuestion.ru_audio);
+    try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(e){}
 }
 
 function checkChineseQuizAnswer() {
     if (chqAnswered) return;
+    const feedback = document.getElementById('chq-feedback');
     if (!chqSelectedAnswer) {
-        document.getElementById('chq-feedback').innerHTML = "<span style='color:#FF9800;'>Сначала выбери ответ! ☝️</span>";
+        feedback.innerHTML = '<span style="color:#7A90A4; display:inline-flex; align-items:center; gap:6px; justify-content:center;">' + CHQ_INFO_SVG + ' Сначала отметь ответ галочкой</span>';
         return;
     }
     chqAnswered = true;
-    
     const correct = chqSelectedAnswer === chqCurrentQuestion.id;
-    const feedback = document.getElementById('chq-feedback');
-    const optionsContainer = document.getElementById('chq-options');
-    
-    // Подсвечиваем правильный и неправильный
-    optionsContainer.querySelectorAll('div[data-id]').forEach(row => {
+    const box = document.getElementById('chq-options');
+
+    box.querySelectorAll('.chq-row').forEach(row => {
         const id = row.getAttribute('data-id');
         if (id === chqCurrentQuestion.id) {
-            row.style.borderColor = '#4CAF50';
-            row.style.background = '#e8f5e9';
+            row.style.borderColor = '#9CBFA6';
+            row.style.background = '#EFF5F0';
         } else if (id === chqSelectedAnswer && !correct) {
-            row.style.borderColor = '#F44336';
-            row.style.background = '#ffebee';
+            row.style.borderColor = '#C9A0A0';
+            row.style.background = '#F7F0F0';
         }
     });
-    
+
     if (correct) {
         try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "medium"}); } catch(e){}
         playSound('audio/correct.wav');
-        feedback.innerHTML = `<span style='color:#4CAF50;'>✅ Верно! ${chqCurrentQuestion.ru}</span>`;
+        feedback.innerHTML = '<span style="color:#6E9B80; display:inline-flex; align-items:center; gap:8px; justify-content:center;">' + CHQ_OK_SVG + ' Верно! ' + chqCurrentQuestion.ru + '</span>';
         chqScore++;
     } else {
         try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "heavy"}); } catch(e){}
         playSound('audio/wrong.wav');
-        feedback.innerHTML = `<span style='color:#F44336;'>❌ Правильный ответ: ${chqCurrentQuestion.char} (${chqCurrentQuestion.ru})</span>`;
+        feedback.innerHTML = '<span style="color:#B08585; display:inline-flex; align-items:center; gap:8px; justify-content:center;">' + CHQ_NO_SVG + ' Правильный ответ: ' + chqCurrentQuestion.char + ' (' + chqCurrentQuestion.ru + ')</span>';
     }
-    
-    // Меняем кнопку на "Дальше"
+
     const btn = document.getElementById('chq-answer-btn');
-    btn.innerText = 'Следующий вопрос ➔';
-    btn.onclick = () => {
-        chqIndex++;
-        showChineseQuestion();
-        btn.innerText = 'Ответить ✨';
-        btn.onclick = checkChineseQuizAnswer;
-    };
+    btn.innerText = (chqIndex === chqItems.length - 1) ? 'Результат' : 'Дальше';
+    btn.onclick = () => { chqIndex++; showChineseQuestion(); };
 }
 
 function finishChineseQuiz() {
-    const container = document.getElementById('chq-options');
-    container.innerHTML = '';
-    document.getElementById('chq-answer-btn').style.display = 'none';
-    document.getElementById('chq-current').style.display = 'none';
-    document.getElementById('chq-image').style.display = 'none';
-    
+    document.getElementById('chq-options').innerHTML = '';
+    const answerBtn = document.getElementById('chq-answer-btn');
+    if (answerBtn) answerBtn.style.display = 'none';
+    const imgBox = document.getElementById('chq-image-box');
+    if (imgBox) imgBox.style.display = 'none';
+
     const percent = Math.round((chqScore / chqItems.length) * 100);
     let msg = "";
-    let emoji = "";
-    if (percent === 100) { msg = "Ты настоящий Гений!"; emoji = "🏆"; }
-    else if (percent >= 70) { msg = "Отличный результат!"; emoji = "🎉"; }
-    else if (percent >= 50) { msg = "Неплохо! Потренируйся ещё!"; emoji = "💪"; }
-    else { msg = "Давай ещё раз!"; emoji = "📚"; }
-    
+    if (percent === 100) msg = "Ты настоящий Гений!";
+    else if (percent >= 70) msg = "Отличный результат!";
+    else if (percent >= 50) msg = "Хорошо! Ещё немного практики!";
+    else msg = "Потренируйся ещё разок!";
+
     document.getElementById('chq-feedback').innerHTML = `
-        <div style="font-size: 80px; margin-bottom: 15px;">${emoji}</div>
-        <div style="font-size: 42px; font-weight: 900; color: #333; margin-bottom: 10px;">${chqScore} / ${chqItems.length}</div>
-        <div style="font-size: 20px; color: #555; margin-bottom: 20px;">${msg}</div>
-        <button onclick="startChineseQuiz('${chqMode}')" style="padding: 12px 30px; background: #2196F3; color: white; border: none; border-radius: 20px; font-size: 16px; font-weight: bold; cursor: pointer; margin: 5px;">Ещё раз</button>
-        <button onclick="goBackFromChineseQuiz()" style="padding: 12px 30px; background: #9E9E9E; color: white; border: none; border-radius: 20px; font-size: 16px; font-weight: bold; cursor: pointer; margin: 5px;">В меню</button>
+        <div style="margin-bottom:10px;">${CHQ_MEDAL_SVG}</div>
+        <div style="font-size:40px; font-weight:900; color:#333;">${chqScore} / ${chqItems.length}</div>
+        <div style="font-size:17px; color:#7A90A4; margin:10px 0 20px 0;">${msg}</div>
+        <button onclick="startChineseQuiz('${chqMode}')" style="padding:12px 28px; background:#7A90A4; color:white; border:none; border-radius:20px; font-size:15px; font-weight:bold; cursor:pointer; margin:5px;">Ещё раз</button>
+        <button onclick="goBackFromChineseQuiz()" style="padding:12px 28px; background:#fff; color:#7A90A4; border:2px solid #E2E8F0; border-radius:20px; font-size:15px; font-weight:bold; cursor:pointer; margin:5px;">В меню</button>
     `;
     playSound('audio/words_win.wav');
 }
 
 function goBackFromChineseQuiz() {
-    document.getElementById('screen-chinese-quiz').classList.remove('active');
-    // Возвращаемся в нужное меню
-    if (chqMode === 'words') {
-        document.getElementById('screen-chinese-words-menu').classList.add('active');
-    } else {
-        document.getElementById('screen-chinese-phrases-menu').classList.add('active');
-    }
+    try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(e){}
     if (currentAudio) { currentAudio.pause(); currentAudio.currentTime = 0; }
+    document.getElementById('screen-chinese-quiz').classList.remove('active');
+    if (chqMode === 'words') document.getElementById('screen-chinese-words-menu').classList.add('active');
+    else document.getElementById('screen-chinese-phrases-menu').classList.add('active');
 }
