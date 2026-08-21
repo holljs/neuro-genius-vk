@@ -789,14 +789,6 @@
                 <div class="category-title">Тайны ключей</div>
                 <div class="category-subtitle">Собираем 3D иероглифы</div>
             </div>
-
-                      <div class="category-card" onclick="startSmartQuiz()" style="background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%); border: 2px solid #64b5f6;">
-                <div class="category-icon-placeholder">
-                    <img src="img/icon_memo.png" alt="Викторина" style="width: 100%; height: 100%; object-fit: contain;">
-                </div>
-                <div class="category-title" style="color: #1565c0;">Проверка знаний</div>
-                <div class="category-subtitle" style="color: #1976d2;">Тест по всем словам и фразам</div>
-            </div>
         </div>   <!-- Закрываем .menu-grid -->
     </div>       <!-- ✅ Закрываем #screen-chinese-main-menu -->
 
@@ -816,9 +808,16 @@
                 <div class="category-card sub-card" style="background-color: #e8f5e9; border-color: #c8e6c9;" onclick="openChineseCategory('food')"><div class="category-title sub-title">Вкусняшки</div></div>
                 <div class="category-card sub-card" style="background-color: #fff3e0; border-color: #ffe0b2;" onclick="openChineseCategory('animals')"><div class="category-title sub-title">Зверята</div></div>
                 <div class="category-card sub-card" style="background-color: #f3e5f5; border-color: #e1bee7;" onclick="openChineseCategory('transport')"><div class="category-title sub-title">Транспорт</div></div>
-            </div>
-        </div>
-    </div>
+</div>
+<div class="category-card" style="grid-column: 1 / -1; background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%); border: 2px solid #64b5f6;" onclick="startChineseQuiz('words')">
+<div class="category-icon-placeholder">
+<img src="img/icon_memo.png" alt="" style="width: 100%; height: 100%; object-fit: contain;">
+</div>
+<div class="category-title" style="color: #1565c0;">Проверка знаний</div>
+<div class="category-subtitle" style="color: #1976d2;">Тест по всем словам</div>
+</div>
+</div>
+</div>
 
     <div id="screen-chinese-phrases-menu" class="screen" style="overflow-y: auto; background: var(--bg-color);">
         <div class="header" style="position: sticky; top: 0; z-index: 10;">
@@ -836,9 +835,16 @@
                 <div class="sub-title-header">В городе</div>
                 <div class="category-card sub-card" style="background-color: #e8f5e9; border-color: #c8e6c9;" onclick="openChineseCategory('ph_shop')"><div class="category-title sub-title">В магазине</div></div>
                 <div class="category-card sub-card" style="background-color: #ede7f6; border-color: #d1c4e9;" onclick="openChineseCategory('ph_way')"><div class="category-title sub-title">Поиск пути</div></div>
-            </div>
-        </div>
-    </div>
+</div>
+<div class="category-card" style="grid-column: 1 / -1; background: linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%); border: 2px solid #ffb74d;" onclick="startChineseQuiz('phrases')">
+<div class="category-icon-placeholder">
+<img src="img/icon_memo.png" alt="" style="width: 100%; height: 100%; object-fit: contain;">
+</div>
+<div class="category-title" style="color: #e65100;">Проверка знаний</div>
+<div class="category-subtitle" style="color: #ef6c00;">Тест по всем фразам</div>
+</div>
+</div>
+</div>
 
     <div id="screen-chinese-cards" class="screen" style="overflow-y: auto; background: #fafafa;">
         <div class="header" style="position: sticky; top: 0; z-index: 10; background: rgba(255,255,255,0.95);">
@@ -953,23 +959,34 @@
             </div>
         </div>
     </div>
-
-        <div id="screen-smart-quiz" class="screen" style="overflow-y: auto; background: var(--bg-color);">
-<div class="header" style="position: sticky; top: 0; z-index: 10;">
-<div class="header-title-row"><span>Проверка знаний</span></div>
-<div class="header-top"><div class="back-btn" onclick="goBackFromSmartQuiz()">⬅ Назад</div></div>
-</div>
-<div style="padding: 20px; text-align: center;">
-<div id="quiz-score" style="font-size: 20px; font-weight: bold; color: #555; margin-bottom: 15px;">Вопрос <span id="q-current">1</span> из <span id="q-total">10</span></div>
-<div id="quiz-question-box" style="background: white; border-radius: 20px; padding: 20px; margin-bottom: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); min-height: 180px; display: flex; align-items: center; justify-content: center; flex-direction: column;">
-<img id="quiz-img" src="" style="max-width: 150px; max-height: 150px; object-fit: contain; margin-bottom: 10px;">
-<div id="quiz-audio-btn" onclick="playQuizAudio()" style="display: none; width: 60px; height: 60px; background: #FF9800; color: white; border-radius: 50%; font-size: 24px; cursor: pointer; box-shadow: 0 4px 10px rgba(255,152,0,0.3); align-items: center; justify-content: center;">🔊</div>
-</div>
-<div id="quiz-options" style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;"></div>
-<div id="quiz-feedback" style="margin-top: 20px; font-size: 20px; font-weight: bold; min-height: 30px;"></div>
-</div>
-</div>
     
-    <script src="script.js?v=8915"></script>
+    <!-- ЭКРАН: ПРОВЕРКА ЗНАНИЙ (КИТАЙСКИЙ) -->
+<div id="screen-chinese-quiz" class="screen" style="overflow-y: auto; background: var(--bg-color);">
+<div class="header" style="position: sticky; top: 0; z-index: 10;">
+<div class="header-title-row"><span id="chq-title">Проверка знаний</span></div>
+<div class="header-top"><div class="back-btn" onclick="goBackFromChineseQuiz()">⬅ Назад</div></div>
+</div>
+<div style="padding: 15px; text-align: center;">
+<div style="font-size: 16px; color: #777; margin-bottom: 10px;">Вопрос <span id="chq-current">1</span> из <span id="chq-total">10</span></div>
+
+<div style="background: #fff9c4; border: 2px solid #fbc02d; border-radius: 15px; padding: 10px; margin-bottom: 15px; font-size: 14px; color: #f57f17; font-weight: bold;">
+Нажми на картинку — услышишь слово по-русски!<br>
+Потом послушай иероглифы и отметь правильный галочкой!
+</div>
+
+<div onclick="playQuizRussian()" style="width: 170px; height: 170px; margin: 0 auto 20px auto; background: white; border-radius: 20px; border: 3px solid #ffe082; box-shadow: 0 6px 15px rgba(0,0,0,0.08); display: flex; align-items: center; justify-content: center; cursor: pointer; position: relative;">
+<img id="chq-image" src="" style="max-width: 88%; max-height: 88%; object-fit: contain; pointer-events: none;">
+<div style="position: absolute; bottom: -12px; right: -12px; width: 46px; height: 46px; background: #FF9800; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 22px; box-shadow: 0 4px 10px rgba(255,152,0,0.4);">🔊</div>
+</div>
+
+<div id="chq-options" style="display: flex; flex-direction: column; gap: 10px; max-width: 400px; margin: 0 auto 20px auto;"></div>
+
+<button id="chq-answer-btn" onclick="checkChineseQuizAnswer()" style="width: 100%; max-width: 300px; padding: 15px; font-size: 18px; font-weight: bold; background: linear-gradient(135deg, #4CAF50 0%, #2E7D32 100%); color: white; border: none; border-radius: 25px; cursor: pointer; box-shadow: 0 4px 15px rgba(76,175,80,0.4);">Ответить</button>
+
+<div id="chq-feedback" style="margin-top: 15px; font-size: 18px; font-weight: bold; min-height: 30px;"></div>
+</div>
+</div>
+
+<script src="script.js?v=8916"></script>
 </body>
 </html>
