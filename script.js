@@ -2728,3 +2728,142 @@ function setupLegoGame() {
     dragZone.innerHTML = '';
     bricks.forEach(b => dragZone.appendChild(b));
 }
+
+// ==========================================
+//        УМНАЯ ВИКТОРИНА (АВТОМАТИЧЕСКАЯ)
+// ==========================================
+let smartQuizItems = [];
+let smartQuizIndex = 0;
+let smartQuizScore = 0;
+let smartQuizAudioUrl = '';
+
+function startSmartQuiz() {
+    smartQuizItems = [];
+    for (let category in chineseDatabase) {
+        chineseDatabase[category].forEach(item => {
+            smartQuizItems.push(item);
+        });
+    }
+    
+    smartQuizItems = shuffleArray([...smartQuizItems]).slice(0, 10);
+    
+    if (smartQuizItems.length < 4) {
+        alert("Слишком мало слов для викторины!");
+        return;
+    }
+
+    smartQuizIndex = 0;
+    smartQuizScore = 0;
+    document.getElementById('q-total').innerText = smartQuizItems.length;
+    document.getElementById('q-current').style.display = 'inline';
+    
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.getElementById('screen-smart-quiz').classList.add('active');
+    
+    showSmartQuestion();
+}
+
+function showSmartQuestion() {
+    if (smartQuizIndex >= smartQuizItems.length) {
+        finishSmartQuiz();
+        return;
+    }
+
+    const q = smartQuizItems[smartQuizIndex];
+    document.getElementById('q-current').innerText = smartQuizIndex + 1;
+    document.getElementById('quiz-feedback').innerText = '';
+    
+    const imgEl = document.getElementById('quiz-img');
+    const audioBtn = document.getElementById('quiz-audio-btn');
+    
+    const isImageMode = Math.random() > 0.5;
+    
+    if (isImageMode) {
+        imgEl.src = q.img;
+        imgEl.style.display = 'block';
+        audioBtn.style.display = 'none';
+        smartQuizAudioUrl = q.ru_audio || q.audio;
+    } else {
+        imgEl.style.display = 'none';
+        audioBtn.style.display = 'flex';
+        smartQuizAudioUrl = q.ru_audio || q.audio;
+        playSound(smartQuizAudioUrl);
+    }
+
+    let wrongOptions = smartQuizItems.filter(item => item.id !== q.id && item.ru !== q.ru);
+    wrongOptions = shuffleArray(wrongOptions).slice(0, 3);
+    let options = shuffleArray([q, ...wrongOptions]);
+
+    const optionsContainer = document.getElementById('quiz-options');
+    optionsContainer.innerHTML = '';
+
+    options.forEach(opt => {
+        const btn = document.createElement('div');
+        btn.className = 'category-card sub-card';
+        btn.style.padding = '15px';
+        btn.style.cursor = 'pointer';
+        btn.innerHTML = `<div style="font-size: 18px; font-weight: bold;">${opt.ru}</div>`;
+        
+        btn.onclick = () => checkSmartAnswer(opt.id === q.id, btn);
+        optionsContainer.appendChild(btn);
+    });
+}
+
+function playQuizAudio() {
+    if (smartQuizAudioUrl) playSound(smartQuizAudioUrl);
+}
+
+function checkSmartAnswer(isCorrect, btnElement) {
+    if (btnElement.classList.contains('matched')) return;
+    
+    const feedback = document.getElementById('quiz-feedback');
+    
+    if (isCorrect) {
+        try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "medium"}); } catch(e){}
+        playSound('audio/correct.wav');
+        btnElement.style.background = '#e8f5e9';
+        btnElement.style.border = '2px solid #4CAF50';
+        feedback.innerText = "Верно!";
+        feedback.style.color = "#4CAF50";
+        smartQuizScore++;
+        
+        setTimeout(() => {
+            smartQuizIndex++;
+            showSmartQuestion();
+        }, 1000);
+    } else {
+        try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "heavy"}); } catch(e){}
+        playSound('audio/wrong.wav');
+        btnElement.style.background = '#ffebee';
+        btnElement.style.border = '2px solid #F44336';
+        feedback.innerText = "Попробуй еще раз!";
+        feedback.style.color = "#F44336";
+    }
+}
+
+function finishSmartQuiz() {
+    const container = document.getElementById('quiz-options');
+    container.innerHTML = '';
+    document.getElementById('quiz-img').style.display = 'none';
+    document.getElementById('quiz-audio-btn').style.display = 'none';
+    document.getElementById('q-current').style.display = 'none';
+    
+    const percent = Math.round((smartQuizScore / smartQuizItems.length) * 100);
+    let msg = "";
+    if (percent === 100) msg = "Ты настоящий Гений!";
+    else if (percent >= 70) msg = "Отличный результат!";
+    else msg = "Нужно потренироваться еще!";
+    
+    document.getElementById('quiz-feedback').innerHTML = `
+        <div style="font-size: 40px; margin-bottom: 10px;">${smartQuizScore}/${smartQuizItems.length}</div>
+        <div>${msg}</div>
+        <button onclick="startSmartQuiz()" style="margin-top: 20px; padding: 12px 30px; background: #2196F3; color: white; border: none; border-radius: 20px; font-size: 16px; font-weight: bold;">Ещё раз</button>
+    `;
+    playSound('audio/words_win.wav');
+}
+
+function goBackFromSmartQuiz() {
+    document.getElementById('screen-smart-quiz').classList.remove('active');
+    document.getElementById('screen-chinese-main-menu').classList.add('active');
+    if (currentAudio) { currentAudio.pause(); currentAudio.currentTime = 0; }
+}
