@@ -789,8 +789,16 @@
                 <div class="category-title">Тайны ключей</div>
                 <div class="category-subtitle">Собираем 3D иероглифы</div>
             </div>
-        </div>
-    </div>
+
+                      <div class="category-card" onclick="startSmartQuiz()" style="background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%); border: 2px solid #64b5f6;">
+                <div class="category-icon-placeholder">
+                    <img src="img/icon_memo.png" alt="Викторина" style="width: 100%; height: 100%; object-fit: contain;">
+                </div>
+                <div class="category-title" style="color: #1565c0;">Проверка знаний</div>
+                <div class="category-subtitle" style="color: #1976d2;">Тест по всем словам и фразам</div>
+            </div>
+        </div>   <!-- Закрываем .menu-grid -->
+    </div>       <!-- ✅ Закрываем #screen-chinese-main-menu -->
 
     <div id="screen-chinese-words-menu" class="screen" style="overflow-y: auto; background: var(--bg-color);">
         <div class="header" style="position: sticky; top: 0; z-index: 10;">
@@ -945,6 +953,22 @@
             </div>
         </div>
     </div>
+
+        <div id="screen-smart-quiz" class="screen" style="overflow-y: auto; background: var(--bg-color);">
+<div class="header" style="position: sticky; top: 0; z-index: 10;">
+<div class="header-title-row"><span>Проверка знаний</span></div>
+<div class="header-top"><div class="back-btn" onclick="goBackFromSmartQuiz()">⬅ Назад</div></div>
+</div>
+<div style="padding: 20px; text-align: center;">
+<div id="quiz-score" style="font-size: 20px; font-weight: bold; color: #555; margin-bottom: 15px;">Вопрос <span id="q-current">1</span> из <span id="q-total">10</span></div>
+<div id="quiz-question-box" style="background: white; border-radius: 20px; padding: 20px; margin-bottom: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); min-height: 180px; display: flex; align-items: center; justify-content: center; flex-direction: column;">
+<img id="quiz-img" src="" style="max-width: 150px; max-height: 150px; object-fit: contain; margin-bottom: 10px;">
+<div id="quiz-audio-btn" onclick="playQuizAudio()" style="display: none; width: 60px; height: 60px; background: #FF9800; color: white; border-radius: 50%; font-size: 24px; cursor: pointer; box-shadow: 0 4px 10px rgba(255,152,0,0.3); align-items: center; justify-content: center;">🔊</div>
+</div>
+<div id="quiz-options" style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;"></div>
+<div id="quiz-feedback" style="margin-top: 20px; font-size: 20px; font-weight: bold; min-height: 30px;"></div>
+</div>
+</div>
     
     <script src="script.js?v=8914"></script>
 </body>
