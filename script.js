@@ -2764,15 +2764,13 @@ function startChineseQuiz(mode) {
         alert("Слишком мало слов в базе!");
         return;
     }
-
+    
     chqIndex = 0;
     chqScore = 0;
     document.getElementById('chq-total').innerText = chqItems.length;
-    document.getElementById('quiz-title').innerText = mode === 'words' ? 'Проверка знаний (Слова)' : 'Проверка знаний (Фразы)';
     
     document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
     document.getElementById('screen-chinese-quiz').classList.add('active');
-    
     showChineseQuestion();
 }
 
@@ -2781,7 +2779,7 @@ function showChineseQuestion() {
         finishChineseQuiz();
         return;
     }
-
+    
     chqCurrentQuestion = chqItems[chqIndex];
     chqSelectedAnswer = null;
     chqAnswered = false;
@@ -2791,15 +2789,17 @@ function showChineseQuestion() {
     document.getElementById('chq-feedback').innerText = '';
     document.getElementById('chq-answer-btn').style.display = 'block';
     document.getElementById('chq-answer-btn').disabled = false;
-
+    document.getElementById('chq-answer-btn').innerText = 'Ответить ✨';
+    document.getElementById('chq-answer-btn').onclick = checkChineseQuizAnswer;
+    
     // Генерируем 3 неправильных варианта
     let wrongOptions = chqItems.filter(item => item.id !== chqCurrentQuestion.id);
     wrongOptions = shuffleArray(wrongOptions).slice(0, 3);
     let allOptions = shuffleArray([chqCurrentQuestion, ...wrongOptions]);
-
+    
     const optionsContainer = document.getElementById('chq-options');
     optionsContainer.innerHTML = '';
-
+    
     allOptions.forEach((opt, idx) => {
         const row = document.createElement('div');
         row.style.cssText = 'display: flex; align-items: center; background: white; border: 3px solid #e0e0e0; border-radius: 16px; padding: 10px; gap: 10px; cursor: pointer; transition: all 0.2s;';
@@ -2822,7 +2822,6 @@ function showChineseQuestion() {
         // Клик по всей строке — выбираем/снимаем галочку
         row.onclick = () => {
             if (chqAnswered) return;
-            
             // Снимаем выделение со всех
             optionsContainer.querySelectorAll('div[data-id]').forEach(r => {
                 r.style.borderColor = '#e0e0e0';
@@ -2831,14 +2830,12 @@ function showChineseQuestion() {
                 r.querySelector('div:last-child').style.background = 'white';
                 r.querySelector('div:last-child').style.borderColor = '#9e9e9e';
             });
-            
             // Выделяем текущий
             row.style.borderColor = '#FF9800';
             row.style.background = '#fff3e0';
             check.innerText = '✓';
             check.style.background = '#FF9800';
             check.style.borderColor = '#FF9800';
-            
             chqSelectedAnswer = opt.id;
             try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(e){}
         };
@@ -2862,8 +2859,8 @@ function checkChineseQuizAnswer() {
         document.getElementById('chq-feedback').innerHTML = "<span style='color:#FF9800;'>Сначала выбери ответ! ☝️</span>";
         return;
     }
-    
     chqAnswered = true;
+    
     const correct = chqSelectedAnswer === chqCurrentQuestion.id;
     const feedback = document.getElementById('chq-feedback');
     const optionsContainer = document.getElementById('chq-options');
@@ -2872,11 +2869,9 @@ function checkChineseQuizAnswer() {
     optionsContainer.querySelectorAll('div[data-id]').forEach(row => {
         const id = row.getAttribute('data-id');
         if (id === chqCurrentQuestion.id) {
-            // Правильный — зелёный
             row.style.borderColor = '#4CAF50';
             row.style.background = '#e8f5e9';
         } else if (id === chqSelectedAnswer && !correct) {
-            // Неправильный выбранный — красный
             row.style.borderColor = '#F44336';
             row.style.background = '#ffebee';
         }
@@ -2910,7 +2905,6 @@ function finishChineseQuiz() {
     document.getElementById('chq-answer-btn').style.display = 'none';
     document.getElementById('chq-current').style.display = 'none';
     document.getElementById('chq-image').style.display = 'none';
-    document.getElementById('chq-image-box').style.display = 'none';
     
     const percent = Math.round((chqScore / chqItems.length) * 100);
     let msg = "";
