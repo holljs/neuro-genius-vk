@@ -597,36 +597,30 @@ function changeWord(direction) {
 }
 
 function handlePointerStart(e) {
-    if (activeItem) return; 
-    
-    // 🔥 КРИТИЧЕСКИ ВАЖНО: проверяем, что тач пришёлся именно на игровую детальку!
-    if (!e.target.classList.contains('draggable-item') || e.target.classList.contains('matched')) return;
-
-    activeItem = e.target;
-    activeItem.setPointerCapture(e.pointerId);
-
-    const rect = activeItem.getBoundingClientRect();
-    
-    // Считаем точный сдвиг курсора относительно левого верхнего угла детальки
-    activeItem._dragOffsetX = e.clientX - rect.left;
-    activeItem._dragOffsetY = e.clientY - rect.top;
-
-    activeItem.style.width = rect.width + 'px';
-    activeItem.style.height = rect.height + 'px';
-    activeItem.style.transform = 'none';
-
-    playSound(activeItem.getAttribute('data-audio'));
-
-    activeItem.classList.add('dragging');
-    activeItem.style.position = 'fixed';
-    activeItem.style.margin = '0';
-    activeItem.style.zIndex = '1000';
-    activeItem.style.left = (e.clientX - activeItem._dragOffsetX) + 'px';
-    activeItem.style.top = (e.clientY - activeItem._dragOffsetY) + 'px';
-
-    activeItem.addEventListener('pointermove', handlePointerMove);
-    activeItem.addEventListener('pointerup', handlePointerEnd);
-    activeItem.addEventListener('pointercancel', handlePointerEnd); 
+if (activeItem) return;
+if (!e.target.classList.contains('draggable-item') || e.target.classList.contains('matched')) return;
+// 🔥 Запрещаем браузеру пытаться скроллить/выделять — деталька остаётся в руке
+e.preventDefault();
+activeItem = e.target;
+try { activeItem.setPointerCapture(e.pointerId); } catch(err) {}
+// 🔥 ЛЕЧИМ "ВЫСКАКИВАНИЕ": мгновенно убиваем остаточную анимацию возврата
+activeItem.style.transition = 'none';
+const rect = activeItem.getBoundingClientRect();
+activeItem._dragOffsetX = e.clientX - rect.left;
+activeItem._dragOffsetY = e.clientY - rect.top;
+activeItem.style.width = rect.width + 'px';
+activeItem.style.height = rect.height + 'px';
+activeItem.style.transform = 'none';
+playSound(activeItem.getAttribute('data-audio'));
+activeItem.classList.add('dragging');
+activeItem.style.position = 'fixed';
+activeItem.style.margin = '0';
+activeItem.style.zIndex = '1000';
+activeItem.style.left = (e.clientX - activeItem._dragOffsetX) + 'px';
+activeItem.style.top = (e.clientY - activeItem._dragOffsetY) + 'px';
+activeItem.addEventListener('pointermove', handlePointerMove);
+activeItem.addEventListener('pointerup', handlePointerEnd);
+activeItem.addEventListener('pointercancel', handlePointerEnd);
 }
 
 function handlePointerMove(e) {
@@ -2922,4 +2916,10 @@ function goBackFromChineseQuiz() {
     document.getElementById('screen-chinese-quiz').classList.remove('active');
     if (chqMode === 'words') document.getElementById('screen-chinese-words-menu').classList.add('active');
     else document.getElementById('screen-chinese-phrases-menu').classList.add('active');
+}
+
+/* 🔥 Пока детальку тащат — отключаем любые transition, чтобы не "плыла" */
+.draggable-item.dragging {
+transition: none !important;
+animation: none !important;
 }
