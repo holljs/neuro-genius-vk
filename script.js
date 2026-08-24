@@ -2773,7 +2773,9 @@ function showChineseQuestion() {
     chqAnswered = false;
 
     document.getElementById('chq-current').innerText = chqIndex + 1;
-    document.getElementById('chq-image').src = chqCurrentQuestion.img;
+    const qImg = document.getElementById('chq-image');
+    qImg.onerror = function(){ this.onerror = null; this.src = 'img/icon_memo.png'; };
+    qImg.src = chqCurrentQuestion.img;
     document.getElementById('chq-feedback').innerText = '';
 
     const imgBox = document.getElementById('chq-image-box');
@@ -2922,4 +2924,86 @@ function goBackFromChineseQuiz() {
 .draggable-item.dragging {
 transition: none !important;
 animation: none !important;
+}
+
+// ==========================================
+//   ДОПОЛНЕНИЕ БАЗЫ: +5 КАРТОЧЕК В КАЖДУЮ КАТЕГОРИЮ
+//   (становится по 10 — карточки и викторина подхватят сами)
+// ==========================================
+const extraChineseData = {
+'food': [
+{ id: 'rice', img: 'img/ch_rice.jpg', ru: 'Рис', char: '米饭', pinyin: 'mìfàn', ru_trans: 'ми-фань', audio: 'audio/ch_rice.mp3', ru_audio: 'audio/ru_rice.mp3' },
+{ id: 'egg', img: 'img/ch_egg.jpg', ru: 'Яйцо', char: '鸡蛋', pinyin: 'jīdàn', ru_trans: 'цзи-дань', audio: 'audio/ch_egg.mp3', ru_audio: 'audio/ru_egg.mp3' },
+{ id: 'tea', img: 'img/ch_tea.jpg', ru: 'Чай', char: '茶', pinyin: 'chá', ru_trans: 'ча', audio: 'audio/ch_tea.mp3', ru_audio: 'audio/ru_tea.mp3' },
+{ id: 'candy', img: 'img/ch_candy.jpg', ru: 'Конфетка', char: '糖果', pinyin: 'tángguǒ', ru_trans: 'тан-гуо', audio: 'audio/ch_candy.mp3', ru_audio: 'audio/ru_candy.mp3' },
+{ id: 'noodles', img: 'img/ch_noodles.jpg', ru: 'Лапша', char: '面条', pinyin: 'miàntiáo', ru_trans: 'мьен-тяо', audio: 'audio/ch_noodles.mp3', ru_audio: 'audio/ru_noodles.mp3' }
+],
+'animals': [
+{ id: 'panda', img: 'img/ch_panda.jpg', ru: 'Панда', char: '熊猫', pinyin: 'xióngmāo', ru_trans: 'сюн-мао', audio: 'audio/ch_panda.mp3', ru_audio: 'audio/ru_panda.mp3' },
+{ id: 'monkey', img: 'img/ch_monkey.jpg', ru: 'Обезьянка', char: '猴子', pinyin: 'hóuzi', ru_trans: 'хоу-цзы', audio: 'audio/ch_monkey.mp3', ru_audio: 'audio/ru_monkey.mp3' },
+{ id: 'rabbit', img: 'img/ch_rabbit.jpg', ru: 'Кролик', char: '兔子', pinyin: 'tùzi', ru_trans: 'ту-цзы', audio: 'audio/ch_rabbit.mp3', ru_audio: 'audio/ru_rabbit.mp3' },
+{ id: 'fish', img: 'img/ch_fish.jpg', ru: 'Рыбка', char: '鱼', pinyin: 'yú', ru_trans: 'юй', audio: 'audio/ch_fish.mp3', ru_audio: 'audio/ru_fish.mp3' },
+{ id: 'duck', img: 'img/ch_duck.jpg', ru: 'Утёнок', char: '鸭子', pinyin: 'yāzi', ru_trans: 'я-цзы', audio: 'audio/ch_duck.mp3', ru_audio: 'audio/ru_duck.mp3' }
+],
+'family': [
+{ id: 'gege', img: 'img/ch_gege.jpg', ru: 'Братик', char: '哥哥', pinyin: 'gēge', ru_trans: 'гэ-гэ', audio: 'audio/ch_gege.mp3', ru_audio: 'audio/ru_gege.mp3' },
+{ id: 'jiejie', img: 'img/ch_jiejie.jpg', ru: 'Сестричка', char: '姐姐', pinyin: 'jiějie', ru_trans: 'цзе-цзе', audio: 'audio/ch_jiejie.mp3', ru_audio: 'audio/ru_jiejie.mp3' },
+{ id: 'didi', img: 'img/ch_didi.jpg', ru: 'Младший братик', char: '弟弟', pinyin: 'dìdi', ru_trans: 'ди-ди', audio: 'audio/ch_didi.mp3', ru_audio: 'audio/ru_didi.mp3' },
+{ id: 'meimei', img: 'img/ch_meimei.jpg', ru: 'Младшая сестричка', char: '妹妹', pinyin: 'mèimei', ru_trans: 'мэй-мэй', audio: 'audio/ch_meimei.mp3', ru_audio: 'audio/ru_meimei.mp3' },
+{ id: 'shushu', img: 'img/ch_shushu.jpg', ru: 'Дядя', char: '叔叔', pinyin: 'shūshu', ru_trans: 'шу-шу', audio: 'audio/ch_shushu.mp3', ru_audio: 'audio/ru_shushu.mp3' }
+],
+'transport': [
+{ id: 'bike', img: 'img/ch_bike.jpg', ru: 'Велосипед', char: '自行车', pinyin: 'zìxíngchē', ru_trans: 'цзы-син-чхэ', audio: 'audio/ch_bike.mp3', ru_audio: 'audio/ru_bike.mp3' },
+{ id: 'heli', img: 'img/ch_heli.jpg', ru: 'Вертолёт', char: '直升机', pinyin: 'zhíshēngjī', ru_trans: 'чжи-шэн-цзи', audio: 'audio/ch_heli.mp3', ru_audio: 'audio/ru_heli.mp3' },
+{ id: 'metro', img: 'img/ch_metro.jpg', ru: 'Метро', char: '地铁', pinyin: 'dìtiě', ru_trans: 'ди-тье', audio: 'audio/ch_metro.mp3', ru_audio: 'audio/ru_metro.mp3' },
+{ id: 'truck', img: 'img/ch_truck.jpg', ru: 'Грузовик', char: '卡车', pinyin: 'kǎchē', ru_trans: 'кха-чхэ', audio: 'audio/ch_truck.mp3', ru_audio: 'audio/ru_truck.mp3' },
+{ id: 'rocket', img: 'img/ch_rocket.jpg', ru: 'Ракета', char: '火箭', pinyin: 'huǒjiàn', ru_trans: 'хуо-цзянь', audio: 'audio/ch_rocket.mp3', ru_audio: 'audio/ru_rocket.mp3' }
+],
+'body': [
+{ id: 'head', img: 'img/ch_head.jpg', ru: 'Голова', char: '头', pinyin: 'tóu', ru_trans: 'тхоу', audio: 'audio/ch_head.mp3', ru_audio: 'audio/ru_head.mp3' },
+{ id: 'hair', img: 'img/ch_hair.jpg', ru: 'Волосы', char: '头发', pinyin: 'tóufa', ru_trans: 'тхоу-фа', audio: 'audio/ch_hair.mp3', ru_audio: 'audio/ru_hair.mp3' },
+{ id: 'finger', img: 'img/ch_finger.jpg', ru: 'Пальчик', char: '手指', pinyin: 'shǒuzhǐ', ru_trans: 'шоу-чжи', audio: 'audio/ch_finger.mp3', ru_audio: 'audio/ru_finger.mp3' },
+{ id: 'tummy', img: 'img/ch_tummy.jpg', ru: 'Животик', char: '肚子', pinyin: 'dùzi', ru_trans: 'ду-цзы', audio: 'audio/ch_tummy.mp3', ru_audio: 'audio/ru_tummy.mp3' },
+{ id: 'foot', img: 'img/ch_foot.jpg', ru: 'Ступня', char: '脚', pinyin: 'jiǎo', ru_trans: 'цзяо', audio: 'audio/ch_foot.mp3', ru_audio: 'audio/ru_foot.mp3' }
+],
+'ph_manners': [
+{ id: 'please', img: 'img/ph_please.jpg', ru: 'Пожалуйста!', char: '请', pinyin: 'Qǐng', ru_trans: 'цин', audio: 'audio/ch_ph_please.mp3', ru_audio: 'audio/ru_ph_please.mp3' },
+{ id: 'sorry', img: 'img/ph_sorry.jpg', ru: 'Извини!', char: '对不起', pinyin: 'Duìbuqǐ', ru_trans: 'дуй-бу-ци', audio: 'audio/ch_ph_sorry.mp3', ru_audio: 'audio/ru_ph_sorry.mp3' },
+{ id: 'welcome', img: 'img/ph_welcome.jpg', ru: 'Не за что!', char: '不客气', pinyin: 'Bú kèqi', ru_trans: 'бу кэ-ци', audio: 'audio/ch_ph_welcome.mp3', ru_audio: 'audio/ru_ph_welcome.mp3' },
+{ id: 'night', img: 'img/ph_night.jpg', ru: 'Спокойной ночи!', char: '晚安', pinyin: 'Wǎnʼān', ru_trans: 'вань-ань', audio: 'audio/ch_ph_night.mp3', ru_audio: 'audio/ru_ph_night.mp3' },
+{ id: 'ok', img: 'img/ph_ok.jpg', ru: 'Хорошо!', char: '好的', pinyin: 'Hǎode', ru_trans: 'хао-дэ', audio: 'audio/ch_ph_ok.mp3', ru_audio: 'audio/ru_ph_ok.mp3' }
+],
+'ph_needs': [
+{ id: 'sleep', img: 'img/ph_sleep.jpg', ru: 'Я хочу спать', char: '我想睡觉', pinyin: 'Wǒ xiǎng shuìjiào', ru_trans: 'во сян шуй-цзяо', audio: 'audio/ch_ph_sleep.mp3', ru_audio: 'audio/ru_ph_sleep.mp3' },
+{ id: 'cold', img: 'img/ph_cold.jpg', ru: 'Мне холодно', char: '我冷', pinyin: 'Wǒ lěng', ru_trans: 'во лэн', audio: 'audio/ch_ph_cold.mp3', ru_audio: 'audio/ru_ph_cold.mp3' },
+{ id: 'hot', img: 'img/ph_hot.jpg', ru: 'Мне жарко', char: '我热', pinyin: 'Wǒ rè', ru_trans: 'во жэ', audio: 'audio/ch_ph_hot.mp3', ru_audio: 'audio/ru_ph_hot.mp3' },
+{ id: 'home', img: 'img/ph_home.jpg', ru: 'Я хочу домой', char: '我想回家', pinyin: 'Wǒ xiǎng huí jiā', ru_trans: 'во сян хуй цзя', audio: 'audio/ch_ph_home.mp3', ru_audio: 'audio/ru_ph_home.mp3' },
+{ id: 'hurt', img: 'img/ph_hurt.jpg', ru: 'У меня болит', char: '我疼', pinyin: 'Wǒ téng', ru_trans: 'во тхэн', audio: 'audio/ch_ph_hurt.mp3', ru_audio: 'audio/ru_ph_hurt.mp3' }
+],
+'ph_play': [
+{ id: 'run', img: 'img/ph_run.jpg', ru: 'Давай бегать!', char: '我们跑吧', pinyin: 'Wǒmen pǎo ba', ru_trans: 'во-мэнь пхао ба', audio: 'audio/ch_ph_run.mp3', ru_audio: 'audio/ru_ph_run.mp3' },
+{ id: 'jump', img: 'img/ph_jump.jpg', ru: 'Прыгай!', char: '跳', pinyin: 'Tiào', ru_trans: 'тхяо', audio: 'audio/ch_ph_jump.mp3', ru_audio: 'audio/ru_ph_jump.mp3' },
+{ id: 'look', img: 'img/ph_look.jpg', ru: 'Смотри!', char: '你看', pinyin: 'Nǐ kàn', ru_trans: 'ни кхань', audio: 'audio/ch_ph_look.mp3', ru_audio: 'audio/ru_ph_look.mp3' },
+{ id: 'again', img: 'img/ph_again.jpg', ru: 'Ещё раз!', char: '再一次', pinyin: 'Zài yī cì', ru_trans: 'цзай и цы', audio: 'audio/ch_ph_again.mp3', ru_audio: 'audio/ru_ph_again.mp3' },
+{ id: 'welldone', img: 'img/ph_welldone.jpg', ru: 'Молодец!', char: '真棒', pinyin: 'Zhēn bàng', ru_trans: 'чжэнь бан', audio: 'audio/ch_ph_welldone.mp3', ru_audio: 'audio/ru_ph_welldone.mp3' }
+],
+'ph_shop': [
+{ id: 'buy', img: 'img/ph_buy.jpg', ru: 'Купить', char: '买', pinyin: 'Mǎi', ru_trans: 'май', audio: 'audio/ch_ph_buy.mp3', ru_audio: 'audio/ru_ph_buy.mp3' },
+{ id: 'money', img: 'img/ph_money.jpg', ru: 'Деньги', char: '钱', pinyin: 'Qián', ru_trans: 'цьень', audio: 'audio/ch_ph_money.mp3', ru_audio: 'audio/ru_ph_money.mp3' },
+{ id: 'little', img: 'img/ph_little.jpg', ru: 'Немного', char: '一点', pinyin: 'Yīdiǎn', ru_trans: 'и-дьянь', audio: 'audio/ch_ph_little.mp3', ru_audio: 'audio/ru_ph_little.mp3' },
+{ id: 'many', img: 'img/ph_many.jpg', ru: 'Много', char: '很多', pinyin: 'Hěn duō', ru_trans: 'хэнь дуо', audio: 'audio/ch_ph_many.mp3', ru_audio: 'audio/ru_ph_many.mp3' },
+{ id: 'gift', img: 'img/ph_gift.jpg', ru: 'Подарок', char: '礼物', pinyin: 'Lǐwù', ru_trans: 'ли-ву', audio: 'audio/ch_ph_gift.mp3', ru_audio: 'audio/ru_ph_gift.mp3' }
+],
+'ph_way': [
+{ id: 'left', img: 'img/ph_left.jpg', ru: 'Поверни налево', char: '向左转', pinyin: 'Xiàng zuǒ zhuǎn', ru_trans: 'сян цзуо чжуань', audio: 'audio/ch_ph_left.mp3', ru_audio: 'audio/ru_ph_left.mp3' },
+{ id: 'stop', img: 'img/ph_stop.jpg', ru: 'Стой!', char: '停', pinyin: 'Tíng', ru_trans: 'тхин', audio: 'audio/ch_ph_stop.mp3', ru_audio: 'audio/ru_ph_stop.mp3' },
+{ id: 'far', img: 'img/ph_far.jpg', ru: 'Далеко', char: '远', pinyin: 'Yuǎn', ru_trans: 'юань', audio: 'audio/ch_ph_far.mp3', ru_audio: 'audio/ru_ph_far.mp3' },
+{ id: 'near', img: 'img/ph_near.jpg', ru: 'Близко', char: '近', pinyin: 'Jìn', ru_trans: 'цзинь', audio: 'audio/ch_ph_near.mp3', ru_audio: 'audio/ru_ph_near.mp3' },
+{ id: 'here', img: 'img/ph_here.jpg', ru: 'Здесь', char: '这里', pinyin: 'Zhèlǐ', ru_trans: 'чжэ-ли', audio: 'audio/ch_ph_here.mp3', ru_audio: 'audio/ru_ph_here.mp3' }
+]
+};
+
+// 🔥 АВТОДОЛИВ: новые карточки сами попадают в базу, карточки и викторину
+for (const cat in extraChineseData) {
+    if (chineseDatabase[cat]) chineseDatabase[cat].push(...extraChineseData[cat]);
 }
