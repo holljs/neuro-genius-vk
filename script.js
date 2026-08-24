@@ -2941,7 +2941,7 @@ const extraChineseData = {
 'animals': [
 { id: 'panda', img: 'img/ch_panda.jpg', ru: 'Панда', char: '熊猫', pinyin: 'xióngmāo', ru_trans: 'сюн-мао', audio: 'audio/ch_panda.mp3', ru_audio: 'audio/ru_panda.mp3' },
 { id: 'monkey', img: 'img/ch_monkey.jpg', ru: 'Обезьянка', char: '猴子', pinyin: 'hóuzi', ru_trans: 'хоу-цзы', audio: 'audio/ch_monkey.mp3', ru_audio: 'audio/ru_monkey.mp3' },
-{ id: 'rabbit', img: 'img/ch_rabbit.jpg', ru: 'Кролик', char: '兔子', pinyin: 'tùzi', ru_trans: 'ту-цзы', audio: 'audio/ch_rabbit.mp3', ru_audio: 'audio/ru_rabbit.mp3' },
+{ id: 'rabbit', img: 'img/ch_rabbit.jpg', ru: 'Зайка', char: '兔子', pinyin: 'tùzi', ru_trans: 'ту-цзы', audio: 'audio/ch_rabbit.mp3', ru_audio: 'audio/ru_rabbit.mp3' },
 { id: 'fish', img: 'img/ch_fish.jpg', ru: 'Рыбка', char: '鱼', pinyin: 'yú', ru_trans: 'юй', audio: 'audio/ch_fish.mp3', ru_audio: 'audio/ru_fish.mp3' },
 { id: 'duck', img: 'img/ch_duck.jpg', ru: 'Утёнок', char: '鸭子', pinyin: 'yāzi', ru_trans: 'я-цзы', audio: 'audio/ch_duck.mp3', ru_audio: 'audio/ru_duck.mp3' }
 ],
