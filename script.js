@@ -2746,189 +2746,146 @@ const CHQ_INFO_SVG = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none
 const CHQ_MEDAL_SVG = '<svg width="70" height="70" viewBox="0 0 24 24" fill="none" stroke="#7A90A4" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="6"></circle><polyline points="8.5 13 7 22 12 19.5 17 22 15.5 13"></polyline></svg>';
 
 function startChineseQuiz(mode) {
-    try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "medium"}); } catch(e){}
-    chqMode = mode;
-    chqItems = [];
-    const cats = mode === 'words' ? wordsCategories : phrasesCategories;
-    cats.forEach(cat => {
-        if (chineseDatabase[cat]) {
-            chineseDatabase[cat].forEach(item => chqItems.push(item));
-        }
-    });
-    chqItems = shuffleArray([...chqItems]).slice(0, 10);
-    if (chqItems.length < 4) { alert("Слишком мало карточек для викторины!"); return; }
-    chqIndex = 0;
-    chqScore = 0;
-    document.getElementById('chq-total').innerText = chqItems.length;
-    document.getElementById('chq-title').innerText = mode === 'words' ? 'Проверка знаний: Слова' : 'Проверка знаний: Фразы';
-    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-    document.getElementById('screen-chinese-quiz').classList.add('active');
-    showChineseQuestion();
+try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "medium"}); } catch(e){}
+chqMode = mode;
+chqItems = [];
+const cats = mode === 'words' ? wordsCategories : phrasesCategories;
+cats.forEach(cat => {
+if (chineseDatabase[cat]) {
+chineseDatabase[cat].forEach(item => chqItems.push(item));
+}
+});
+chqItems = shuffleArray([...chqItems]).slice(0, 10);
+if (chqItems.length < 4) { alert("Слишком мало слов в базе!"); return; }
+chqIndex = 0;
+chqScore = 0;
+document.getElementById('chq-total').innerText = chqItems.length;
+document.getElementById('chq-title').innerText = mode === 'words' ? 'Проверка знаний: Слова' : 'Проверка знаний: Фразы';
+document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+document.getElementById('screen-chinese-quiz').classList.add('active');
+showChineseQuestion();
 }
 
 function showChineseQuestion() {
-    if (chqIndex >= chqItems.length) { finishChineseQuiz(); return; }
-    chqCurrentQuestion = chqItems[chqIndex];
-    chqSelectedAnswer = null;
-    chqAnswered = false;
-
-    document.getElementById('chq-current').innerText = chqIndex + 1;
-    const qImg = document.getElementById('chq-image');
-    qImg.onerror = function(){ this.onerror = null; this.src = 'img/icon_memo.png'; };
-    qImg.src = chqCurrentQuestion.img;
-    document.getElementById('chq-feedback').innerText = '';
-
-    const imgBox = document.getElementById('chq-image-box');
-    if (imgBox) imgBox.style.display = 'flex';
-
-    const answerBtn = document.getElementById('chq-answer-btn');
-    answerBtn.style.display = 'block';
-    answerBtn.innerText = 'Ответить';
-    answerBtn.onclick = checkChineseQuizAnswer;
-
-    let wrong = chqItems.filter(i => i.id !== chqCurrentQuestion.id && i.ru !== chqCurrentQuestion.ru);
-    wrong = shuffleArray(wrong).slice(0, 3);
-    const options = shuffleArray([chqCurrentQuestion, ...wrong]);
-
-    const box = document.getElementById('chq-options');
-    box.innerHTML = '';
-    options.forEach(opt => {
-        const row = document.createElement('div');
-        row.className = 'chq-row';
-        row.setAttribute('data-id', opt.id);
-        row.style.cssText = 'display:flex; align-items:center; gap:12px; background:#fff; border:2px solid #E2E8F0; border-radius:16px; padding:10px 12px; cursor:pointer; transition:all 0.2s;';
-
-        const check = document.createElement('div');
-        check.className = 'chq-check';
-        check.style.cssText = 'width:30px; height:30px; border:2px solid #C3CDD9; border-radius:8px; background:#fff; display:flex; align-items:center; justify-content:center; flex-shrink:0; transition:all 0.2s;';
-
-        const charLabel = document.createElement('div');
-        charLabel.style.cssText = 'flex:1; text-align:center; font-size:26px; font-weight:bold; color:#333; line-height:1.2; word-break:break-all;';
-        charLabel.innerText = opt.char;
-
-        const spk = document.createElement('div');
-        spk.style.cssText = 'width:36px; height:36px; border-radius:50%; background:#F4F6F9; display:flex; align-items:center; justify-content:center; flex-shrink:0;';
-        spk.innerHTML = CHQ_SPEAKER_SVG;
-
-        const playOptAudio = (e) => {
-            e.stopPropagation();
-            if (opt.audio) playSound(opt.audio);
-            try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(err){}
-        };
-        charLabel.onclick = playOptAudio;
-        spk.onclick = playOptAudio;
-
-        row.onclick = () => {
-            if (chqAnswered) return;
-            box.querySelectorAll('.chq-row').forEach(r => {
-                r.style.borderColor = '#E2E8F0';
-                r.style.background = '#fff';
-                const c = r.querySelector('.chq-check');
-                c.innerHTML = '';
-                c.style.background = '#fff';
-                c.style.borderColor = '#C3CDD9';
-            });
-            if (chqSelectedAnswer === opt.id) { chqSelectedAnswer = null; return; }
-            chqSelectedAnswer = opt.id;
-            row.style.borderColor = '#7A90A4';
-            row.style.background = '#F4F6F9';
-            check.innerHTML = CHQ_CHECK_SVG;
-            check.style.background = '#7A90A4';
-            check.style.borderColor = '#7A90A4';
-            try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(err){}
-        };
-
-        row.appendChild(check);
-        row.appendChild(charLabel);
-        row.appendChild(spk);
-        box.appendChild(row);
-    });
+if (chqIndex >= chqItems.length) { finishChineseQuiz(); return; }
+chqCurrentQuestion = chqItems[chqIndex];
+chqSelectedAnswer = null;
+chqAnswered = false;
+document.getElementById('chq-current').innerText = chqIndex + 1;
+const qImg = document.getElementById('chq-image');
+qImg.onerror = function(){ this.onerror = null; this.src = 'img/icon_memo.png'; };
+qImg.src = chqCurrentQuestion.img;
+document.getElementById('chq-feedback').innerText = '';
+const imgBox = document.getElementById('chq-image-box');
+if (imgBox) imgBox.style.display = 'flex';
+const answerBtn = document.getElementById('chq-answer-btn');
+answerBtn.style.display = 'block';
+answerBtn.innerText = 'Ответить';
+answerBtn.onclick = checkChineseQuizAnswer;
+let wrong = chqItems.filter(i => i.id !== chqCurrentQuestion.id && i.ru !== chqCurrentQuestion.ru);
+wrong = shuffleArray(wrong).slice(0, 3);
+const options = shuffleArray([chqCurrentQuestion, ...wrong]);
+const box = document.getElementById('chq-options');
+box.innerHTML = '';
+options.forEach(opt => {
+const row = document.createElement('div');
+row.setAttribute('data-id', opt.id);
+row.style.cssText = 'display:flex; align-items:center; gap:12px; background:#fff; border:2px solid #E2E8F0; border-radius:16px; padding:10px; cursor:pointer; transition:all 0.2s;';
+const check = document.createElement('div');
+check.className = 'chq-check';
+check.style.cssText = 'width:32px; height:32px; border:2px solid #C3CDD9; border-radius:8px; background:#fff; display:flex; align-items:center; justify-content:center; flex-shrink:0; transition:all 0.2s;';
+const charLabel = document.createElement('div');
+charLabel.style.cssText = 'flex:1; font-size:26px; font-weight:bold; color:#d32f2f; text-align:center; padding:8px;';
+charLabel.innerText = opt.char;
+const spk = document.createElement('div');
+spk.style.cssText = 'width:36px; height:36px; border-radius:50%; background:#F4F6F9; display:flex; align-items:center; justify-content:center; flex-shrink:0;';
+spk.innerHTML = CHQ_SPEAKER_SVG;
+const playOpt = (e) => { e.stopPropagation(); if (opt.audio) playSound(opt.audio); };
+charLabel.onclick = playOpt;
+spk.onclick = playOpt;
+row.onclick = () => {
+if (chqAnswered) return;
+box.querySelectorAll('div[data-id]').forEach(r => {
+r.style.borderColor = '#E2E8F0'; r.style.background = '#fff';
+const c = r.querySelector('.chq-check');
+c.innerHTML = ''; c.style.background = '#fff'; c.style.borderColor = '#C3CDD9';
+});
+if (chqSelectedAnswer === opt.id) { chqSelectedAnswer = null; return; }
+chqSelectedAnswer = opt.id;
+row.style.borderColor = '#7A90A4'; row.style.background = '#F4F6F9';
+check.innerHTML = CHQ_CHECK_SVG; check.style.background = '#7A90A4'; check.style.borderColor = '#7A90A4';
+};
+row.appendChild(charLabel);
+row.appendChild(check);
+row.appendChild(spk);
+box.appendChild(row);
+});
 }
 
 function playQuizRussian() {
-    if (chqCurrentQuestion && chqCurrentQuestion.ru_audio) playSound(chqCurrentQuestion.ru_audio);
-    try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(e){}
+if (chqCurrentQuestion && chqCurrentQuestion.ru_audio) playSound(chqCurrentQuestion.ru_audio);
 }
 
 function checkChineseQuizAnswer() {
-    if (chqAnswered) return;
-    const feedback = document.getElementById('chq-feedback');
-    if (!chqSelectedAnswer) {
-        feedback.innerHTML = '<span style="color:#7A90A4; display:inline-flex; align-items:center; gap:6px; justify-content:center;">' + CHQ_INFO_SVG + ' Сначала отметь ответ галочкой</span>';
-        return;
-    }
-    chqAnswered = true;
-    const correct = chqSelectedAnswer === chqCurrentQuestion.id;
-    const box = document.getElementById('chq-options');
-
-    box.querySelectorAll('.chq-row').forEach(row => {
-        const id = row.getAttribute('data-id');
-        if (id === chqCurrentQuestion.id) {
-            row.style.borderColor = '#9CBFA6';
-            row.style.background = '#EFF5F0';
-        } else if (id === chqSelectedAnswer && !correct) {
-            row.style.borderColor = '#C9A0A0';
-            row.style.background = '#F7F0F0';
-        }
-    });
-
-    if (correct) {
-        try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "medium"}); } catch(e){}
-        playSound('audio/correct.wav');
-        feedback.innerHTML = '<span style="color:#6E9B80; display:inline-flex; align-items:center; gap:8px; justify-content:center;">' + CHQ_OK_SVG + ' Верно! ' + chqCurrentQuestion.ru + '</span>';
-        chqScore++;
-    } else {
-        try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "heavy"}); } catch(e){}
-        playSound('audio/wrong.wav');
-        feedback.innerHTML = '<span style="color:#B08585; display:inline-flex; align-items:center; gap:8px; justify-content:center;">' + CHQ_NO_SVG + ' Правильный ответ: ' + chqCurrentQuestion.char + ' (' + chqCurrentQuestion.ru + ')</span>';
-    }
-
-    const btn = document.getElementById('chq-answer-btn');
-    btn.innerText = (chqIndex === chqItems.length - 1) ? 'Результат' : 'Дальше';
-    btn.onclick = () => { chqIndex++; showChineseQuestion(); };
+if (chqAnswered) return;
+if (!chqSelectedAnswer) {
+document.getElementById('chq-feedback').innerHTML = '<span style="color:#7A90A4; display:inline-flex; align-items:center; gap:6px;">' + CHQ_INFO_SVG + ' Сначала отметь ответ галочкой</span>';
+return;
+}
+chqAnswered = true;
+const correct = chqSelectedAnswer === chqCurrentQuestion.id;
+const feedback = document.getElementById('chq-feedback');
+document.getElementById('chq-options').querySelectorAll('div[data-id]').forEach(row => {
+const id = row.getAttribute('data-id');
+if (id === chqCurrentQuestion.id) { row.style.borderColor = '#9CBFA6'; row.style.background = '#EFF5F0'; }
+else if (id === chqSelectedAnswer && !correct) { row.style.borderColor = '#C9A0A0'; row.style.background = '#F7F0F0'; }
+});
+if (correct) {
+try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "medium"}); } catch(e){}
+playSound('audio/correct.wav');
+feedback.innerHTML = '<span style="color:#6E9B80; display:inline-flex; align-items:center; gap:8px;">' + CHQ_OK_SVG + ' Верно! ' + chqCurrentQuestion.ru + '</span>';
+chqScore++;
+} else {
+try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "heavy"}); } catch(e){}
+playSound('audio/wrong.wav');
+feedback.innerHTML = '<span style="color:#B08585; display:inline-flex; align-items:center; gap:8px;">' + CHQ_NO_SVG + ' Правильный ответ: ' + chqCurrentQuestion.char + ' (' + chqCurrentQuestion.ru + ')</span>';
+}
+const btn = document.getElementById('chq-answer-btn');
+btn.innerText = (chqIndex === chqItems.length - 1) ? 'Результат' : 'Дальше';
+btn.onclick = () => { chqIndex++; showChineseQuestion(); };
 }
 
 function finishChineseQuiz() {
-    document.getElementById('chq-options').innerHTML = '';
-    const answerBtn = document.getElementById('chq-answer-btn');
-    if (answerBtn) answerBtn.style.display = 'none';
-    const imgBox = document.getElementById('chq-image-box');
-    if (imgBox) imgBox.style.display = 'none';
-
-    const percent = Math.round((chqScore / chqItems.length) * 100);
-    let msg = "";
-    if (percent === 100) msg = "Ты настоящий Гений!";
-    else if (percent >= 70) msg = "Отличный результат!";
-    else if (percent >= 50) msg = "Хорошо! Ещё немного практики!";
-    else msg = "Потренируйся ещё разок!";
-
-    document.getElementById('chq-feedback').innerHTML = `
-        <div style="margin-bottom:10px;">${CHQ_MEDAL_SVG}</div>
-        <div style="font-size:40px; font-weight:900; color:#333;">${chqScore} / ${chqItems.length}</div>
-        <div style="font-size:17px; color:#7A90A4; margin:10px 0 20px 0;">${msg}</div>
-        <button onclick="startChineseQuiz('${chqMode}')" style="padding:12px 28px; background:#7A90A4; color:white; border:none; border-radius:20px; font-size:15px; font-weight:bold; cursor:pointer; margin:5px;">Ещё раз</button>
-        <button onclick="goBackFromChineseQuiz()" style="padding:12px 28px; background:#fff; color:#7A90A4; border:2px solid #E2E8F0; border-radius:20px; font-size:15px; font-weight:bold; cursor:pointer; margin:5px;">В меню</button>
-    `;
-    playSound('audio/words_win.wav');
+document.getElementById('chq-options').innerHTML = '';
+const answerBtn = document.getElementById('chq-answer-btn');
+if (answerBtn) answerBtn.style.display = 'none';
+const imgBox = document.getElementById('chq-image-box');
+if (imgBox) imgBox.style.display = 'none';
+const percent = Math.round((chqScore / chqItems.length) * 100);
+let msg = "";
+if (percent === 100) msg = "Ты настоящий Гений!";
+else if (percent >= 70) msg = "Отличный результат!";
+else if (percent >= 50) msg = "Неплохо! Потренируйся ещё!";
+else msg = "Давай ещё раз!";
+document.getElementById('chq-feedback').innerHTML =
+'<div style="margin-bottom:10px;">' + CHQ_MEDAL_SVG + '</div>' +
+'<div style="font-size:40px; font-weight:900; color:#333;">' + chqScore + ' / ' + chqItems.length + '</div>' +
+'<div style="font-size:18px; color:#7A90A4; margin:10px 0 20px 0;">' + msg + '</div>' +
+'<button onclick="startChineseQuiz(chqMode)" style="padding:12px 28px; background:#7A90A4; color:white; border:none; border-radius:20px; font-size:16px; font-weight:bold; cursor:pointer; margin:5px;">Ещё раз</button>' +
+'<button onclick="goBackFromChineseQuiz()" style="padding:12px 28px; background:#fff; color:#7A90A4; border:2px solid #E2E8F0; border-radius:20px; font-size:16px; font-weight:bold; cursor:pointer; margin:5px;">В меню</button>';
+playSound('audio/words_win.wav');
 }
 
 function goBackFromChineseQuiz() {
-    try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(e){}
-    if (currentAudio) { currentAudio.pause(); currentAudio.currentTime = 0; }
-    document.getElementById('screen-chinese-quiz').classList.remove('active');
-    if (chqMode === 'words') document.getElementById('screen-chinese-words-menu').classList.add('active');
-    else document.getElementById('screen-chinese-phrases-menu').classList.add('active');
-}
-
-/* 🔥 Пока детальку тащат — отключаем любые transition, чтобы не "плыла" */
-.draggable-item.dragging {
-transition: none !important;
-animation: none !important;
+try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(e){}
+document.getElementById('screen-chinese-quiz').classList.remove('active');
+if (chqMode === 'words') document.getElementById('screen-chinese-words-menu').classList.add('active');
+else document.getElementById('screen-chinese-phrases-menu').classList.add('active');
+if (currentAudio) { currentAudio.pause(); currentAudio.currentTime = 0; }
 }
 
 // ==========================================
 //   ДОПОЛНЕНИЕ БАЗЫ: +5 КАРТОЧЕК В КАЖДУЮ КАТЕГОРИЮ
-//   (становится по 10 — карточки и викторина подхватят сами)
 // ==========================================
 const extraChineseData = {
 'food': [
@@ -2967,43 +2924,42 @@ const extraChineseData = {
 { id: 'foot', img: 'img/ch_foot.jpg', ru: 'Ступня', char: '脚', pinyin: 'jiǎo', ru_trans: 'цзяо', audio: 'audio/ch_foot.mp3', ru_audio: 'audio/ru_foot.mp3' }
 ],
 'ph_manners': [
-{ id: 'please', img: 'img/ph_please.jpg', ru: 'Пожалуйста!', char: '请', pinyin: 'Qǐng', ru_trans: 'цин', audio: 'audio/ch_ph_please.mp3', ru_audio: 'audio/ru_ph_please.mp3' },
-{ id: 'sorry', img: 'img/ph_sorry.jpg', ru: 'Извини!', char: '对不起', pinyin: 'Duìbuqǐ', ru_trans: 'дуй-бу-ци', audio: 'audio/ch_ph_sorry.mp3', ru_audio: 'audio/ru_ph_sorry.mp3' },
-{ id: 'welcome', img: 'img/ph_welcome.jpg', ru: 'Не за что!', char: '不客气', pinyin: 'Bú kèqi', ru_trans: 'бу кэ-ци', audio: 'audio/ch_ph_welcome.mp3', ru_audio: 'audio/ru_ph_welcome.mp3' },
-{ id: 'night', img: 'img/ph_night.jpg', ru: 'Спокойной ночи!', char: '晚安', pinyin: 'Wǎnʼān', ru_trans: 'вань-ань', audio: 'audio/ch_ph_night.mp3', ru_audio: 'audio/ru_ph_night.mp3' },
-{ id: 'ok', img: 'img/ph_ok.jpg', ru: 'Хорошо!', char: '好的', pinyin: 'Hǎode', ru_trans: 'хао-дэ', audio: 'audio/ch_ph_ok.mp3', ru_audio: 'audio/ru_ph_ok.mp3' }
+{ id: 'please', img: 'img/ph_please.jpg', ru: 'Пожалуйста!', char: '请', pinyin: 'qǐng', ru_trans: 'цин', audio: 'audio/ch_ph_please.mp3', ru_audio: 'audio/ru_ph_please.mp3' },
+{ id: 'sorry', img: 'img/ph_sorry.jpg', ru: 'Извини!', char: '对不起', pinyin: 'duìbuqǐ', ru_trans: 'дуй-бу-ци', audio: 'audio/ch_ph_sorry.mp3', ru_audio: 'audio/ru_ph_sorry.mp3' },
+{ id: 'welcome', img: 'img/ph_welcome.jpg', ru: 'Не за что!', char: '不客气', pinyin: 'bú kèqi', ru_trans: 'бу кэ-ци', audio: 'audio/ch_ph_welcome.mp3', ru_audio: 'audio/ru_ph_welcome.mp3' },
+{ id: 'night', img: 'img/ph_night.jpg', ru: 'Спокойной ночи!', char: '晚安', pinyin: "wǎn'ān", ru_trans: 'вань-ань', audio: 'audio/ch_ph_night.mp3', ru_audio: 'audio/ru_ph_night.mp3' },
+{ id: 'ok', img: 'img/ph_ok.jpg', ru: 'Хорошо!', char: '好的', pinyin: 'hǎode', ru_trans: 'хао-дэ', audio: 'audio/ch_ph_ok.mp3', ru_audio: 'audio/ru_ph_ok.mp3' }
 ],
 'ph_needs': [
-{ id: 'sleep', img: 'img/ph_sleep.jpg', ru: 'Я хочу спать', char: '我想睡觉', pinyin: 'Wǒ xiǎng shuìjiào', ru_trans: 'во сян шуй-цзяо', audio: 'audio/ch_ph_sleep.mp3', ru_audio: 'audio/ru_ph_sleep.mp3' },
-{ id: 'cold', img: 'img/ph_cold.jpg', ru: 'Мне холодно', char: '我冷', pinyin: 'Wǒ lěng', ru_trans: 'во лэн', audio: 'audio/ch_ph_cold.mp3', ru_audio: 'audio/ru_ph_cold.mp3' },
-{ id: 'hot', img: 'img/ph_hot.jpg', ru: 'Мне жарко', char: '我热', pinyin: 'Wǒ rè', ru_trans: 'во жэ', audio: 'audio/ch_ph_hot.mp3', ru_audio: 'audio/ru_ph_hot.mp3' },
-{ id: 'home', img: 'img/ph_home.jpg', ru: 'Я хочу домой', char: '我想回家', pinyin: 'Wǒ xiǎng huí jiā', ru_trans: 'во сян хуй цзя', audio: 'audio/ch_ph_home.mp3', ru_audio: 'audio/ru_ph_home.mp3' },
-{ id: 'hurt', img: 'img/ph_hurt.jpg', ru: 'У меня болит', char: '我疼', pinyin: 'Wǒ téng', ru_trans: 'во тхэн', audio: 'audio/ch_ph_hurt.mp3', ru_audio: 'audio/ru_ph_hurt.mp3' }
+{ id: 'sleep', img: 'img/ph_sleep.jpg', ru: 'Я хочу спать', char: '我想睡觉', pinyin: 'wǒ xiǎng shuìjiào', ru_trans: 'во сян шуй-цзяо', audio: 'audio/ch_ph_sleep.mp3', ru_audio: 'audio/ru_ph_sleep.mp3' },
+{ id: 'cold', img: 'img/ph_cold.jpg', ru: 'Мне холодно', char: '我冷', pinyin: 'wǒ lěng', ru_trans: 'во лэн', audio: 'audio/ch_ph_cold.mp3', ru_audio: 'audio/ru_ph_cold.mp3' },
+{ id: 'hot', img: 'img/ph_hot.jpg', ru: 'Мне жарко', char: '我热', pinyin: 'wǒ rè', ru_trans: 'во жэ', audio: 'audio/ch_ph_hot.mp3', ru_audio: 'audio/ru_ph_hot.mp3' },
+{ id: 'home', img: 'img/ph_home.jpg', ru: 'Я хочу домой', char: '我想回家', pinyin: 'wǒ xiǎng huí jiā', ru_trans: 'во сян хуй цзя', audio: 'audio/ch_ph_home.mp3', ru_audio: 'audio/ru_ph_home.mp3' },
+{ id: 'hurt', img: 'img/ph_hurt.jpg', ru: 'У меня болит', char: '我疼', pinyin: 'wǒ téng', ru_trans: 'во тхэн', audio: 'audio/ch_ph_hurt.mp3', ru_audio: 'audio/ru_ph_hurt.mp3' }
 ],
 'ph_play': [
-{ id: 'run', img: 'img/ph_run.jpg', ru: 'Давай бегать!', char: '我们跑吧', pinyin: 'Wǒmen pǎo ba', ru_trans: 'во-мэнь пхао ба', audio: 'audio/ch_ph_run.mp3', ru_audio: 'audio/ru_ph_run.mp3' },
-{ id: 'jump', img: 'img/ph_jump.jpg', ru: 'Прыгай!', char: '跳', pinyin: 'Tiào', ru_trans: 'тхяо', audio: 'audio/ch_ph_jump.mp3', ru_audio: 'audio/ru_ph_jump.mp3' },
-{ id: 'look', img: 'img/ph_look.jpg', ru: 'Смотри!', char: '你看', pinyin: 'Nǐ kàn', ru_trans: 'ни кхань', audio: 'audio/ch_ph_look.mp3', ru_audio: 'audio/ru_ph_look.mp3' },
-{ id: 'again', img: 'img/ph_again.jpg', ru: 'Ещё раз!', char: '再一次', pinyin: 'Zài yī cì', ru_trans: 'цзай и цы', audio: 'audio/ch_ph_again.mp3', ru_audio: 'audio/ru_ph_again.mp3' },
-{ id: 'welldone', img: 'img/ph_welldone.jpg', ru: 'Молодец!', char: '真棒', pinyin: 'Zhēn bàng', ru_trans: 'чжэнь бан', audio: 'audio/ch_ph_welldone.mp3', ru_audio: 'audio/ru_ph_welldone.mp3' }
+{ id: 'run', img: 'img/ph_run.jpg', ru: 'Давай бегать!', char: '我们跑吧', pinyin: 'wǒmen pǎo ba', ru_trans: 'во-мэнь пхао ба', audio: 'audio/ch_ph_run.mp3', ru_audio: 'audio/ru_ph_run.mp3' },
+{ id: 'jump', img: 'img/ph_jump.jpg', ru: 'Прыгай!', char: '跳', pinyin: 'tiào', ru_trans: 'тхяо', audio: 'audio/ch_ph_jump.mp3', ru_audio: 'audio/ru_ph_jump.mp3' },
+{ id: 'look', img: 'img/ph_look.jpg', ru: 'Смотри!', char: '你看', pinyin: 'nǐ kàn', ru_trans: 'ни кхань', audio: 'audio/ch_ph_look.mp3', ru_audio: 'audio/ru_ph_look.mp3' },
+{ id: 'again', img: 'img/ph_again.jpg', ru: 'Ещё раз!', char: '再一次', pinyin: 'zài yī cì', ru_trans: 'цзай и цы', audio: 'audio/ch_ph_again.mp3', ru_audio: 'audio/ru_ph_again.mp3' },
+{ id: 'welldone', img: 'img/ph_welldone.jpg', ru: 'Молодец!', char: '真棒', pinyin: 'zhēn bàng', ru_trans: 'чжэнь бан', audio: 'audio/ch_ph_welldone.mp3', ru_audio: 'audio/ru_ph_welldone.mp3' }
 ],
 'ph_shop': [
-{ id: 'buy', img: 'img/ph_buy.jpg', ru: 'Купить', char: '买', pinyin: 'Mǎi', ru_trans: 'май', audio: 'audio/ch_ph_buy.mp3', ru_audio: 'audio/ru_ph_buy.mp3' },
-{ id: 'money', img: 'img/ph_money.jpg', ru: 'Деньги', char: '钱', pinyin: 'Qián', ru_trans: 'цьень', audio: 'audio/ch_ph_money.mp3', ru_audio: 'audio/ru_ph_money.mp3' },
-{ id: 'little', img: 'img/ph_little.jpg', ru: 'Немного', char: '一点', pinyin: 'Yīdiǎn', ru_trans: 'и-дьянь', audio: 'audio/ch_ph_little.mp3', ru_audio: 'audio/ru_ph_little.mp3' },
-{ id: 'many', img: 'img/ph_many.jpg', ru: 'Много', char: '很多', pinyin: 'Hěn duō', ru_trans: 'хэнь дуо', audio: 'audio/ch_ph_many.mp3', ru_audio: 'audio/ru_ph_many.mp3' },
-{ id: 'gift', img: 'img/ph_gift.jpg', ru: 'Подарок', char: '礼物', pinyin: 'Lǐwù', ru_trans: 'ли-ву', audio: 'audio/ch_ph_gift.mp3', ru_audio: 'audio/ru_ph_gift.mp3' }
+{ id: 'buy', img: 'img/ph_buy.jpg', ru: 'Купить', char: '买', pinyin: 'mǎi', ru_trans: 'май', audio: 'audio/ch_ph_buy.mp3', ru_audio: 'audio/ru_ph_buy.mp3' },
+{ id: 'money', img: 'img/ph_money.jpg', ru: 'Деньги', char: '钱', pinyin: 'qián', ru_trans: 'цьень', audio: 'audio/ch_ph_money.mp3', ru_audio: 'audio/ru_ph_money.mp3' },
+{ id: 'little', img: 'img/ph_little.jpg', ru: 'Немного', char: '一点', pinyin: 'yīdiǎn', ru_trans: 'и-дьянь', audio: 'audio/ch_ph_little.mp3', ru_audio: 'audio/ru_ph_little.mp3' },
+{ id: 'many', img: 'img/ph_many.jpg', ru: 'Много', char: '很多', pinyin: 'hěn duō', ru_trans: 'хэнь дуо', audio: 'audio/ch_ph_many.mp3', ru_audio: 'audio/ru_ph_many.mp3' },
+{ id: 'gift', img: 'img/ph_gift.jpg', ru: 'Подарок', char: '礼物', pinyin: 'lǐwù', ru_trans: 'ли-ву', audio: 'audio/ch_ph_gift.mp3', ru_audio: 'audio/ru_ph_gift.mp3' }
 ],
 'ph_way': [
-{ id: 'left', img: 'img/ph_left.jpg', ru: 'Поверни налево', char: '向左转', pinyin: 'Xiàng zuǒ zhuǎn', ru_trans: 'сян цзуо чжуань', audio: 'audio/ch_ph_left.mp3', ru_audio: 'audio/ru_ph_left.mp3' },
-{ id: 'stop', img: 'img/ph_stop.jpg', ru: 'Стой!', char: '停', pinyin: 'Tíng', ru_trans: 'тхин', audio: 'audio/ch_ph_stop.mp3', ru_audio: 'audio/ru_ph_stop.mp3' },
-{ id: 'far', img: 'img/ph_far.jpg', ru: 'Далеко', char: '远', pinyin: 'Yuǎn', ru_trans: 'юань', audio: 'audio/ch_ph_far.mp3', ru_audio: 'audio/ru_ph_far.mp3' },
-{ id: 'near', img: 'img/ph_near.jpg', ru: 'Близко', char: '近', pinyin: 'Jìn', ru_trans: 'цзинь', audio: 'audio/ch_ph_near.mp3', ru_audio: 'audio/ru_ph_near.mp3' },
-{ id: 'here', img: 'img/ph_here.jpg', ru: 'Здесь', char: '这里', pinyin: 'Zhèlǐ', ru_trans: 'чжэ-ли', audio: 'audio/ch_ph_here.mp3', ru_audio: 'audio/ru_ph_here.mp3' }
+{ id: 'left', img: 'img/ph_left.jpg', ru: 'Поверни налево', char: '向左转', pinyin: 'xiàng zuǒ zhuǎn', ru_trans: 'сян цзуо чжуань', audio: 'audio/ch_ph_left.mp3', ru_audio: 'audio/ru_ph_left.mp3' },
+{ id: 'stop', img: 'img/ph_stop.jpg', ru: 'Стой!', char: '停', pinyin: 'tíng', ru_trans: 'тхин', audio: 'audio/ch_ph_stop.mp3', ru_audio: 'audio/ru_ph_stop.mp3' },
+{ id: 'far', img: 'img/ph_far.jpg', ru: 'Далеко', char: '远', pinyin: 'yuǎn', ru_trans: 'юань', audio: 'audio/ch_ph_far.mp3', ru_audio: 'audio/ru_ph_far.mp3' },
+{ id: 'near', img: 'img/ph_near.jpg', ru: 'Близко', char: '近', pinyin: 'jìn', ru_trans: 'цзинь', audio: 'audio/ch_ph_near.mp3', ru_audio: 'audio/ru_ph_near.mp3' },
+{ id: 'here', img: 'img/ph_here.jpg', ru: 'Здесь', char: '这里', pinyin: 'zhèlǐ', ru_trans: 'чжэ-ли', audio: 'audio/ch_ph_here.mp3', ru_audio: 'audio/ru_ph_here.mp3' }
 ]
 };
 
-// 🔥 АВТОДОЛИВ: новые карточки сами попадают в базу, карточки и викторину
 for (const cat in extraChineseData) {
-    if (chineseDatabase[cat]) chineseDatabase[cat].push(...extraChineseData[cat]);
+if (chineseDatabase[cat]) chineseDatabase[cat].push(...extraChineseData[cat]);
 }
