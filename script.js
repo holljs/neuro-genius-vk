@@ -134,7 +134,7 @@ function buyPremium() {
     })
     .then(res => res.json())
     .then(data => {
-        if (data.success && data.payment_url) window.location.href = data.payment_url;
+        if (data.success && data.payment_url) { var w = window.open(data.payment_url,
     });
 }
 
