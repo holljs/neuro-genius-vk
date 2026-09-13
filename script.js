@@ -7,7 +7,7 @@ let vkPlatform = "";
 let hasPremiumAccess = false;
 
 // 🔥🔥🔥 ВАЖНО: ВПИШИ СВОИ ДАННЫЕ СЮДА 🔥🔥🔥
-const BACKEND_URL = "https://neuro-master.online"; 
+const BACKEND_URL = "https://neuro-master.online";
 const VK_GROUP_ID = 78549529; // Твой ID группы без минуса
 
 try {
@@ -16,12 +16,11 @@ try {
         userVkId = urlParams.get('vk_user_id');
         vkPlatform = urlParams.get('vk_platform');
         vkSignParams = window.location.search.replace('?', '');
-
+        
         hidePaymentsOnMobile();
 
         // Сначала убираем замочки СОВСЕМ со всех бесплатных разделов (чтобы они всегда сияли)
         // Для этого в index.html оставь класс 'locked-card' ТОЛЬКО на карточках Математики и Китайского!
-
         fetch(`${BACKEND_URL}/api/user_geniy/${userVkId}`, {
             method: "GET",
             headers: { "x-vk-sign": vkSignParams }
@@ -33,12 +32,14 @@ try {
             }
             // Если у обычного юзера или у тебя активирован Premium на бэкенде — снимаем замочки и с платных карт
             if (hasPremiumAccess) {
-document.querySelectorAll('.locked-card').forEach(el => el.classList.remove('locked-card'));
-document.querySelectorAll('.vip-lock-badge').forEach(el => el.remove());
-}
+                document.querySelectorAll('.locked-card').forEach(el => el.classList.remove('locked-card'));
+                document.querySelectorAll('.vip-lock-badge').forEach(el => el.remove());
+            }
         }).catch(err => console.log("Ошибка доступа:", err));
     });
-} catch(e) { console.log("Ошибка инициализации VK:", e); } // <-- ДОБАВИЛИ ЗАКРЫВАЮЩИЙ CATCH
+} catch(e) { 
+    console.log("Ошибка инициализации VK:", e); 
+} // <-- ДОБАВИЛИ ЗАКРЫВАЮЩИЙ CATCH
 
 // Прячем ЮKassa для модераторов и пользователей в мобильных приложениях
 function hidePaymentsOnMobile() {
@@ -119,6 +120,12 @@ if (modalText) modalText.innerHTML = "<b style='color:#FF9800; font-size:15px;'>
 
 function buyPremium() {
     try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "medium"}); } catch(e){}
+    
+    // 💡 СОВЕТ: На время запроса можно скрыть кнопку или показать лоадер, 
+    // чтобы пользователь не нажал дважды и не создал 5 дублей платежа.
+    const buyBtn = document.getElementById('btn-buy-premium');
+    if (buyBtn) buyBtn.style.pointerEvents = 'none'; // Блокируем клики
+
     const requestData = {
         user_id: parseInt(userVkId),
         amount: 250,
@@ -134,18 +141,26 @@ function buyPremium() {
     })
     .then(res => res.json())
     .then(data => {
+        if (buyBtn) buyBtn.style.pointerEvents = 'auto'; // Разблокируем кнопку
+        
         if (data.success && data.payment_url) {
-            // Открываем страницу оплаты в новой вкладке/окне
-            var w = window.open(data.payment_url, '_blank');
-            
-            // Если браузер/WebView заблокировал всплывающее окно (w будет null), 
-            // то на всякий случай делаем редирект текущего окна
-            if (!w) {
-                window.location.href = data.payment_url;
-            }
+            // 🔥 ПРАВИЛЬНЫЙ СПОСОБ ДЛЯ ВК: Открываем ссылку через VK Bridge
+            vkBridge.send("VKWebAppOpenURL", {"url": data.payment_url})
+            .catch(err => {
+                // Фоллбек на случай, если приложение запущено вне ВК (например, в обычном браузере)
+                console.warn("VKWebAppOpenURL не сработал, используем фоллбек", err);
+                var w = window.open(data.payment_url, '_blank');
+                if (!w) window.location.href = data.payment_url;
+            });
+        } else {
+            alert("Не удалось создать платеж. Попробуйте позже.");
         }
     })
-    .catch(err => console.log("Ошибка создания платежа:", err));
+    .catch(err => {
+        if (buyBtn) buyBtn.style.pointerEvents = 'auto';
+        console.log("Ошибка создания платежа:", err);
+        alert("Ошибка связи с сервером оплаты.");
+    });
 }
 
 // ==========================================
