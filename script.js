@@ -1437,21 +1437,30 @@ function goBackToMemorikaFromPoemInput() {
 function loadPredefinedPoem(poemId) {
     try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "light"}); } catch(e){}
     const textarea = document.getElementById('custom-poem-text');
-    if (poemId === 'barto') textarea.value = "Идёт бычок, качается,\nВздыхает на ходу:\n— Ох, доска кончается,\nСейчас я упаду!";
-    else if (poemId === 'pushkin') textarea.value = "У лукоморья дуб зелёный;\nЗлатая цепь на дубе том:\nИ днём и ночью кот учёный\nВсё ходит по цепи кругом;";
-    else if (poemId === 'tanya') textarea.value = "Наша Таня громко плачет:\nУронила в речку мячик.\n— Тише, Танечка, не плачь:\nНе утонет в речке мяч.";
+    if (poemId === 'barto') textarea.value = `Идёт бычок, качается,
+Вздыхает на ходу:
+— Ох, доска кончается,
+Сейчас я упаду!`;
+    else if (poemId === 'pushkin') textarea.value = `У лукоморья дуб зелёный;
+Златая цепь на дубе том:
+И днём и ночью кот учёный
+Всё ходит по цепи кругом;`;
+    else if (poemId === 'tanya') textarea.value = `Наша Таня громко плачет:
+Уронила в речку мячик.
+— Тише, Танечка, не плачь:
+Не утонет в речке мяч.`;
 }
 
 function startCustomPoemDrawing() {
     const text = document.getElementById('custom-poem-text').value;
-    if (!text.trim()) { 
-        // Вместо alert подсвечиваем плейсхолдер
-        document.getElementById('custom-poem-text').placeholder = 'Пожалуйста, напиши или вставь стих сюда! ✍️'; 
-        return; 
+    if (!text.trim()) {
+        document.getElementById('custom-poem-text').placeholder = 'Пожалуйста, напиши или вставь стих сюда! ✍️';
+        return;
     }
-
+    // БЫЛО: text.split(' \n ') -> СТАЛО: text.split('\n')
     const lines = text.split('\n').map(line => line.trim()).filter(line => line.length > 0);
     if (lines.length === 0) return;
+    // ... остальной код
     drawingPoem = lines.map(line => ({ text: line }));
 
     try { vkBridge.send("VKWebAppTapticImpactOccurred", {"style": "heavy"}); } catch(e){}
