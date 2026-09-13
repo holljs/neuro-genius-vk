@@ -134,8 +134,18 @@ function buyPremium() {
     })
     .then(res => res.json())
     .then(data => {
-        if (data.success && data.payment_url) { var w = window.open(data.payment_url,
-    });
+        if (data.success && data.payment_url) {
+            // Открываем страницу оплаты в новой вкладке/окне
+            var w = window.open(data.payment_url, '_blank');
+            
+            // Если браузер/WebView заблокировал всплывающее окно (w будет null), 
+            // то на всякий случай делаем редирект текущего окна
+            if (!w) {
+                window.location.href = data.payment_url;
+            }
+        }
+    })
+    .catch(err => console.log("Ошибка создания платежа:", err));
 }
 
 // ==========================================
